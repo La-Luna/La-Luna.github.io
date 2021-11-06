@@ -12,5 +12,5 @@ Disallow: /fonts/
 Disallow: /vendors/
 Disallow: /fancybox/
 
-Sitemap: http://www.colins110.cn/sitemap.xml
-Sitemap: http://www.colins110.cn/baidusitemap.xml
+Sitemap: http://www.laluna00.cn/sitemap.xml
+Sitemap: http://www.laluna00.cn/baidusitemap.xml
