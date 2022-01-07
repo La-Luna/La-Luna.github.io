@@ -1,25 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[ubuntu下编译内核模块]]></title>
-    <url>%2F2020%2F03%2F17%2Fubuntu%E4%B8%8B%E7%BC%96%E8%AF%91%E5%86%85%E6%A0%B8%E6%A8%A1%E5%9D%97%2F</url>
-    <content type="text"><![CDATA[在ubuntu下编写内核模块，需要一个源文件和一个makefile文件。模块源文件hello.c:123456789101112131415#include&lt;linux/init.h&gt;#include&lt;linux/module.h&gt;MODULE_LICENSE("Dual BSD/GPL");static int hello_init(void)&#123; printk(KERN_ALERT "Hello,world\n"); return 0;&#125;static void hello_exit(void)&#123; printk(KERN_ALERT "GoodBye,colin!\n");&#125;module_init(hello_init);module_exit(hello_exit); makefile文件:123456789101112131415161718192021222324252627282930313233343536373839404142434445# Comment/uncomment the following line to disable/enable debugging#DEBUG = y# Add your debugging flag (or not) to CFLAGSifeq ($(DEBUG),y) DEBFLAGS = -O -g -DSCULL_DEBUG # "-O" is needed to expand inlineselse DEBFLAGS = -O2endifLDDINC=$(PWD)/../includeEXTRA_CFLAGS += $(DEBFLAGS)EXTRA_CFLAGS += -I$(LDDINC)ifneq ($(KERNELRELEASE),)# call from kernel build system#scull-objs := main.o pipe.o access.oobj-m := hello.oelseKERNELDIR ?= /lib/modules/$(shell uname -r)/buildPWD := $(shell pwd)modules: $(MAKE) -C $(KERNELDIR) M=$(PWD) modulesendifclean: rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versionsdepend .depend dep: $(CC) $(EXTRA_CFLAGS) -M *.c &gt; .dependifeq (.depend,$(wildcard .depend))include .dependendif]]></content>
-      <tags>
-        <tag>kernel</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[centos获取内核源码]]></title>
-    <url>%2F2020%2F03%2F08%2Fcentos%E8%8E%B7%E5%8F%96%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%2F</url>
-    <content type="text"><![CDATA[参考centos wiki 常见编译目录 12[user@host]$ mkdir -p ~/rpmbuild/&#123;BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS&#125;[user@host]$ echo '%_topdir %(echo $HOME)/rpmbuild' &gt; ~/.rpmmacros 安装必要的工具 12345[root@host]# yum install asciidoc audit-libs-devel bash bc binutils binutils-devel bison diffutils elfutils[root@host]# yum install elfutils-devel elfutils-libelf-devel findutils flex gawk gcc gettext gzip hmaccalc hostname java-devel[root@host]# yum install m4 make module-init-tools ncurses-devel net-tools newt-devel numactl-devel openssl[root@host]# yum install patch pciutils-devel perl perl-ExtUtils-Embed pesign python-devel python-docutils redhat-rpm-config[root@host]# yum install rpm-build sh-utils tar xmlto xz zlib-devel 安装包含源码的rpm包 1[user@host]$ rpm -i http://vault.centos.org/7.7.1908/updates/Source/SPackages/kernel-3.10.0-1062.12.1.el7.src.rpm 2&gt;&amp;1 | grep -v exist 可以使用cat /etc/redhat-release和uname -r确定要安装的内核源码。在线安装比较慢，可以到http://vault.centos.org下载后安装。]]></content>
-      <categories>
-        <category>kernel</category>
-      </categories>
-      <tags>
-        <tag>内核</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[centos安装chacha20]]></title>
     <url>%2F2020%2F02%2F08%2Fcentos%E5%AE%89%E8%A3%85chacha20%2F</url>
     <content type="text"><![CDATA[1234567891011yum install m2crypto gcc -ywget https://download.libsodium.org/libsodium/releases/libsodium-1.0.18.tar.gztar zxf libsodium-1.0.18.tar.gzcd libsodium-1.0.18./configuremake &amp;&amp; make installecho "include ld.so.conf.d/*.conf" &gt; /etc/ld.so.confecho "/lib" &gt;&gt; /etc/ld.so.confecho "/usr/lib64" &gt;&gt; /etc/ld.so.confecho "/usr/local/lib" &gt;&gt; /etc/ld.so.confldconfig]]></content>
