@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.laluna00.cn/"/>
-  <updated>2022-01-07T09:00:18.463Z</updated>
+  <updated>2022-01-07T10:45:28.538Z</updated>
   <id>https://www.laluna00.cn/</id>
   
   <author>
@@ -17,13 +17,13 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>test</title>
-    <link href="https://www.laluna00.cn/2022/01/07/test/"/>
-    <id>https://www.laluna00.cn/2022/01/07/test/</id>
-    <published>2022-01-07T08:59:59.000Z</published>
-    <updated>2022-01-07T09:00:18.463Z</updated>
+    <title>night</title>
+    <link href="https://www.laluna00.cn/2022/01/07/night/"/>
+    <id>https://www.laluna00.cn/2022/01/07/night/</id>
+    <published>2022-01-07T10:45:28.000Z</published>
+    <updated>2022-01-07T10:45:28.538Z</updated>
     
-    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><p>hello</p>]]></content>
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script>]]></content>
     
     <summary type="html">
     
