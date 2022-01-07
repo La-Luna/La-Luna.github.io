@@ -212,18 +212,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[使用win10创意者更新自带工具MBR2GPT完成系统盘的MBR到GPT的无损转换]]></title>
-    <url>%2F2017%2F06%2F11%2F%E4%BD%BF%E7%94%A8win10%E5%88%9B%E6%84%8F%E8%80%85%E6%9B%B4%E6%96%B0%E8%87%AA%E5%B8%A6%E5%B7%A5%E5%85%B7MBR2GPT%E5%AE%8C%E6%88%90%E7%B3%BB%E7%BB%9F%E7%9B%98%E7%9A%84MBR%E5%88%B0GPT%E7%9A%84%E6%97%A0%E6%8D%9F%E8%BD%AC%E6%8D%A2%2F</url>
-    <content type="text"><![CDATA[之前如果需要将MBR格式的硬盘转换为GPT硬盘，要么选择格盘重装系统，这样数据会丢失。如果需要数据无损转换的话，手工转换比较复杂，或者可以使用第三方的分区工具完成。这里我们介绍微软官方提供的无损转换工具MBR2GPT，工具已经内置到win10创意者更新里了，这里我们可以在命令行里直接调用！ 这是官方参考文档: 点此阅读 注意事项 在转换过程中会创建UEFI系统分区，这会占用一个MBR主分区，而因为MBR磁盘最多只能有四个主分区，所以待转换的MBR磁盘不能超过四个主分区； BitLocker加密磁盘需要先解除BitLocker加密之后才能使用MBR2GPT进行转换； 即使当前安装的Win10 1703之前的早期Win10版本（1607，1511，1507），依然能够使用MBR2GPT进行转换，只不过需要使用Win10 1703系统盘启动进入WinRE环境，才能运行MBR2GPT工具。 这是我们演示将本机的系统盘转换为GPT文件格式步骤一:启动进入WinRE环境，如果不懂如何进入，请点击阅读 进入后选择命令提示符 步骤二使用命令disk查看里的磁盘序号。 步骤三启动MBR2GPT程序，带上参数/validate和/disk:1，用于指定对1号磁盘（系统盘）进行检查，如果提示successfully说明可以进行转换。1mbr2gpt /validate /disk:1 开始转换完成后类似如下提示:1234567891011121314151617MBR2GPT will now attempt to convert disk 0.If conversion is successful the disk can only be booted in GPT mode.These changes cannot be undone!MBR2GPT: Attempting to convert disk 0MBR2GPT: Retrieving layout of diskMBR2GPT: Validating layout, disk sector size is: 512 bytesMBR2GPT: Trying to shrink the system partitionMBR2GPT: Trying to shrink the OS partitionMBR2GPT: Creating the EFI system partitionMBR2GPT: Installing the new boot filesMBR2GPT: Performing the layout conversionMBR2GPT: Migrating default boot entryMBR2GPT: Adding recovery boot entryMBR2GPT: Fixing drive letter mappingMBR2GPT: Conversion completed successfullyMBR2GPT: Before the new system can boot properly you need to switch the firmware to boot to UEFI mode! 最后记得将主板上的启动模式改为UEFI mode!更多细节参见官方手册]]></content>
-      <categories>
-        <category>windows</category>
-      </categories>
-      <tags>
-        <tag>windows</tag>
-        <tag>分区无损转换</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[Markdown语法]]></title>
     <url>%2F2017%2F06%2F06%2FMarkdown%E8%AF%AD%E6%B3%95%2F</url>
     <content type="text"><![CDATA[这是我的第一篇文章首先，回忆一下Markdown语法 标题 标题可以根据字体大小分为六级，分别用不同数量的#表示【效果】 这是一级标题这是二级标题这是三级标题这是四级标题这是五级标题这是六级标题【输入】123456#这是一级标题##这是二级标题###这是三级标题####这是四级标题#####这是五级标题######这是六级标题 文本 【效果】粗体斜体粗体+斜体【输入】123**这是粗体***这是斜体****这是粗体+斜体*** 图片 【效果】【输入】1![我的博客主页](Markdown语法/我的主页.png) 列表 列表分为有序列表和无序列表无序列表可以通过在每行文本前输入*,+,-来实现【效果】 星号实现的列表 加号实现的列表 减号实现的列表 注意符号与文本之间要有一个空格 【输入】1234* 星号实现的列表+ 加号实现的列表- 减号实现的列表* 注意符号与文本之间要有一个空格 有序列表可以通过在每行文本前面输入数字+.+空格来实现【效果】 第一行 第二行 第三行 【输入】1231. 第一行2. 第二行3. 第三行 引用 【效果】 这是一段引用啦 【输入】1&gt;这是一段引用啦 行内代码块 行内代码块可用于关键字词，将其与普通文本文件分别开来，其用法是在文本内容外套上”`“，即反引号。 【效果】这是一段行内代码块【输入】1`这是一段行内代码块` 代码块 【效果】12345public class test&#123; public static void main()&#123; System.out.println("This is a test_class!"); &#125;&#125; 表格 【效果】|默认|居中|左对齐|右对齐||–|:-:|:-|-:||换行\n换行失败|我的Markdown|不支持|换行||支持斜体|粗体|斜体+粗体|||# 不支持标题|支持链接||支持行内代码块 | 【输入】12345|默认|居中|左对齐|右对齐||--|:-:|:-|-:||换行\n换行失败|我的Markdown|不支持|换行||*支持斜体*|**粗体**|***斜体+粗体***|||# 不支持标题|[支持链接](http://jianshu.com)|![支持图片](https://cdn.sspai.com/attachment/origin/2014/04/15/69488.png?imageMogr2/quality/90/thumbnail/100x)|`支持行内代码块` | 删除线 【效果】删除线【输入】1~~删除线~~ 分割线 分割线可使用*、-来实现。【效果】 【输入】12---***]]></content>
