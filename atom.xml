@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.laluna00.cn/"/>
-  <updated>2022-03-24T08:21:26.085Z</updated>
+  <updated>2022-03-24T09:58:01.943Z</updated>
   <id>https://www.laluna00.cn/</id>
   
   <author>
@@ -17,34 +17,13 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>test</title>
-    <link href="https://www.laluna00.cn/2022/03/24/test/"/>
-    <id>https://www.laluna00.cn/2022/03/24/test/</id>
-    <published>2022-03-24T08:21:26.000Z</published>
-    <updated>2022-03-24T08:21:26.085Z</updated>
-    
-    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;\assets\css\APlayer.min.css&quot;&gt;&lt;script src=&quot;\assets\js\APlayer.min.js&quot; cla
-      
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
     <title>night</title>
     <link href="https://www.laluna00.cn/2022/01/07/night/"/>
     <id>https://www.laluna00.cn/2022/01/07/night/</id>
     <published>2022-01-07T10:45:28.000Z</published>
-    <updated>2022-03-24T08:25:43.059Z</updated>
+    <updated>2022-03-24T09:58:01.943Z</updated>
     
-    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><p>我将在后续更新unity灯光渲染demo的每一步….</p>]]></content>
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><p>我将在后续更新unity灯光渲染demo的每一步….<br>之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。</p><p>Step1：熟悉使用Unity实时预计算全局环境光照</p>]]></content>
     
     <summary type="html">
     
