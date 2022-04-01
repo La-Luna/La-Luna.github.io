@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.laluna00.cn/"/>
-  <updated>2022-04-01T02:49:14.529Z</updated>
+  <updated>2022-04-01T05:50:13.676Z</updated>
   <id>https://www.laluna00.cn/</id>
   
   <author>
@@ -21,9 +21,9 @@
     <link href="https://www.laluna00.cn/2022/01/07/night/"/>
     <id>https://www.laluna00.cn/2022/01/07/night/</id>
     <published>2022-01-07T10:45:28.000Z</published>
-    <updated>2022-04-01T02:49:14.529Z</updated>
+    <updated>2022-04-01T05:50:13.676Z</updated>
     
-    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>我将在后续更新unity灯光渲染demo的每一步….<br>之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。</p></blockquote><h1 id="step-0-预备知识"><a href="#step-0-预备知识" class="headerlink" title="step 0: 预备知识"></a>step 0: 预备知识</h1><ul><li>HDRP</li><li>寻找可行的方案</li></ul><p>test <del>markdowm</del></p><p>test ==markdown==</p><p>test <strong>markdown</strong></p><h2 id="HDRP"><a href="#HDRP" class="headerlink" title="HDRP"></a>HDRP</h2><p>看到unity手册里有个介绍将内置渲染管线转为HDRP的教程，跟一下，然后把YouTube那个调整再跟一下。发现游戏引擎已经把我想要的效果实现出来了，先看看效果怎么样，然后想办法魔改一下。</p><blockquote><p><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a><br><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">Volumetric Lights in HDRP with Unity 2019.3</a></p></blockquote><p>HDRP，High Definition Render Pipeline是Unity可编程渲染管线的其中一种，</p><!--step 1: 树叶摇曳怎么实现# step 2: 路灯，光，阴影怎么实现# Step n：熟悉使用Unity实时预计算全局环境光照看unity官方教程去咯....-->]]></content>
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>我将在后续更新unity灯光渲染demo的每一步….<br>之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。</p><p>我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。</p></blockquote><h1 id="step-0-预备知识"><a href="#step-0-预备知识" class="headerlink" title="step 0: 预备知识"></a>step 0: 预备知识</h1><ul><li>HDRP</li><li>寻找可行的方案</li></ul><p>test <del>markdowm</del></p><p>test ==markdown==</p><p>test <strong>markdown</strong></p><h2 id="HDRP"><a href="#HDRP" class="headerlink" title="HDRP"></a>HDRP</h2><p>看到unity手册里有个介绍将内置渲染管线转为HDRP的教程，跟一下，然后把YouTube那个调整再跟一下。发现游戏引擎已经把我想要的效果实现出来了，先看看效果怎么样，然后想办法魔改一下。</p><blockquote><p><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a><br><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">Volumetric Lights in HDRP with Unity 2019.3</a></p></blockquote><p>HDRP，High Definition Render Pipeline是Unity可编程渲染管线的其中一种，是Unity用来适配现代兼容计算着色器平台的渲染管线。HDRP使用了基于物理的光线技术，线性空间，HDR光线，和前向光线（Forward lighting）结构，让游戏制作者用更高的图形标准去创造艺术。</p><!--step 1: 树叶摇曳怎么实现# step 2: 路灯，光，阴影怎么实现# Step n：熟悉使用Unity实时预计算全局环境光照看unity官方教程去咯....-->]]></content>
     
     <summary type="html">
     
