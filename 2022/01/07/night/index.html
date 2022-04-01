@@ -149,17 +149,17 @@
 
 
 
-  <meta name="description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。  Step1：熟悉使用Unity实时预计算全局环境光照看unity官方教程去咯….">
+  <meta name="description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。  step 0: 预备知识 HDRP 寻找可行的方案  test markdowm test ==markdown== test markdown HDRP看到unity手册里有个介绍将内置渲染管线转为HDRP的教程">
 <meta property="og:type" content="article">
-<meta property="og:title" content="night">
+<meta property="og:title" content="night：0-unity HDRP">
 <meta property="og:url" content="https://www.laluna00.cn/2022/01/07/night/index.html">
 <meta property="og:site_name" content="LaLuna&#39;s Home">
-<meta property="og:description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。  Step1：熟悉使用Unity实时预计算全局环境光照看unity官方教程去咯….">
+<meta property="og:description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。  step 0: 预备知识 HDRP 寻找可行的方案  test markdowm test ==markdown== test markdown HDRP看到unity手册里有个介绍将内置渲染管线转为HDRP的教程">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2022-03-24T10:07:23.538Z">
+<meta property="og:updated_time" content="2022-04-01T02:49:14.529Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="night">
-<meta name="twitter:description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。  Step1：熟悉使用Unity实时预计算全局环境光照看unity官方教程去咯….">
+<meta name="twitter:title" content="night：0-unity HDRP">
+<meta name="twitter:description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。  step 0: 预备知识 HDRP 寻找可行的方案  test markdowm test ==markdown== test markdown HDRP看到unity手册里有个介绍将内置渲染管线转为HDRP的教程">
 
 
 
@@ -178,7 +178,7 @@
   };
 </script>
 
-  <title>night | LaLuna's Home</title>
+  <title>night：0-unity HDRP | LaLuna's Home</title>
   
 
 
@@ -442,7 +442,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">night
+          <h2 class="post-title" itemprop="name headline">night：0-unity HDRP
               
             
           </h2>
@@ -484,7 +484,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2022-03-24 18:07:23" itemprop="dateModified" datetime="2022-03-24T18:07:23+08:00">2022-03-24</time>
+                <time title="修改时间：2022-04-01 10:49:14" itemprop="dateModified" datetime="2022-04-01T10:49:14+08:00">2022-04-01</time>
               
             
           </span>
@@ -497,7 +497,7 @@
 
           
           
-             <span id="/2022/01/07/night/" class="leancloud_visitors" data-flag-title="night">
+             <span id="/2022/01/07/night/" class="leancloud_visitors" data-flag-title="night：0-unity HDRP">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -522,7 +522,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">134</span>
+                <span title="本文字数">391</span>
               
 
               
@@ -558,8 +558,29 @@
       
         <blockquote><p>我将在后续更新unity灯光渲染demo的每一步….<br>之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。</p>
 </blockquote>
-<h1 id="Step1：熟悉使用Unity实时预计算全局环境光照"><a href="#Step1：熟悉使用Unity实时预计算全局环境光照" class="headerlink" title="Step1：熟悉使用Unity实时预计算全局环境光照"></a>Step1：熟悉使用Unity实时预计算全局环境光照</h1><p>看unity官方教程去咯….</p>
+<h1 id="step-0-预备知识"><a href="#step-0-预备知识" class="headerlink" title="step 0: 预备知识"></a>step 0: 预备知识</h1><ul>
+<li>HDRP</li>
+<li>寻找可行的方案</li>
+</ul>
+<p>test <del>markdowm</del></p>
+<p>test ==markdown==</p>
+<p>test <strong>markdown</strong></p>
+<h2 id="HDRP"><a href="#HDRP" class="headerlink" title="HDRP"></a>HDRP</h2><p>看到unity手册里有个介绍将内置渲染管线转为HDRP的教程，跟一下，然后把YouTube那个调整再跟一下。发现游戏引擎已经把我想要的效果实现出来了，先看看效果怎么样，然后想办法魔改一下。</p>
+<blockquote>
+<p><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a><br><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">Volumetric Lights in HDRP with Unity 2019.3</a></p>
+</blockquote>
+<p>HDRP，High Definition Render Pipeline是Unity可编程渲染管线的其中一种，</p>
+<!--
 
+step 1: 树叶摇曳怎么实现
+
+
+
+# step 2: 路灯，光，阴影怎么实现
+
+
+# Step n：熟悉使用Unity实时预计算全局环境光照
+看unity官方教程去咯....-->
       
     </div>
 
@@ -751,7 +772,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Step1：熟悉使用Unity实时预计算全局环境光照"><span class="nav-number">1.</span> <span class="nav-text">Step1：熟悉使用Unity实时预计算全局环境光照</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#step-0-预备知识"><span class="nav-number">1.</span> <span class="nav-text">step 0: 预备知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HDRP"><span class="nav-number">1.1.</span> <span class="nav-text">HDRP</span></a></li></ol></li></ol></div>
             
 
           </div>
