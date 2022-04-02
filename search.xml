@@ -3,6 +3,6 @@
   <entry>
     <title><![CDATA[night：0-unity HDRP]]></title>
     <url>%2F2022%2F01%2F07%2Fnight%2F</url>
-    <content type="text"><![CDATA[我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。 我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。 step 0: 预备知识 HDRP 寻找可行的方案 test markdowm test ==markdown== test markdown HDRP看到unity手册里有个介绍将内置渲染管线转为HDRP的教程，跟一下，然后把YouTube那个调整再跟一下。发现游戏引擎已经把我想要的效果实现出来了，先看看效果怎么样，然后想办法魔改一下。 HDRP conversion tutorialVolumetric Lights in HDRP with Unity 2019.3 HDRP，High Definition Render Pipeline是Unity可编程渲染管线的其中一种，是Unity用来适配现代兼容计算着色器平台的渲染管线。HDRP使用了基于物理的光线技术，线性空间，HDR光线，和前向光线（Forward lighting）结构，让游戏制作者用更高的图形标准去创造艺术。]]></content>
+    <content type="text"><![CDATA[我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。 我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。 step 0: 预备知识 Unity HDRP 寻找可行的方案 HDRP看到unity手册里有个介绍将内置渲染管线转为HDRP的教程，跟一下，然后把YouTube那个调整再跟一下。发现游戏引擎已经把我想要的效果实现出来了，先看看效果怎么样，然后想办法魔改一下。 HDRP conversion tutorialVolumetric Lights in HDRP with Unity 2019.3 HDRP，High Definition Render Pipeline是Unity可编程渲染管线的其中一种，是Unity用来适配现代兼容计算着色器平台的渲染管线。HDRP使用了基于物理的光线技术，线性空间，HDR光线，和前向光线（Forward lighting）结构，让游戏制作者用更高的图形标准去创造艺术。]]></content>
   </entry>
 </search>
