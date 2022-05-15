@@ -149,17 +149,17 @@
 
 
 
-  <meta name="description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。 我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。  step 0: 预备知识 Unity HDRP 寻找可行的方案  HDRP看到unity手册里有个介绍将内置渲染管线转为HDRP的教程，跟一下，然后把YouT">
+  <meta name="description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。 我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。  看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门—–&amp;gt;  Volumetric Lights in HDRP with Unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="night：0-unity HDRP">
 <meta property="og:url" content="https://www.laluna00.cn/2022/01/07/night/index.html">
 <meta property="og:site_name" content="LaLuna&#39;s Home">
-<meta property="og:description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。 我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。  step 0: 预备知识 Unity HDRP 寻找可行的方案  HDRP看到unity手册里有个介绍将内置渲染管线转为HDRP的教程，跟一下，然后把YouT">
+<meta property="og:description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。 我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。  看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门—–&amp;gt;  Volumetric Lights in HDRP with Unity">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2022-04-02T14:14:38.202Z">
+<meta property="og:updated_time" content="2022-05-15T16:13:20.885Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="night：0-unity HDRP">
-<meta name="twitter:description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。 我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。  step 0: 预备知识 Unity HDRP 寻找可行的方案  HDRP看到unity手册里有个介绍将内置渲染管线转为HDRP的教程，跟一下，然后把YouT">
+<meta name="twitter:description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。 我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。  看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门—–&amp;gt;  Volumetric Lights in HDRP with Unity">
 
 
 
@@ -484,11 +484,29 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2022-04-02 22:14:38" itemprop="dateModified" datetime="2022-04-02T22:14:38+08:00">2022-04-02</time>
+                <time title="修改时间：2022-05-16 00:13:20" itemprop="dateModified" datetime="2022-05-16T00:13:20+08:00">2022-05-16</time>
               
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Unity-Lighting/" itemprop="url" rel="index"><span itemprop="name">Unity Lighting</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -522,7 +540,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">480</span>
+                <span title="本文字数">869</span>
               
 
               
@@ -559,15 +577,22 @@
         <blockquote><p>我将在后续更新unity灯光渲染demo的每一步….<br>之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。</p>
 <p>我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。</p>
 </blockquote>
-<h1 id="step-0-预备知识"><a href="#step-0-预备知识" class="headerlink" title="step 0: 预备知识"></a>step 0: 预备知识</h1><ul>
-<li>Unity HDRP</li>
-<li>寻找可行的方案</li>
-</ul>
-<h2 id="HDRP"><a href="#HDRP" class="headerlink" title="HDRP"></a>HDRP</h2><p>看到unity手册里有个介绍将内置渲染管线转为HDRP的教程，跟一下，然后把YouTube那个调整再跟一下。发现游戏引擎已经把我想要的效果实现出来了，先看看效果怎么样，然后想办法魔改一下。</p>
+<p>看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门—–&gt;</p>
 <blockquote>
-<p><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a><br><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">Volumetric Lights in HDRP with Unity 2019.3</a></p>
+<p><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">Volumetric Lights in HDRP with Unity 2019.3</a>，<br>还有一个将内置渲染管线专为HDRP的，可以用来参考，传送门—–&gt;<br><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p>
 </blockquote>
-<p>HDRP，High Definition Render Pipeline是Unity可编程渲染管线的其中一种，是Unity用来适配现代兼容计算着色器平台的渲染管线。HDRP使用了基于物理的光线技术，线性空间，HDR光线，和前向光线（Forward lighting）结构，让游戏制作者用更高的图形标准去创造艺术。</p>
+<h2 id="HDRP"><a href="#HDRP" class="headerlink" title="HDRP"></a>HDRP</h2><p>HDRP，High Definition Render Pipeline是Unity可编程渲染管线的其中一种，是Unity用来适配现代兼容计算着色器平台的渲染管线。HDRP使用了基于物理的光线技术，线性空间，HDR光线，和前向光线（Forward lighting）结构，让游戏制作者用更高的图形标准去创造艺术。</p>
+<p>使用HDRP的项目则不能使用Lightweight Render Pipeline了。每个项目必须明确使用的渲染管线。</p>
+<p>HDRP支持光栅化，光线追踪，路径追踪等渲染技术，遵循基于物理的渲染工作流程。</p>
+<p>总之，HDRP就是Unity集成了多种基于物理的渲染技术所设计的面向用户的渲染管线。</p>
+<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><blockquote>
+<p><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">YouTube视频</a>下提供了Fontainebleau的下载位置，<br>这是一个森林模拟器。</p>
+</blockquote>
+<p>首先要将项目的渲染管线转成HDRP：<br>1.window–package manager–安装HDRP<br>2.资源管理器中新建HDRP资源<br>3.edit–project setting–graphic中选择刚刚创建的HDRP资源</p>
+<p>此时，项目便使用HDRP了。<br>更多的，项目中的材质也要转为HDRP材质。参考这里—&gt;&gt;<a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p>
+<h1 id="Fog"><a href="#Fog" class="headerlink" title="Fog"></a>Fog</h1><p>场景中创建Fog资源。调整Fog浓度</p>
+<h1 id="体积光"><a href="#体积光" class="headerlink" title="体积光"></a>体积光</h1><p>场景中创建direct light</p>
+<h1 id="手电筒光源"><a href="#手电筒光源" class="headerlink" title="手电筒光源"></a>手电筒光源</h1><p>场景中创建spotlight</p>
 <!--
 
 step 1: 树叶摇曳怎么实现
@@ -721,7 +746,9 @@ step 1: 树叶摇曳怎么实现
                     
                       
                     
-                    <span class="site-state-item-count">1</span>
+                      
+                    
+                    <span class="site-state-item-count">2</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -812,7 +839,7 @@ step 1: 树叶摇曳怎么实现
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#step-0-预备知识"><span class="nav-number">1.</span> <span class="nav-text">step 0: 预备知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HDRP"><span class="nav-number">1.1.</span> <span class="nav-text">HDRP</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#HDRP"><span class="nav-number">1.</span> <span class="nav-text">HDRP</span></a></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#环境搭建"><span class="nav-number"></span> <span class="nav-text">环境搭建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Fog"><span class="nav-number"></span> <span class="nav-text">Fog</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#体积光"><span class="nav-number"></span> <span class="nav-text">体积光</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#手电筒光源"><span class="nav-number"></span> <span class="nav-text">手电筒光源</span></a></li></div>
             
 
           </div>
@@ -853,7 +880,7 @@ step 1: 树叶摇曳怎么实现
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">6 分钟</span>
+    <span title="站点阅读时长">7 分钟</span>
   
 </div>
 
