@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.laluna00.cn/"/>
-  <updated>2022-05-08T11:59:55.817Z</updated>
+  <updated>2022-05-15T08:58:15.223Z</updated>
   <id>https://www.laluna00.cn/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Animation In Texture</title>
+    <link href="https://www.laluna00.cn/2022/05/14/AnimationInTexture/"/>
+    <id>https://www.laluna00.cn/2022/05/14/AnimationInTexture/</id>
+    <published>2022-05-14T13:54:08.000Z</published>
+    <updated>2022-05-15T08:58:15.223Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十一章介绍的纹理动画复现了一遍。纹理动画一个很有趣的效果，用一些简单的技巧实现动画。记录一下。感谢乐乐女神~</p></blockquote><p>书中介绍两种实现简单动画的技巧，一种是利用纹理坐标的偏移，一种是利用模型顶点坐标的偏移。</p><h1 id="纹理动画"><a href="#纹理动画" class="headerlink" title="纹理动画"></a>纹理动画</h1><p>实际上就是对Texture的采样坐标进行偏移，随着时间的流动，采样不断变化，以达到动画的效果。<br>书中介绍了两个例子，一个是火焰动画，一个是无限移动的背景板。</p><p>火焰动画关键的代码块是<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">fixed4 frag(v2f i) :SV_Target&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">float</span> time = <span class="built_in">floor</span>(_Time.y*_Speed);<span class="comment">//_Time.y 表示自场景加载到当前经过的时间</span></span><br><span class="line">    <span class="keyword">float</span> row=<span class="built_in">floor</span>(time/_HorizonAmount);<span class="comment">//行索引</span></span><br><span class="line">    <span class="keyword">float</span> column = time - _HorizonAmount * row;<span class="comment">//列索引</span></span><br><span class="line"></span><br><span class="line">    float2 uv;</span><br><span class="line">    uv.x =i.uv.x + column;<span class="comment">//加在uv上</span></span><br><span class="line">    uv.y =i.uv.y - row;<span class="comment">//因为纹理列坐标 上大下小 所以是减法 变小</span></span><br><span class="line">    uv.x /= _HorizonAmount;<span class="comment">//映射到 局部的小片段纹理中的坐标 </span></span><br><span class="line">    uv.y /= _VerticleAmount;</span><br><span class="line">    fixed4 c=tex2D(_MainTex,uv);</span><br><span class="line">    c.rgb *= _Color.rgb;</span><br><span class="line">    <span class="keyword">return</span> c;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p>主要就是给一个含有N*N个局部小片段纹理的动画纹理，在fragment中对采样坐标进行从左向右，从上倒下的偏移，因为时间变化是连续的，即采样坐标是连续的，所以只要动画纹理中的局部片段是连续的，则可以得到连续的动画。随着时间_Time.y的变化。其中在uv.x/=_HorizonAmount把坐标映射到局部的小片段纹理中，需要仔细体会。</p><p>移动的背景墙就简单一点，关键的代码块为：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">v2f <span class="title">vert</span> <span class="params">(appdata v)</span></span></span><br><span class="line"><span class="function">     </span>&#123;</span><br><span class="line">         v2f o;</span><br><span class="line">         o.pos = UnityObjectToClipPos(v.vertex);</span><br><span class="line">         o.uv.xy = TRANSFORM_TEX(v.uv, _FarTex)+frac(float2(_Time.y * _FarMoveSpeed,<span class="number">0.0</span>));</span><br><span class="line">         o.uv.zw = TRANSFORM_TEX(v.uv, _NearTex)+frac(float2(_Time.y*_NearMoveSpeed,<span class="number">0.0</span>));</span><br><span class="line">         <span class="comment">//对采样坐标进行偏移</span></span><br><span class="line"></span><br><span class="line">         <span class="keyword">return</span> o;</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure></p><p>因为是横向移动的背景墙，所以只在uv.x上叠加时间的流动<br>其中frac函数是取值的小数位。</p><h1 id="顶点动画"><a href="#顶点动画" class="headerlink" title="顶点动画"></a>顶点动画</h1><p>顶点动画，就是对顶点的位置进行变化。</p><p>利用Asin(Bx+C)对顶点进行偏转。其中只对X方向进行位移，对应的mesh也是在xoz平面上分布如下图所示（如果在yoz平面上，对x偏移就使得mesh像飘动的丝带）。</p><p><img src="/2022/05/14/AnimationInTexture/waterquadmesh.png#pic_center" alt=""></p><p>关键代码如下<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">v2f <span class="title">vert</span> <span class="params">(appdata v)</span></span></span><br><span class="line"><span class="function">            </span>&#123;</span><br><span class="line">                v2f o;</span><br><span class="line">                float4 offset;</span><br><span class="line">                offset.yzw = float3(<span class="number">0.0</span>,<span class="number">0.0</span>,<span class="number">0.0</span>);</span><br><span class="line">                offset.x = <span class="built_in">sin</span>(_Frequency * _Time.y + v.vertex.x * _InvWaveLength + v.vertex.y * _InvWaveLength + v.vertex.z * _InvWaveLength) * _Magnet;</span><br><span class="line">                </span><br><span class="line">                o.vertex = UnityObjectToClipPos(v.vertex+offset);</span><br><span class="line">                o.uv = TRANSFORM_TEX(v.uv, _MainTex);</span><br><span class="line">                o.uv += float2(<span class="number">0.0</span>, _Time.y * _Speed);</span><br><span class="line">                <span class="keyword">return</span> o;</span><br><span class="line">            &#125;</span><br></pre></td></tr></table></figure></p><p>对正弦函数调参就能得到各种波浪效果了<br><img src="/2022/05/14/AnimationInTexture/sinfunction.png#pic_center" alt=""></p><p>另外，在纹理采样时，也需要对纹理进行偏移达到水流的效果。y偏转为0时，水流不动。对y值进行偏转的话，结合纹理（如下图所示）的特点，会使得采样点迅速更新向偏转位置采样，则造成水流的效果。<br><img src="/2022/05/14/AnimationInTexture/watertexture.png#pic_center" alt=""></p><h1 id="广告牌效果"><a href="#广告牌效果" class="headerlink" title="广告牌效果"></a>广告牌效果</h1><p>（挖个坑，下面这个是什么意思？）<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">float3 centerOffs = v.vertex.xyz - center;</span><br><span class="line">                float3 localPos = center + rightDir * centerOffs.x + upDir * centerOffs.y + normalDir * centerOffs.z;</span><br></pre></td></tr></table></figure></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;\assets\css\APlayer.min.css&quot;&gt;&lt;script src=&quot;\assets\js\APlayer.min.js&quot; cla
+      
+    
+    </summary>
+    
+      <category term="Unity Shader" scheme="https://www.laluna00.cn/categories/Unity-Shader/"/>
+    
+    
+      <category term="Unity Shader" scheme="https://www.laluna00.cn/tags/Unity-Shader/"/>
+    
+  </entry>
   
   <entry>
     <title>GlassRefractionShader</title>
