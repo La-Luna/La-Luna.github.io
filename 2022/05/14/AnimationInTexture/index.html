@@ -160,7 +160,7 @@
 <meta property="og:image" content="https://www.laluna00.cn/2022/05/14/AnimationInTexture/waterquadmesh.png#pic_center">
 <meta property="og:image" content="https://www.laluna00.cn/2022/05/14/AnimationInTexture/sinfunction.png#pic_center">
 <meta property="og:image" content="https://www.laluna00.cn/2022/05/14/AnimationInTexture/watertexture.png#pic_center">
-<meta property="og:updated_time" content="2022-05-15T10:02:19.468Z">
+<meta property="og:updated_time" content="2022-05-15T16:19:18.878Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Animation In Texture">
 <meta name="twitter:description" content="在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十一章介绍的纹理动画复现了一遍。纹理动画一个很有趣的效果，用一些简单的技巧实现动画。记录一下。感谢乐乐女神~  书中介绍两种实现简单动画的技巧，一种是利用纹理坐标的偏移，一种是利用模型顶点坐标的偏移。 纹理动画实际上就是对Texture的采样坐标进行偏移，随着时间的流动，采样不断变化，以达到动画的效果。书中介绍了">
@@ -489,7 +489,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2022-05-15 18:02:19" itemprop="dateModified" datetime="2022-05-15T18:02:19+08:00">2022-05-15</time>
+                <time title="修改时间：2022-05-16 00:19:18" itemprop="dateModified" datetime="2022-05-16T00:19:18+08:00">2022-05-16</time>
               
             
           </span>
@@ -594,6 +594,7 @@
 <p>对正弦函数调参就能得到各种波浪效果了<br><img src="/2022/05/14/AnimationInTexture/sinfunction.png#pic_center" alt=""></p>
 <p>另外，在纹理采样时，也需要对纹理进行偏移达到水流的效果。y偏转为0时，水流不动。对y值进行偏转的话，结合纹理（如下图所示）的特点，会使得采样点迅速更新向偏转位置采样，则造成水流的效果。<br><img src="/2022/05/14/AnimationInTexture/watertexture.png#pic_center" alt=""></p>
 <h1 id="广告牌效果"><a href="#广告牌效果" class="headerlink" title="广告牌效果"></a>广告牌效果</h1><p>（挖个坑，下面这个是什么意思？）<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">float3 centerOffs = v.vertex.xyz - center;</span><br><span class="line">                float3 localPos = center + rightDir * centerOffs.x + upDir * centerOffs.y + normalDir * centerOffs.z;</span><br></pre></td></tr></table></figure></p>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></p>
 
       
     </div>
@@ -655,6 +656,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/05/17/renderingpath/" rel="prev" title="Unity 的渲染路径">
+                Unity 的渲染路径 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -728,7 +733,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-count">4</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -836,7 +841,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#纹理动画"><span class="nav-number">1.</span> <span class="nav-text">纹理动画</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#顶点动画"><span class="nav-number">2.</span> <span class="nav-text">顶点动画</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#广告牌效果"><span class="nav-number">3.</span> <span class="nav-text">广告牌效果</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#纹理动画"><span class="nav-number">1.</span> <span class="nav-text">纹理动画</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#顶点动画"><span class="nav-number">2.</span> <span class="nav-text">顶点动画</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#广告牌效果"><span class="nav-number">3.</span> <span class="nav-text">广告牌效果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文献"><span class="nav-number">4.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
             
 
           </div>
@@ -868,7 +873,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">7k</span>
+    <span title="站点总字数">8k</span>
   
 
   
