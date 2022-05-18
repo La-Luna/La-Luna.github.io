@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://www.laluna00.cn/2022/05/18/posteffects/</loc>
+    <lastmod>2022-05-18</lastmod>
+  </url>  <url>
+    <loc>https://www.laluna00.cn/2022/05/14/AnimationInTexture/</loc>
+    <lastmod>2022-05-18</lastmod>
+  </url>  <url>
     <loc>https://www.laluna00.cn/2022/05/17/renderingpath/</loc>
     <lastmod>2022-05-18</lastmod>
   </url>  <url>
@@ -9,8 +15,5 @@
   </url>  <url>
     <loc>https://www.laluna00.cn/2022/05/08/GlassRefractionShader/</loc>
     <lastmod>2022-05-17</lastmod>
-  </url>  <url>
-    <loc>https://www.laluna00.cn/2022/05/14/AnimationInTexture/</loc>
-    <lastmod>2022-05-15</lastmod>
   </url>
 </urlset>
