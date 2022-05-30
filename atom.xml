@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.laluna00.cn/"/>
-  <updated>2022-05-26T08:37:37.643Z</updated>
+  <updated>2022-05-30T01:22:53.743Z</updated>
   <id>https://www.laluna00.cn/</id>
   
   <author>
@@ -17,11 +17,36 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>屏幕后处理·运动模糊</title>
+    <link href="https://www.laluna00.cn/2022/05/28/posteffectsmb/"/>
+    <id>https://www.laluna00.cn/2022/05/28/posteffectsmb/</id>
+    <published>2022-05-28T05:29:25.000Z</published>
+    <updated>2022-05-30T01:22:53.743Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>《Unity Shader入门精要》第十二章屏幕后处理技巧中介绍了运动模糊的实现，因为涉及的知识点较多，因此单记一篇笔记，如有错误的理解，望各位指正。感谢乐乐女神~</p></blockquote><h1 id="透明度测试-与-透明度混合"><a href="#透明度测试-与-透明度混合" class="headerlink" title="透明度测试 与 透明度混合"></a>透明度测试 与 透明度混合</h1><p>实现透明效果主要有两种方法，一种是透明度测试，一种是透明度混合。透明度测试即在shader中加入clip()函数，裁剪掉小于透明度阈值的片元，无法实现半透明的效果。透明度用来实现半透明的效果，更加复杂。</p><p>使用透明度混合，必须要添加ZWrite Off，与Blend语义告诉Unity不将透明物体的深度写入深度缓冲，并且要混合当前片元与颜色缓冲中的片元RGB值，利用Shader中frag返回的alpha通道值混合。混合的模式有多种方式：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Blend Off <span class="comment">//不混合，直接用当前片元覆盖颜色缓冲区</span></span><br><span class="line">Blend SrcFactor DstFactor <span class="comment">//利用当前片元的透明度混合 颜色缓冲区的rgb与当前片元的rgb</span></span><br><span class="line">Blend SrcFactor DstFactor,SrcFactorA DstFactorA <span class="comment">//赋予新的透明度因子SrcFactorA DstFactorA进行混合</span></span><br><span class="line">BlendOp BlendOperation <span class="comment">//指定别的方式BlendOperation进行混合</span></span><br></pre></td></tr></table></figure></p><p>其中第二种混合方式公式如下（当SrcFactor为SrcAlpha ,DstFactor为OneMinusSrcalpha时）：</p><script type="math/tex; mode=display">DstColor_{new}=SrcAlpha \times SrcColor + (1-SrcAlpha) \times DstColor_{old}</script><p>其中$DstColor$为颜色缓冲区中的值。</p><p>ColorMask A值得是只对alpha通道进行写值。</p><h1 id="屏幕后处理脚本系统"><a href="#屏幕后处理脚本系统" class="headerlink" title="屏幕后处理脚本系统"></a>屏幕后处理脚本系统</h1><p>屏幕后处理，就是对执行完所有透明与不透明的Pass后的场景进行抓取，将抓取到的屏幕存在纹理中，对抓取的纹理进行一些处理，将变化后的纹理再显示再屏幕中。unity已经提供了抓取屏幕的接口——-OnRenderImage，函数声明如下：</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MonoBehaviour.OnRenderImage(RenderTexture source,RenderTexture destination);</span><br></pre></td></tr></table></figure><p>当在脚本中声明此函数时，Unity会将当前渲染得到的屏幕图像存储在参数source中，此函数中的实现对source的操作，最终处理后的屏幕图像保存在destination中，Unity会将destination绘制在屏幕中。在OnRenderImage中我们通常用Graphics.Blit函数实现对纹理的变换，Blit函数声明如下：</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Blit</span><span class="params">(Texture src,RnederTexture dest)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Blit</span><span class="params">(Texture src,RnederTexture dest,Material mat,<span class="keyword">int</span> pass=<span class="number">-1</span>)</span></span>;</span><br></pre></td></tr></table></figure><p>Unity设计Blit函数帮助我们变换屏幕纹理，Blit中会将src传给mat中的“_MainTex”，利用mat进行修改，将结果返回给dest，pass默认为-1表示会依次执行mat中所有的pass，否则就会调用指定的Pass。</p><h1 id="运动模糊"><a href="#运动模糊" class="headerlink" title="运动模糊"></a>运动模糊</h1><p>该效果主要思路就是：当前帧的rgb值取决于上一帧与实际当前帧的混合。</p><h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;\assets\css\APlayer.min.css&quot;&gt;&lt;script src=&quot;\assets\js\APlayer.min.js&quot; cla
+      
+    
+    </summary>
+    
+      <category term="Unity Shader" scheme="https://www.laluna00.cn/categories/Unity-Shader/"/>
+    
+    
+      <category term="Unity Shader" scheme="https://www.laluna00.cn/tags/Unity-Shader/"/>
+    
+  </entry>
+  
+  <entry>
     <title>写Unity Shader时常见问题</title>
     <link href="https://www.laluna00.cn/2022/05/26/shaderlaberror/"/>
     <id>https://www.laluna00.cn/2022/05/26/shaderlaberror/</id>
     <published>2022-05-26T08:36:41.000Z</published>
-    <updated>2022-05-26T08:37:37.643Z</updated>
+    <updated>2022-05-30T09:33:47.083Z</updated>
     
     <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="shader不报错"><a href="#shader不报错" class="headerlink" title="shader不报错"></a>shader不报错</h1>]]></content>
     
@@ -146,7 +171,7 @@
     <link href="https://www.laluna00.cn/2022/01/07/night/"/>
     <id>https://www.laluna00.cn/2022/01/07/night/</id>
     <published>2022-01-07T10:45:28.000Z</published>
-    <updated>2022-05-17T08:45:07.751Z</updated>
+    <updated>2022-05-30T10:30:23.202Z</updated>
     
     <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>我将在后续更新unity灯光渲染demo的每一步….<br>之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。</p><p>我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。</p></blockquote><p>看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门</p><blockquote><p><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">Volumetric Lights in HDRP with Unity 2019.3</a>，<br>还有一个将内置渲染管线专为HDRP的，可以用来参考，传送门<br><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p></blockquote><h2 id="HDRP"><a href="#HDRP" class="headerlink" title="HDRP"></a>HDRP</h2><p>HDRP，High Definition Render Pipeline是Unity可编程渲染管线的其中一种，是Unity用来适配现代兼容计算着色器平台的渲染管线。HDRP使用了基于物理的光线技术，线性空间，HDR光线，和前向光线（Forward lighting）结构，让游戏制作者用更高的图形标准去创造艺术。</p><p>使用HDRP的项目则不能使用Lightweight Render Pipeline了。每个项目必须明确使用的渲染管线。</p><p>HDRP支持光栅化，光线追踪，路径追踪等渲染技术，遵循基于物理的渲染工作流程。</p><p>总之，HDRP就是Unity集成了多种基于物理的渲染技术所设计的面向用户的渲染管线。</p><h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><blockquote><p><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">YouTube视频</a>下提供了Fontainebleau的下载位置，<br>这是一个森林模拟器。</p></blockquote><p>首先要将项目的渲染管线转成HDRP：<br>1.window—package manager—安装HDRP<br>2.资源管理器中新建HDRP资源<br>3.edit—project setting—graphic中选择刚刚创建的HDRP资源</p><p>此时，项目便使用HDRP了。<br>更多的，项目中的材质也要转为HDRP材质。参考这里—-&gt;&gt;<a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p><h1 id="Fog"><a href="#Fog" class="headerlink" title="Fog"></a>Fog</h1><p>场景中创建Fog资源。调整Fog浓度</p><h1 id="体积光"><a href="#体积光" class="headerlink" title="体积光"></a>体积光</h1><p>场景中创建direct light</p><h1 id="手电筒光源"><a href="#手电筒光源" class="headerlink" title="手电筒光源"></a>手电筒光源</h1><p>场景中创建spotlight</p><!--step 1: 树叶摇曳怎么实现# step 2: 路灯，光，阴影怎么实现# Step n：熟悉使用Unity实时预计算全局环境光照看unity官方教程去咯....-->]]></content>
     
@@ -161,6 +186,8 @@
     
       <category term="Unity Lighting" scheme="https://www.laluna00.cn/categories/Unity-Lighting/"/>
     
+    
+      <category term="Unity Lighting" scheme="https://www.laluna00.cn/tags/Unity-Lighting/"/>
     
   </entry>
   
