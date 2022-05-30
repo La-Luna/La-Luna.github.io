@@ -81,18 +81,18 @@
 
 
 
-<meta name="description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。 我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。  看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门  Volumetric Lights in HDRP with Unity 2019.3">
+<meta name="description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。 我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。   看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门  Volumetric Lights in HDRP with Unity 2019.">
 <meta name="keywords" content="Unity Lighting">
 <meta property="og:type" content="article">
 <meta property="og:title" content="night：0-unity HDRP">
 <meta property="og:url" content="https://www.laluna00.cn/2022/01/07/night/index.html">
 <meta property="og:site_name" content="LaLuna&#39;s Home">
-<meta property="og:description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。 我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。  看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门  Volumetric Lights in HDRP with Unity 2019.3">
+<meta property="og:description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。 我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。   看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门  Volumetric Lights in HDRP with Unity 2019.">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:updated_time" content="2022-05-30T10:30:23.202Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="night：0-unity HDRP">
-<meta name="twitter:description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。 我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。  看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门  Volumetric Lights in HDRP with Unity 2019.3">
+<meta name="twitter:description" content="我将在后续更新unity灯光渲染demo的每一步….之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。 我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。   看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门  Volumetric Lights in HDRP with Unity 2019.">
 
 
 
@@ -300,16 +300,6 @@
 
           
             
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2022/01/07/night/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count gitment-comments-count" data-xid="/2022/01/07/night/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
           
 
           
@@ -337,6 +327,7 @@
         <blockquote><p>我将在后续更新unity灯光渲染demo的每一步….<br>之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。</p>
 <p>我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。</p>
 </blockquote>
+
 <p>看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门</p>
 <blockquote>
 <p><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">Volumetric Lights in HDRP with Unity 2019.3</a>，<br>还有一个将内置渲染管线专为HDRP的，可以用来参考，传送门<br><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p>
@@ -348,8 +339,8 @@
 <h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><blockquote>
 <p><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">YouTube视频</a>下提供了Fontainebleau的下载位置，<br>这是一个森林模拟器。</p>
 </blockquote>
-<p>首先要将项目的渲染管线转成HDRP：<br>1.window—package manager—安装HDRP<br>2.资源管理器中新建HDRP资源<br>3.edit—project setting—graphic中选择刚刚创建的HDRP资源</p>
-<p>此时，项目便使用HDRP了。<br>更多的，项目中的材质也要转为HDRP材质。参考这里—-&gt;&gt;<a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p>
+<p>首先要将项目的渲染管线转成HDRP：<br>1.window–package manager–安装HDRP<br>2.资源管理器中新建HDRP资源<br>3.edit–project setting–graphic中选择刚刚创建的HDRP资源</p>
+<p>此时，项目便使用HDRP了。<br>更多的，项目中的材质也要转为HDRP材质。参考这里—&gt;&gt;<a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p>
 <h1 id="Fog"><a href="#Fog" class="headerlink" title="Fog"></a>Fog</h1><p>场景中创建Fog资源。调整Fog浓度</p>
 <h1 id="体积光"><a href="#体积光" class="headerlink" title="体积光"></a>体积光</h1><p>场景中创建direct light</p>
 <h1 id="手电筒光源"><a href="#手电筒光源" class="headerlink" title="手电筒光源"></a>手电筒光源</h1><p>场景中创建spotlight</p>
@@ -429,13 +420,6 @@ step 1: 树叶摇曳怎么实现
 
 
           
-
-  
-    <div class="comments" id="comments">
-      
-        <div id="gitment-container"></div>
-      
-    </div>
 
   
 
@@ -724,43 +708,6 @@ step 1: 树叶摇曳怎么实现
 
 
 
-
-
-<!-- LOCAL: You can save these files to your site and update links -->
-    
-        
-        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
-        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
-    
-<!-- END LOCAL -->
-
-    
-
-    
-      <script type="text/javascript">
-      function renderGitment(){
-        var gitment = new Gitmint({
-            id: window.location.pathname, 
-            owner: 'La-Luna',
-            repo: 'Blogcomments',
-            
-            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
-            
-            oauth: {
-            
-            
-                client_secret: '02a76145bea0c1e257e87871ac2feff85318847a',
-            
-                client_id: '3c193abdba500b4471e6'
-            }});
-        gitment.render('gitment-container');
-      }
-
-      
-      renderGitment();
-      
-      </script>
-    
 
 
 
