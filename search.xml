@@ -66,47 +66,6 @@
       </tags>
   </entry>
   <entry>
-    <title>night：0-unity HDRP</title>
-    <url>/2022/01/07/night/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>我将在后续更新unity灯光渲染demo的每一步….<br>之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。</p>
-<p>我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。</p>
-</blockquote>
-
-<p>看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门</p>
-<blockquote>
-<p><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">Volumetric Lights in HDRP with Unity 2019.3</a>，<br>还有一个将内置渲染管线专为HDRP的，可以用来参考，传送门<br><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p>
-</blockquote>
-<h2 id="HDRP"><a href="#HDRP" class="headerlink" title="HDRP"></a>HDRP</h2><p>HDRP，High Definition Render Pipeline是Unity可编程渲染管线的其中一种，是Unity用来适配现代兼容计算着色器平台的渲染管线。HDRP使用了基于物理的光线技术，线性空间，HDR光线，和前向光线（Forward lighting）结构，让游戏制作者用更高的图形标准去创造艺术。</p>
-<p>使用HDRP的项目则不能使用Lightweight Render Pipeline了。每个项目必须明确使用的渲染管线。</p>
-<p>HDRP支持光栅化，光线追踪，路径追踪等渲染技术，遵循基于物理的渲染工作流程。</p>
-<p>总之，HDRP就是Unity集成了多种基于物理的渲染技术所设计的面向用户的渲染管线。</p>
-<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><blockquote>
-<p><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">YouTube视频</a>下提供了Fontainebleau的下载位置，<br>这是一个森林模拟器。</p>
-</blockquote>
-<p>首先要将项目的渲染管线转成HDRP：<br>1.window–package manager–安装HDRP<br>2.资源管理器中新建HDRP资源<br>3.edit–project setting–graphic中选择刚刚创建的HDRP资源</p>
-<p>此时，项目便使用HDRP了。<br>更多的，项目中的材质也要转为HDRP材质。参考这里—&gt;&gt;<a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p>
-<h1 id="Fog"><a href="#Fog" class="headerlink" title="Fog"></a>Fog</h1><p>场景中创建Fog资源。调整Fog浓度</p>
-<h1 id="体积光"><a href="#体积光" class="headerlink" title="体积光"></a>体积光</h1><p>场景中创建direct light</p>
-<h1 id="手电筒光源"><a href="#手电筒光源" class="headerlink" title="手电筒光源"></a>手电筒光源</h1><p>场景中创建spotlight</p>
-<!--
-
-step 1: 树叶摇曳怎么实现
-
-
-
-# step 2: 路灯，光，阴影怎么实现
-
-
-# Step n：熟悉使用Unity实时预计算全局环境光照
-看unity官方教程去咯....-->]]></content>
-      <categories>
-        <category>Unity Lighting</category>
-      </categories>
-      <tags>
-        <tag>Unity Lighting</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>屏幕后处理效果</title>
     <url>/2022/05/18/posteffects/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十二章介绍的屏幕后处理复现了一遍。包括屏幕明暗+饱和度+对比度、高斯模糊、运动模糊、Bloom、边缘检测等。记录一下。感谢乐乐女神~</p>
@@ -151,6 +110,67 @@ step 1: 树叶摇曳怎么实现
       </tags>
   </entry>
   <entry>
+    <title>night：0-unity HDRP</title>
+    <url>/2022/01/07/night/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>我将在后续更新unity灯光渲染demo的每一步….<br>之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。</p>
+<p>我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。</p>
+</blockquote>
+
+<p>看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门</p>
+<blockquote>
+<p><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">Volumetric Lights in HDRP with Unity 2019.3</a>，<br>还有一个将内置渲染管线专为HDRP的，可以用来参考，传送门<br><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p>
+</blockquote>
+<h2 id="HDRP"><a href="#HDRP" class="headerlink" title="HDRP"></a>HDRP</h2><p>HDRP，High Definition Render Pipeline是Unity可编程渲染管线的其中一种，是Unity用来适配现代兼容计算着色器平台的渲染管线。HDRP使用了基于物理的光线技术，线性空间，HDR光线，和前向光线（Forward lighting）结构，让游戏制作者用更高的图形标准去创造艺术。</p>
+<p>使用HDRP的项目则不能使用Lightweight Render Pipeline了。每个项目必须明确使用的渲染管线。</p>
+<p>HDRP支持光栅化，光线追踪，路径追踪等渲染技术，遵循基于物理的渲染工作流程。</p>
+<p>总之，HDRP就是Unity集成了多种基于物理的渲染技术所设计的面向用户的渲染管线。</p>
+<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><blockquote>
+<p><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">YouTube视频</a>下提供了Fontainebleau的下载位置，<br>这是一个森林模拟器。</p>
+</blockquote>
+<p>首先要将项目的渲染管线转成HDRP：<br>1.window–package manager–安装HDRP<br>2.资源管理器中新建HDRP资源<br>3.edit–project setting–graphic中选择刚刚创建的HDRP资源</p>
+<p>此时，项目便使用HDRP了。<br>更多的，项目中的材质也要转为HDRP材质。参考这里—&gt;&gt;<a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p>
+<h1 id="Fog"><a href="#Fog" class="headerlink" title="Fog"></a>Fog</h1><p>场景中创建Fog资源。调整Fog浓度</p>
+<h1 id="体积光"><a href="#体积光" class="headerlink" title="体积光"></a>体积光</h1><p>场景中创建direct light</p>
+<h1 id="手电筒光源"><a href="#手电筒光源" class="headerlink" title="手电筒光源"></a>手电筒光源</h1><p>场景中创建spotlight</p>
+<!--
+
+step 1: 树叶摇曳怎么实现
+
+
+
+# step 2: 路灯，光，阴影怎么实现
+
+
+# Step n：熟悉使用Unity实时预计算全局环境光照
+看unity官方教程去咯....-->]]></content>
+      <categories>
+        <category>Unity Lighting</category>
+      </categories>
+      <tags>
+        <tag>Unity Lighting</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity 的渲染路径</title>
+    <url>/2022/05/17/renderingpath/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="什么是渲染路径"><a href="#什么是渲染路径" class="headerlink" title="什么是渲染路径"></a>什么是渲染路径</h1><p>程序员指定渲染路径，是想配置光照属性与渲染流程。这是程序员与Unity的一个暗号。</p>
+<p>渲染路径中主要有两种，一是前向渲染路径（Forward Rendering Path）,一是延迟渲染路径（Differred Rendering Path）。</p>
+<h1 id="前向渲染路径"><a href="#前向渲染路径" class="headerlink" title="前向渲染路径"></a>前向渲染路径</h1><p>前向渲染需要计算两个缓冲区的信息，一是颜色缓冲区，二是深度缓冲区。利用深度缓冲来决定一个片元是否可见，如果可见就更新颜色缓冲区。</p>
+<p><strong>Unity含有内置的光照变量和函数，指定了前向渲染路径时，Unity会进行相关计算并填充一些变量如_LightColor0。</strong></p>
+<h2 id="如何指定前向渲染路径"><a href="#如何指定前向渲染路径" class="headerlink" title="如何指定前向渲染路径"></a>如何指定前向渲染路径</h2><p>大多数情况下，一个项目只使用一种渲染路径，可以在菜单Edit里设置。</p>
+<p>要是想使用多种渲染路径，也可以对不同的摄像机进行不同的设置。</p>
+<p>完成了上面的设置，就可以在Pass中使用标签“LightMode”来指定该Path使用的的渲染路径，比如，“LightMode”&#x3D;“ForwardBase”告诉Unity，当前Pass使用的是前向渲染路径中的“ForwadBase”路径，在shader中访问到Unity填好的光照属性。对于前向渲染，Unity Shader通常会定义一个Base Pass和一个Add Path。通常在Base Path中执行平行光照的逐像素计算，在Add Path中计算其他逐像素光照，最后Blend这些值。实际上，由于Shader中如何利用内置属性进行光照计算，完全取决于程序员，所以也可以在Base Path中进行逐顶点光照计算。</p>
+<h1 id="延迟渲染路径"><a href="#延迟渲染路径" class="headerlink" title="延迟渲染路径"></a>延迟渲染路径</h1><p>前向渲染会多出很多重复的操作，延迟渲染可以解决。延迟渲染不仅要计算深度缓冲、颜色缓冲，还需要计算G缓冲（Geometry Buffer，G-Buffer）。G-Buffer中存储表面信息，包括表面的法线、位置、材质属性等。</p>
+<p>延迟渲染的流程主要包括两个Pass，第一个Pass利用深度缓冲计算片元的可见性，如果一个片元可见就把其相关信息放到G-Buffer中。在第二个Pass中利用G-Buffer中的表面信息计算真正的着色。</p>
+]]></content>
+      <categories>
+        <category>Unity Lighting</category>
+      </categories>
+      <tags>
+        <tag>Unity Lighting</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>屏幕后处理·运动模糊</title>
     <url>/2022/05/28/posteffectsmb/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>《Unity Shader入门精要》第十二章屏幕后处理技巧中介绍了运动模糊的实现，因为涉及的知识点较多，因此单记一篇笔记，如有错误的理解，望各位指正。感谢乐乐女神~</p>
@@ -188,26 +208,6 @@ step 1: 树叶摇曳怎么实现
       </categories>
       <tags>
         <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity 的渲染路径</title>
-    <url>/2022/05/17/renderingpath/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="什么是渲染路径"><a href="#什么是渲染路径" class="headerlink" title="什么是渲染路径"></a>什么是渲染路径</h1><p>程序员指定渲染路径，是想配置光照属性与渲染流程。这是程序员与Unity的一个暗号。</p>
-<p>渲染路径中主要有两种，一是前向渲染路径（Forward Rendering Path）,一是延迟渲染路径（Differred Rendering Path）。</p>
-<h1 id="前向渲染路径"><a href="#前向渲染路径" class="headerlink" title="前向渲染路径"></a>前向渲染路径</h1><p>前向渲染需要计算两个缓冲区的信息，一是颜色缓冲区，二是深度缓冲区。利用深度缓冲来决定一个片元是否可见，如果可见就更新颜色缓冲区。</p>
-<p><strong>Unity含有内置的光照变量和函数，指定了前向渲染路径时，Unity会进行相关计算并填充一些变量如_LightColor0。</strong></p>
-<h2 id="如何指定前向渲染路径"><a href="#如何指定前向渲染路径" class="headerlink" title="如何指定前向渲染路径"></a>如何指定前向渲染路径</h2><p>大多数情况下，一个项目只使用一种渲染路径，可以在菜单Edit里设置。</p>
-<p>要是想使用多种渲染路径，也可以对不同的摄像机进行不同的设置。</p>
-<p>完成了上面的设置，就可以在Pass中使用标签“LightMode”来指定该Path使用的的渲染路径，比如，“LightMode”&#x3D;“ForwardBase”告诉Unity，当前Pass使用的是前向渲染路径中的“ForwadBase”路径，在shader中访问到Unity填好的光照属性。对于前向渲染，Unity Shader通常会定义一个Base Pass和一个Add Path。通常在Base Path中执行平行光照的逐像素计算，在Add Path中计算其他逐像素光照，最后Blend这些值。实际上，由于Shader中如何利用内置属性进行光照计算，完全取决于程序员，所以也可以在Base Path中进行逐顶点光照计算。</p>
-<h1 id="延迟渲染路径"><a href="#延迟渲染路径" class="headerlink" title="延迟渲染路径"></a>延迟渲染路径</h1><p>前向渲染会多出很多重复的操作，延迟渲染可以解决。延迟渲染不仅要计算深度缓冲、颜色缓冲，还需要计算G缓冲（Geometry Buffer，G-Buffer）。G-Buffer中存储表面信息，包括表面的法线、位置、材质属性等。</p>
-<p>延迟渲染的流程主要包括两个Pass，第一个Pass利用深度缓冲计算片元的可见性，如果一个片元可见就把其相关信息放到G-Buffer中。在第二个Pass中利用G-Buffer中的表面信息计算真正的着色。</p>
-]]></content>
-      <categories>
-        <category>Unity Lighting</category>
-      </categories>
-      <tags>
-        <tag>Unity Lighting</tag>
       </tags>
   </entry>
 </search>
