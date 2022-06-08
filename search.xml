@@ -37,6 +37,35 @@
       </tags>
   </entry>
   <entry>
+    <title>Glass Refraction Shader</title>
+    <url>/2022/05/08/GlassRefractionShader/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十章介绍的GlassRefractionShader复现了一遍。这是一个很有趣的效果，表现玻璃的纹理折射。记录一下。感谢乐乐女神~</p>
+</blockquote>
+
+<p>shader效果：<br><img src="/2022/05/08/GlassRefractionShader/glassrefractionshadershow.png#pic_center"></p>
+<p>material参数：<br><img src="/2022/05/08/GlassRefractionShader/param.png#pic_center"></p>
+<h1 id="关键技术点"><a href="#关键技术点" class="headerlink" title="关键技术点"></a>关键技术点</h1><p>对于实现玻璃的纹理折射，主要是两块，一是对环境的反射reflection，二是对背景的折射refraction。将二者融合在一起，就是最后的效果了。</p>
+<h2 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h2><p>反射的话,反射的是对象周围的环境，环境存在cubemap中，在shader中采样即可：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bump = normalize(half3(dot(i.TtoW0.xyz,bump),dot(i.TtoW1.xyz,bump),dot(i.TtoW2.xyz,bump)));</span><br><span class="line">fixed3 reflectDir = reflect(-worldViewDir, bump);</span><br><span class="line">fixed4 texColor = tex2D(_MainTex,i.uv.xy);</span><br><span class="line">fixed3 reflColor = texCUBE(_Cubemap,reflectDir).rgb * texColor.rgb;</span><br></pre></td></tr></table></figure>
+
+<p>主要是，反射需要采样点的法线，如果只是正方体的法线的话，效果就不有趣了，书中用的是法线纹理贴图使得cube表面凹凸不平，反射的效果就更加有趣。并且由于文章所用的法线纹理定义在切线空间，因此需要将切线空间的normal转到世界空间。</p>
+<h2 id="折射"><a href="#折射" class="headerlink" title="折射"></a>折射</h2><p>折射的话，折射的是背景图片，在shader中加上GrabPass，存在一张纹理中，同样在shader中采样即可。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">fixed3 bump = UnpackNormal(tex2D(_BumpTex, i.uv.zw));</span><br><span class="line">float2 offset = bump.xy * _Disortion * _RefractionTex_TexelSize.xy;</span><br><span class="line">i.scrPos.xy = i.scrPos.xy + offset.xy;</span><br><span class="line">fixed3 refrColor = tex2D(_RefractionTex,i.scrPos.xy / i.scrPos.w).rgb;</span><br></pre></td></tr></table></figure>
+
+<p>如第二章图所示，在材质面板定义了_Disortion（emmm，我的命名应该写成distortion才对&#x3D;&#x3D;），这个参数是用来对折射进行偏移处理的。_Disortion越小，对于背景折射的就越清晰，看起来cube表面就越光滑；反之_Disortion越大，cube表面看起来就越凹凸不平。由上面这段代码，可见变量offset中偏移的方向与数值是由采样点的法向决定的，因此，offset比重越大，对表面法向的反应就越明显。<br>_Disortion的有趣效果如下图所示：<br>_Distortion&#x3D;100, _RefractionAmount&#x3D;0.691:<br><img src="/2022/05/08/GlassRefractionShader/disortion100.png#pic_center"></p>
+<p>_Distortion&#x3D;1, _RefractionAmount&#x3D;0.691:<br><img src="/2022/05/08/GlassRefractionShader/distortion1.png#pic_center"></p>
+<h1 id="完整shader"><a href="#完整shader" class="headerlink" title="完整shader"></a>完整shader</h1><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Shader <span class="string">"chp10/GlassRefractionShader"</span></span><br><span class="line">&#123;</span><br><span class="line">	Properties</span><br><span class="line">	&#123;</span><br><span class="line">		_MainTex(<span class="string">"Texture"</span>, <span class="number">2</span>D) = <span class="string">"white"</span> &#123;&#125;</span><br><span class="line">		_BumpTex(<span class="string">"Normal map"</span>,<span class="number">2</span>D) = <span class="string">"while"</span>&#123;&#125;</span><br><span class="line">		_Cubemap(<span class="string">"Environment Cubemap"</span>,Cube) = <span class="string">"_Skybox"</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">		_Disortion(<span class="string">"Disortion"</span>,Range(<span class="number">0</span>,<span class="number">100</span>)) = <span class="number">10</span></span><br><span class="line">		_RefractionAmount(<span class="string">"RefractionAmount"</span>,Range(<span class="number">0</span>,<span class="number">1</span>)) = <span class="number">0.5</span></span><br><span class="line">	&#125;</span><br><span class="line">		SubShader</span><br><span class="line">		&#123;</span><br><span class="line">			Tags &#123;<span class="string">"Queue"</span> = <span class="string">"Transparent"</span> <span class="string">"RenderType"</span> = <span class="string">"Opaque"</span> &#125;</span><br><span class="line"></span><br><span class="line">			GrabPass&#123;<span class="string">"_RefractionTex"</span>&#125;</span><br><span class="line"></span><br><span class="line">			Pass</span><br><span class="line">			&#123;</span><br><span class="line">				CGPROGRAM</span><br><span class="line">				#pragma vertex vert</span><br><span class="line">				#pragma fragment frag</span><br><span class="line"></span><br><span class="line">				#include <span class="string">"UnityCG.cginc"</span></span><br><span class="line"></span><br><span class="line">				sampler2D _MainTex;</span><br><span class="line">				float4 _MainTex_ST;</span><br><span class="line">				sampler2D _BumpTex;</span><br><span class="line">				float4 _BumpTex_ST;</span><br><span class="line">				samplerCUBE _Cubemap;</span><br><span class="line"></span><br><span class="line">				<span class="keyword">float</span> _Disortion;</span><br><span class="line">				fixed _RefractionAmount;</span><br><span class="line"></span><br><span class="line">				sampler2D _RefractionTex;</span><br><span class="line">				float4 _RefractionTex_TexelSize;</span><br><span class="line"></span><br><span class="line">				<span class="class"><span class="keyword">struct</span> <span class="title">a2v</span> &#123;</span></span><br><span class="line">					float4 vertex : POSITION;</span><br><span class="line">					float3 normal : NORMAL;</span><br><span class="line">					float4 tangent : TANGENT;</span><br><span class="line">					float2 texcoord: TEXCOORD0;</span><br><span class="line">				&#125;;</span><br><span class="line"></span><br><span class="line">				<span class="class"><span class="keyword">struct</span> <span class="title">v2f</span> &#123;</span></span><br><span class="line">					float4 pos : SV_POSITION;</span><br><span class="line">					float4 scrPos : TEXCOORD0;</span><br><span class="line">					float4 uv : TEXCOORD1;</span><br><span class="line">					float4 TtoW0 : TEXCOORD2;</span><br><span class="line">					float4 TtoW1 : TEXCOORD3;</span><br><span class="line">					float4 TtoW2 : TEXCOORD4;</span><br><span class="line">				&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">			<span class="function">v2f <span class="title">vert</span><span class="params">(a2v v)</span></span></span><br><span class="line"><span class="function">			</span>&#123;</span><br><span class="line">				v2f o;</span><br><span class="line">				o.pos = UnityObjectToClipPos(v.vertex);</span><br><span class="line">				o.scrPos = ComputeGrabScreenPos(o.pos);</span><br><span class="line">				o.uv.xy = TRANSFORM_TEX(v.texcoord, _MainTex);</span><br><span class="line">				o.uv.zw = TRANSFORM_TEX(v.texcoord, _BumpTex);</span><br><span class="line"></span><br><span class="line">				float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;</span><br><span class="line">				fixed3 worldNormal = UnityObjectToWorldNormal(v.normal);</span><br><span class="line">				fixed3 worldTangent = UnityObjectToWorldDir(v.tangent.xyz);</span><br><span class="line">				fixed3 worldBinormal = cross(worldNormal,worldTangent) * v.tangent.w;</span><br><span class="line"></span><br><span class="line">				o.TtoW0 = float4(worldTangent.x,worldBinormal.x,worldNormal.x,worldPos.x);</span><br><span class="line">				o.TtoW1 = float4(worldTangent.y, worldBinormal.y, worldNormal.y, worldPos.y);</span><br><span class="line">				o.TtoW2 = float4(worldTangent.z, worldBinormal.z, worldNormal.z, worldPos.z);</span><br><span class="line">				<span class="keyword">return</span> o;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			fixed4 frag(v2f i) : SV_Target</span><br><span class="line">			&#123;</span><br><span class="line">				float3 worldPos = float3(i.TtoW0.w,i.TtoW1.w,i.TtoW2.w);</span><br><span class="line">				fixed3 worldViewDir = normalize(UnityWorldSpaceViewDir(worldPos));</span><br><span class="line"></span><br><span class="line">				fixed3 bump = UnpackNormal(tex2D(_BumpTex, i.uv.zw));</span><br><span class="line">				float2 offset = bump.xy * _Disortion * _RefractionTex_TexelSize.xy;</span><br><span class="line">				i.scrPos.xy = i.scrPos.xy + offset.xy;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">				<span class="comment">//折射:从grabmap读</span></span><br><span class="line">				fixed3 refrColor = tex2D(_RefractionTex,i.scrPos.xy / i.scrPos.w).rgb;</span><br><span class="line"></span><br><span class="line">				<span class="comment">//反射:从cubemap读</span></span><br><span class="line">				bump = normalize(half3(dot(i.TtoW0.xyz,bump),dot(i.TtoW1.xyz,bump),dot(i.TtoW2.xyz,bump)));</span><br><span class="line">				fixed3 reflectDir = reflect(-worldViewDir, bump);</span><br><span class="line">				fixed4 texColor = tex2D(_MainTex,i.uv.xy);</span><br><span class="line">				fixed3 reflColor = texCUBE(_Cubemap,reflectDir).rgb * texColor.rgb;</span><br><span class="line">				<span class="comment">//混合</span></span><br><span class="line">				fixed3 finalColor = reflColor * (<span class="number">1</span> - _RefractionAmount) + refrColor * _RefractionAmount;</span><br><span class="line">				<span class="keyword">return</span> fixed4(finalColor, <span class="number">1</span>);</span><br><span class="line">			&#125;</span><br><span class="line">			ENDCG</span><br><span class="line">		&#125;</span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></p>
+]]></content>
+      <categories>
+        <category>Unity Shader</category>
+      </categories>
+      <tags>
+        <tag>Unity Shader</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>night：0-unity HDRP</title>
     <url>/2022/01/07/night/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>我将在后续更新unity灯光渲染demo的每一步….<br>之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果,结合这两年在某neuron机构做mesh的成果整点有意思的。</p>
@@ -75,35 +104,6 @@ step 1: 树叶摇曳怎么实现
       </categories>
       <tags>
         <tag>Unity Lighting</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Glass Refraction Shader</title>
-    <url>/2022/05/08/GlassRefractionShader/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十章介绍的GlassRefractionShader复现了一遍。这是一个很有趣的效果，表现玻璃的纹理折射。记录一下。感谢乐乐女神~</p>
-</blockquote>
-
-<p>shader效果：<br><img src="/2022/05/08/GlassRefractionShader/glassrefractionshadershow.png#pic_center"></p>
-<p>material参数：<br><img src="/2022/05/08/GlassRefractionShader/param.png#pic_center"></p>
-<h1 id="关键技术点"><a href="#关键技术点" class="headerlink" title="关键技术点"></a>关键技术点</h1><p>对于实现玻璃的纹理折射，主要是两块，一是对环境的反射reflection，二是对背景的折射refraction。将二者融合在一起，就是最后的效果了。</p>
-<h2 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h2><p>反射的话,反射的是对象周围的环境，环境存在cubemap中，在shader中采样即可：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bump = normalize(half3(dot(i.TtoW0.xyz,bump),dot(i.TtoW1.xyz,bump),dot(i.TtoW2.xyz,bump)));</span><br><span class="line">fixed3 reflectDir = reflect(-worldViewDir, bump);</span><br><span class="line">fixed4 texColor = tex2D(_MainTex,i.uv.xy);</span><br><span class="line">fixed3 reflColor = texCUBE(_Cubemap,reflectDir).rgb * texColor.rgb;</span><br></pre></td></tr></table></figure>
-
-<p>主要是，反射需要采样点的法线，如果只是正方体的法线的话，效果就不有趣了，书中用的是法线纹理贴图使得cube表面凹凸不平，反射的效果就更加有趣。并且由于文章所用的法线纹理定义在切线空间，因此需要将切线空间的normal转到世界空间。</p>
-<h2 id="折射"><a href="#折射" class="headerlink" title="折射"></a>折射</h2><p>折射的话，折射的是背景图片，在shader中加上GrabPass，存在一张纹理中，同样在shader中采样即可。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">fixed3 bump = UnpackNormal(tex2D(_BumpTex, i.uv.zw));</span><br><span class="line">float2 offset = bump.xy * _Disortion * _RefractionTex_TexelSize.xy;</span><br><span class="line">i.scrPos.xy = i.scrPos.xy + offset.xy;</span><br><span class="line">fixed3 refrColor = tex2D(_RefractionTex,i.scrPos.xy / i.scrPos.w).rgb;</span><br></pre></td></tr></table></figure>
-
-<p>如第二章图所示，在材质面板定义了_Disortion（emmm，我的命名应该写成distortion才对&#x3D;&#x3D;），这个参数是用来对折射进行偏移处理的。_Disortion越小，对于背景折射的就越清晰，看起来cube表面就越光滑；反之_Disortion越大，cube表面看起来就越凹凸不平。由上面这段代码，可见变量offset中偏移的方向与数值是由采样点的法向决定的，因此，offset比重越大，对表面法向的反应就越明显。<br>_Disortion的有趣效果如下图所示：<br>_Distortion&#x3D;100, _RefractionAmount&#x3D;0.691:<br><img src="/2022/05/08/GlassRefractionShader/disortion100.png#pic_center"></p>
-<p>_Distortion&#x3D;1, _RefractionAmount&#x3D;0.691:<br><img src="/2022/05/08/GlassRefractionShader/distortion1.png#pic_center"></p>
-<h1 id="完整shader"><a href="#完整shader" class="headerlink" title="完整shader"></a>完整shader</h1><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Shader <span class="string">"chp10/GlassRefractionShader"</span></span><br><span class="line">&#123;</span><br><span class="line">	Properties</span><br><span class="line">	&#123;</span><br><span class="line">		_MainTex(<span class="string">"Texture"</span>, <span class="number">2</span>D) = <span class="string">"white"</span> &#123;&#125;</span><br><span class="line">		_BumpTex(<span class="string">"Normal map"</span>,<span class="number">2</span>D) = <span class="string">"while"</span>&#123;&#125;</span><br><span class="line">		_Cubemap(<span class="string">"Environment Cubemap"</span>,Cube) = <span class="string">"_Skybox"</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">		_Disortion(<span class="string">"Disortion"</span>,Range(<span class="number">0</span>,<span class="number">100</span>)) = <span class="number">10</span></span><br><span class="line">		_RefractionAmount(<span class="string">"RefractionAmount"</span>,Range(<span class="number">0</span>,<span class="number">1</span>)) = <span class="number">0.5</span></span><br><span class="line">	&#125;</span><br><span class="line">		SubShader</span><br><span class="line">		&#123;</span><br><span class="line">			Tags &#123;<span class="string">"Queue"</span> = <span class="string">"Transparent"</span> <span class="string">"RenderType"</span> = <span class="string">"Opaque"</span> &#125;</span><br><span class="line"></span><br><span class="line">			GrabPass&#123;<span class="string">"_RefractionTex"</span>&#125;</span><br><span class="line"></span><br><span class="line">			Pass</span><br><span class="line">			&#123;</span><br><span class="line">				CGPROGRAM</span><br><span class="line">				#pragma vertex vert</span><br><span class="line">				#pragma fragment frag</span><br><span class="line"></span><br><span class="line">				#include <span class="string">"UnityCG.cginc"</span></span><br><span class="line"></span><br><span class="line">				sampler2D _MainTex;</span><br><span class="line">				float4 _MainTex_ST;</span><br><span class="line">				sampler2D _BumpTex;</span><br><span class="line">				float4 _BumpTex_ST;</span><br><span class="line">				samplerCUBE _Cubemap;</span><br><span class="line"></span><br><span class="line">				<span class="keyword">float</span> _Disortion;</span><br><span class="line">				fixed _RefractionAmount;</span><br><span class="line"></span><br><span class="line">				sampler2D _RefractionTex;</span><br><span class="line">				float4 _RefractionTex_TexelSize;</span><br><span class="line"></span><br><span class="line">				<span class="class"><span class="keyword">struct</span> <span class="title">a2v</span> &#123;</span></span><br><span class="line">					float4 vertex : POSITION;</span><br><span class="line">					float3 normal : NORMAL;</span><br><span class="line">					float4 tangent : TANGENT;</span><br><span class="line">					float2 texcoord: TEXCOORD0;</span><br><span class="line">				&#125;;</span><br><span class="line"></span><br><span class="line">				<span class="class"><span class="keyword">struct</span> <span class="title">v2f</span> &#123;</span></span><br><span class="line">					float4 pos : SV_POSITION;</span><br><span class="line">					float4 scrPos : TEXCOORD0;</span><br><span class="line">					float4 uv : TEXCOORD1;</span><br><span class="line">					float4 TtoW0 : TEXCOORD2;</span><br><span class="line">					float4 TtoW1 : TEXCOORD3;</span><br><span class="line">					float4 TtoW2 : TEXCOORD4;</span><br><span class="line">				&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">			<span class="function">v2f <span class="title">vert</span><span class="params">(a2v v)</span></span></span><br><span class="line"><span class="function">			</span>&#123;</span><br><span class="line">				v2f o;</span><br><span class="line">				o.pos = UnityObjectToClipPos(v.vertex);</span><br><span class="line">				o.scrPos = ComputeGrabScreenPos(o.pos);</span><br><span class="line">				o.uv.xy = TRANSFORM_TEX(v.texcoord, _MainTex);</span><br><span class="line">				o.uv.zw = TRANSFORM_TEX(v.texcoord, _BumpTex);</span><br><span class="line"></span><br><span class="line">				float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;</span><br><span class="line">				fixed3 worldNormal = UnityObjectToWorldNormal(v.normal);</span><br><span class="line">				fixed3 worldTangent = UnityObjectToWorldDir(v.tangent.xyz);</span><br><span class="line">				fixed3 worldBinormal = cross(worldNormal,worldTangent) * v.tangent.w;</span><br><span class="line"></span><br><span class="line">				o.TtoW0 = float4(worldTangent.x,worldBinormal.x,worldNormal.x,worldPos.x);</span><br><span class="line">				o.TtoW1 = float4(worldTangent.y, worldBinormal.y, worldNormal.y, worldPos.y);</span><br><span class="line">				o.TtoW2 = float4(worldTangent.z, worldBinormal.z, worldNormal.z, worldPos.z);</span><br><span class="line">				<span class="keyword">return</span> o;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			fixed4 frag(v2f i) : SV_Target</span><br><span class="line">			&#123;</span><br><span class="line">				float3 worldPos = float3(i.TtoW0.w,i.TtoW1.w,i.TtoW2.w);</span><br><span class="line">				fixed3 worldViewDir = normalize(UnityWorldSpaceViewDir(worldPos));</span><br><span class="line"></span><br><span class="line">				fixed3 bump = UnpackNormal(tex2D(_BumpTex, i.uv.zw));</span><br><span class="line">				float2 offset = bump.xy * _Disortion * _RefractionTex_TexelSize.xy;</span><br><span class="line">				i.scrPos.xy = i.scrPos.xy + offset.xy;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">				<span class="comment">//折射:从grabmap读</span></span><br><span class="line">				fixed3 refrColor = tex2D(_RefractionTex,i.scrPos.xy / i.scrPos.w).rgb;</span><br><span class="line"></span><br><span class="line">				<span class="comment">//反射:从cubemap读</span></span><br><span class="line">				bump = normalize(half3(dot(i.TtoW0.xyz,bump),dot(i.TtoW1.xyz,bump),dot(i.TtoW2.xyz,bump)));</span><br><span class="line">				fixed3 reflectDir = reflect(-worldViewDir, bump);</span><br><span class="line">				fixed4 texColor = tex2D(_MainTex,i.uv.xy);</span><br><span class="line">				fixed3 reflColor = texCUBE(_Cubemap,reflectDir).rgb * texColor.rgb;</span><br><span class="line">				<span class="comment">//混合</span></span><br><span class="line">				fixed3 finalColor = reflColor * (<span class="number">1</span> - _RefractionAmount) + refrColor * _RefractionAmount;</span><br><span class="line">				<span class="keyword">return</span> fixed4(finalColor, <span class="number">1</span>);</span><br><span class="line">			&#125;</span><br><span class="line">			ENDCG</span><br><span class="line">		&#125;</span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></p>
-]]></content>
-      <categories>
-        <category>Unity Shader</category>
-      </categories>
-      <tags>
-        <tag>Unity Shader</tag>
       </tags>
   </entry>
   <entry>
@@ -151,37 +151,6 @@ step 1: 树叶摇曳怎么实现
       </tags>
   </entry>
   <entry>
-    <title>Unity 的渲染路径</title>
-    <url>/2022/05/17/renderingpath/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="什么是渲染路径"><a href="#什么是渲染路径" class="headerlink" title="什么是渲染路径"></a>什么是渲染路径</h1><p>程序员指定渲染路径，是想配置光照属性与渲染流程。这是程序员与Unity的一个暗号。</p>
-<p>渲染路径中主要有两种，一是前向渲染路径（Forward Rendering Path）,一是延迟渲染路径（Differred Rendering Path）。</p>
-<h1 id="前向渲染路径"><a href="#前向渲染路径" class="headerlink" title="前向渲染路径"></a>前向渲染路径</h1><p>前向渲染需要计算两个缓冲区的信息，一是颜色缓冲区，二是深度缓冲区。利用深度缓冲来决定一个片元是否可见，如果可见就更新颜色缓冲区。</p>
-<p><strong>Unity含有内置的光照变量和函数，指定了前向渲染路径时，Unity会进行相关计算并填充一些变量如_LightColor0。</strong></p>
-<h2 id="如何指定前向渲染路径"><a href="#如何指定前向渲染路径" class="headerlink" title="如何指定前向渲染路径"></a>如何指定前向渲染路径</h2><p>大多数情况下，一个项目只使用一种渲染路径，可以在菜单Edit里设置。</p>
-<p>要是想使用多种渲染路径，也可以对不同的摄像机进行不同的设置。</p>
-<p>完成了上面的设置，就可以在Pass中使用标签“LightMode”来指定该Path使用的的渲染路径，比如，“LightMode”&#x3D;“ForwardBase”告诉Unity，当前Pass使用的是前向渲染路径中的“ForwadBase”路径，在shader中访问到Unity填好的光照属性。对于前向渲染，Unity Shader通常会定义一个Base Pass和一个Add Path。通常在Base Path中执行平行光照的逐像素计算，在Add Path中计算其他逐像素光照，最后Blend这些值。实际上，由于Shader中如何利用内置属性进行光照计算，完全取决于程序员，所以也可以在Base Path中进行逐顶点光照计算。</p>
-<h1 id="延迟渲染路径"><a href="#延迟渲染路径" class="headerlink" title="延迟渲染路径"></a>延迟渲染路径</h1><p>前向渲染会多出很多重复的操作，延迟渲染可以解决。延迟渲染不仅要计算深度缓冲、颜色缓冲，还需要计算G缓冲（Geometry Buffer，G-Buffer）。G-Buffer中存储表面信息，包括表面的法线、位置、材质属性等。</p>
-<p>延迟渲染的流程主要包括两个Pass，第一个Pass利用深度缓冲计算片元的可见性，如果一个片元可见就把其相关信息放到G-Buffer中。在第二个Pass中利用G-Buffer中的表面信息计算真正的着色。</p>
-]]></content>
-      <categories>
-        <category>Unity Lighting</category>
-      </categories>
-      <tags>
-        <tag>Unity Lighting</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>写Unity Shader时常见问题</title>
-    <url>/2022/05/26/shaderlaberror/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="shader不报错"><a href="#shader不报错" class="headerlink" title="shader不报错"></a>shader不报错</h1>]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>屏幕后处理·运动模糊</title>
     <url>/2022/05/28/posteffectsmb/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>《Unity Shader入门精要》第十二章屏幕后处理技巧中介绍了运动模糊的实现，因为涉及的知识点较多，因此单记一篇笔记，如有错误的理解，望各位指正。感谢乐乐女神~</p>
@@ -208,6 +177,37 @@ step 1: 树叶摇曳怎么实现
       </categories>
       <tags>
         <tag>Unity Shader</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>写Unity Shader时常见问题</title>
+    <url>/2022/05/26/shaderlaberror/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="shader不报错"><a href="#shader不报错" class="headerlink" title="shader不报错"></a>shader不报错</h1>]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity 的渲染路径</title>
+    <url>/2022/05/17/renderingpath/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="什么是渲染路径"><a href="#什么是渲染路径" class="headerlink" title="什么是渲染路径"></a>什么是渲染路径</h1><p>程序员指定渲染路径，是想配置光照属性与渲染流程。这是程序员与Unity的一个暗号。</p>
+<p>渲染路径中主要有两种，一是前向渲染路径（Forward Rendering Path）,一是延迟渲染路径（Differred Rendering Path）。</p>
+<h1 id="前向渲染路径"><a href="#前向渲染路径" class="headerlink" title="前向渲染路径"></a>前向渲染路径</h1><p>前向渲染需要计算两个缓冲区的信息，一是颜色缓冲区，二是深度缓冲区。利用深度缓冲来决定一个片元是否可见，如果可见就更新颜色缓冲区。</p>
+<p><strong>Unity含有内置的光照变量和函数，指定了前向渲染路径时，Unity会进行相关计算并填充一些变量如_LightColor0。</strong></p>
+<h2 id="如何指定前向渲染路径"><a href="#如何指定前向渲染路径" class="headerlink" title="如何指定前向渲染路径"></a>如何指定前向渲染路径</h2><p>大多数情况下，一个项目只使用一种渲染路径，可以在菜单Edit里设置。</p>
+<p>要是想使用多种渲染路径，也可以对不同的摄像机进行不同的设置。</p>
+<p>完成了上面的设置，就可以在Pass中使用标签“LightMode”来指定该Path使用的的渲染路径，比如，“LightMode”&#x3D;“ForwardBase”告诉Unity，当前Pass使用的是前向渲染路径中的“ForwadBase”路径，在shader中访问到Unity填好的光照属性。对于前向渲染，Unity Shader通常会定义一个Base Pass和一个Add Path。通常在Base Path中执行平行光照的逐像素计算，在Add Path中计算其他逐像素光照，最后Blend这些值。实际上，由于Shader中如何利用内置属性进行光照计算，完全取决于程序员，所以也可以在Base Path中进行逐顶点光照计算。</p>
+<h1 id="延迟渲染路径"><a href="#延迟渲染路径" class="headerlink" title="延迟渲染路径"></a>延迟渲染路径</h1><p>前向渲染会多出很多重复的操作，延迟渲染可以解决。延迟渲染不仅要计算深度缓冲、颜色缓冲，还需要计算G缓冲（Geometry Buffer，G-Buffer）。G-Buffer中存储表面信息，包括表面的法线、位置、材质属性等。</p>
+<p>延迟渲染的流程主要包括两个Pass，第一个Pass利用深度缓冲计算片元的可见性，如果一个片元可见就把其相关信息放到G-Buffer中。在第二个Pass中利用G-Buffer中的表面信息计算真正的着色。</p>
+]]></content>
+      <categories>
+        <category>Unity Lighting</category>
+      </categories>
+      <tags>
+        <tag>Unity Lighting</tag>
       </tags>
   </entry>
 </search>
