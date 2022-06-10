@@ -157,11 +157,11 @@ step 1: 树叶摇曳怎么实现
 </blockquote>
 
 <h1 id="透明度测试-与-透明度混合"><a href="#透明度测试-与-透明度混合" class="headerlink" title="透明度测试 与 透明度混合"></a>透明度测试 与 透明度混合</h1><p>实现透明效果主要有两种方法，一种是透明度测试，一种是透明度混合。透明度测试即在shader中加入clip()函数，裁剪掉小于透明度阈值的片元，无法实现半透明的效果。透明度用来实现半透明的效果，更加复杂。</p>
-<p>使用透明度混合，必须要添加ZWrite Off，与Blend语义告诉Unity不将透明物体的深度写入深度缓冲，并且要混合当前片元与颜色缓冲中的片元RGB值，利用Shader中frag返回的alpha通道值混合。混合的模式有多种方式：</p>
+<p>使用透明度混合，必须要添加ZWrite Off与Blend语义，告诉Unity不将透明物体的深度写入深度缓冲，并且要混合当前片元与颜色缓冲中的片元RGB值，利用Shader中frag返回的alpha通道值混合。混合的模式有多种方式：</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Blend Off <span class="comment">//不混合，直接用当前片元覆盖颜色缓冲区</span></span><br><span class="line">Blend SrcFactor DstFactor <span class="comment">//利用当前片元的透明度混合 颜色缓冲区的rgb与当前片元的rgb</span></span><br><span class="line">Blend SrcFactor DstFactor,SrcFactorA DstFactorA <span class="comment">//赋予新的透明度因子SrcFactorA DstFactorA进行混合</span></span><br><span class="line">BlendOp BlendOperation <span class="comment">//指定别的方式BlendOperation进行混合</span></span><br></pre></td></tr></table></figure>
 
 <p>其中第二种混合方式公式如下（当SrcFactor为SrcAlpha ,DstFactor为OneMinusSrcalpha时）：<br>$$<br>DstColor_{new}&#x3D;SrcAlpha \times SrcColor + (1-SrcAlpha) \times DstColor_{old}<br>$$<br>其中$DstColor$为颜色缓冲区中的值。</p>
-<p>ColorMask A值得是只对alpha通道进行写值。</p>
+<p>ColorMask A指的是只对alpha通道进行写值。</p>
 <h1 id="屏幕后处理脚本系统"><a href="#屏幕后处理脚本系统" class="headerlink" title="屏幕后处理脚本系统"></a>屏幕后处理脚本系统</h1><p>屏幕后处理，就是对执行完所有透明与不透明的Pass后的场景进行抓取，将抓取到的屏幕存在纹理中，对抓取的纹理进行一些处理，将变化后的纹理再显示再屏幕中。unity已经提供了抓取屏幕的接口—–OnRenderImage，函数声明如下：</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">MonoBehaviour.OnRenderImage(RenderTexture source,RenderTexture destination);</span><br></pre></td></tr></table></figure>
 
@@ -170,6 +170,12 @@ step 1: 树叶摇曳怎么实现
 
 <p>Unity设计Blit函数帮助我们变换屏幕纹理，Blit中会将src传给mat中的“_MainTex”，利用mat进行修改，将结果返回给dest，pass默认为-1表示会依次执行mat中所有的pass，否则就会调用指定的Pass。</p>
 <h1 id="运动模糊"><a href="#运动模糊" class="headerlink" title="运动模糊"></a>运动模糊</h1><p>该效果主要思路就是：当前帧的rgb值取决于上一帧与实际当前帧的混合。</p>
+<h2 id="让画面运动起来"><a href="#让画面运动起来" class="headerlink" title="让画面运动起来"></a>让画面运动起来</h2><p>设置相机运动脚本，让画面动起来，再混合每一帧造成运动模糊的效果。在书中，想要获得相机绕固定点旋转的视角，改变相机的transform，lookAt矩阵即可。像机脚本的关键代码如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">		transform.position = Vector3.Slerp(transform.position, curEndPoint, Time.deltaTime * speed);<span class="comment">//利用Slerp球形插值函数，随着Time而移动</span></span><br><span class="line">		transform.LookAt(lookAt);<span class="comment">//改变像机视角矩阵 View</span></span><br><span class="line">		<span class="keyword">if</span> (pingpong) &#123;</span><br><span class="line">			<span class="keyword">if</span> (Vector3.Distance(transform.position, curEndPoint) &lt; <span class="number">0.001f</span>) &#123;</span><br><span class="line">				curEndPoint = Vector3.Distance(curEndPoint, endPoint) &lt; Vector3.Distance(curEndPoint, startPoint) ? startPoint : endPoint;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="shader"><a href="#shader" class="headerlink" title="shader"></a>shader</h2><p>在shader中开启ZWrite Off与Blend语义，以混合颜色缓冲区中上一帧的RGB与当前渲染帧的RGB以达到模糊的效果。设置两个Pass，Pass1往颜色缓冲中写RGB值，并且利用_BlurAmount混合前后帧率，Pass2往颜色缓冲区中写入原有屏幕的Alpha值。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">fixed4 fragRGB (v2f i) : SV_Target &#123;</span><br><span class="line">	<span class="keyword">return</span> fixed4(tex2D(_MainTex, i.uv).rgb, _BlurAmount);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></p>
 ]]></content>
       <categories>
@@ -177,17 +183,6 @@ step 1: 树叶摇曳怎么实现
       </categories>
       <tags>
         <tag>Unity Shader</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>写Unity Shader时常见问题</title>
-    <url>/2022/05/26/shaderlaberror/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="shader不报错"><a href="#shader不报错" class="headerlink" title="shader不报错"></a>shader不报错</h1>]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -208,6 +203,17 @@ step 1: 树叶摇曳怎么实现
       </categories>
       <tags>
         <tag>Unity Lighting</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>写Unity Shader时常见问题</title>
+    <url>/2022/05/26/shaderlaberror/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="shader不报错"><a href="#shader不报错" class="headerlink" title="shader不报错"></a>shader不报错</h1>]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
       </tags>
   </entry>
 </search>
