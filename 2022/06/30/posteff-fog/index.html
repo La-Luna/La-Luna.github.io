@@ -149,18 +149,18 @@
 
 
 
-  <meta name="description" content="shader不报错">
-<meta name="keywords" content="Unity">
+  <meta name="description" content="在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十三章介绍的屏幕后处理之全局雾效复现了一遍。记录一下。感谢乐乐女神~">
+<meta name="keywords" content="Unity Shader">
 <meta property="og:type" content="article">
-<meta property="og:title" content="写Unity Shader时常见问题">
-<meta property="og:url" content="https://www.laluna00.cn/2022/05/26/shaderlaberror/index.html">
+<meta property="og:title" content="posteff-fog">
+<meta property="og:url" content="https://www.laluna00.cn/2022/06/30/posteff-fog/index.html">
 <meta property="og:site_name" content="LaLuna&#39;s Home">
-<meta property="og:description" content="shader不报错">
+<meta property="og:description" content="在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十三章介绍的屏幕后处理之全局雾效复现了一遍。记录一下。感谢乐乐女神~">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2022-05-30T09:33:47.083Z">
+<meta property="og:updated_time" content="2022-07-03T02:58:54.317Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="写Unity Shader时常见问题">
-<meta name="twitter:description" content="shader不报错">
+<meta name="twitter:title" content="posteff-fog">
+<meta name="twitter:description" content="在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十三章介绍的屏幕后处理之全局雾效复现了一遍。记录一下。感谢乐乐女神~">
 
 
 
@@ -169,7 +169,7 @@
 
 
 
-  <link rel="canonical" href="https://www.laluna00.cn/2022/05/26/shaderlaberror/">
+  <link rel="canonical" href="https://www.laluna00.cn/2022/06/30/posteff-fog/">
 
 
 
@@ -179,7 +179,7 @@
   };
 </script>
 
-  <title>写Unity Shader时常见问题 | LaLuna's Home</title>
+  <title>posteff-fog | LaLuna's Home</title>
   
 
 
@@ -426,7 +426,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.laluna00.cn/2022/05/26/shaderlaberror/">
+    <link itemprop="mainEntityOfPage" href="https://www.laluna00.cn/2022/06/30/posteff-fog/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="LaLuna">
@@ -443,7 +443,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">写Unity Shader时常见问题
+          <h2 class="post-title" itemprop="name headline">posteff-fog
               
             
           </h2>
@@ -468,7 +468,7 @@
                 
               
 
-              <time title="创建时间：2022-05-26 16:36:41" itemprop="dateCreated datePublished" datetime="2022-05-26T16:36:41+08:00">2022-05-26</time>
+              <time title="创建时间：2022-06-30 17:59:48" itemprop="dateCreated datePublished" datetime="2022-06-30T17:59:48+08:00">2022-06-30</time>
             
 
             
@@ -485,7 +485,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2022-05-30 17:33:47" itemprop="dateModified" datetime="2022-05-30T17:33:47+08:00">2022-05-30</time>
+                <time title="修改时间：2022-07-03 10:58:54" itemprop="dateModified" datetime="2022-07-03T10:58:54+08:00">2022-07-03</time>
               
             
           </span>
@@ -502,7 +502,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Unity/" itemprop="url" rel="index"><span itemprop="name">Unity</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Unity-Shader/" itemprop="url" rel="index"><span itemprop="name">Unity Shader</span></a></span>
 
                 
                 
@@ -517,8 +517,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2022/05/26/shaderlaberror/#comments" itemprop="discussionUrl">
-                  <span class="post-meta-item-text">评论数：</span> <span class="post-comments-count valine-comment-count" data-xid="/2022/05/26/shaderlaberror/" itemprop="commentCount"></span>
+                <a href="/2022/06/30/posteff-fog/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span class="post-comments-count valine-comment-count" data-xid="/2022/06/30/posteff-fog/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -526,7 +526,7 @@
 
           
           
-             <span id="/2022/05/26/shaderlaberror/" class="leancloud_visitors" data-flag-title="写Unity Shader时常见问题">
+             <span id="/2022/06/30/posteff-fog/" class="leancloud_visitors" data-flag-title="posteff-fog">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -551,7 +551,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">9</span>
+                <span title="本文字数">80</span>
               
 
               
@@ -585,7 +585,10 @@
       
 
       
-        <h1 id="shader不报错"><a href="#shader不报错" class="headerlink" title="shader不报错"></a>shader不报错</h1>
+        <blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十三章介绍的屏幕后处理之全局雾效复现了一遍。记录一下。感谢乐乐女神~</p>
+</blockquote>
+
+
       
     </div>
 
@@ -624,7 +627,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Unity/" rel="tag"><i class="fa fa-tag"></i> Unity</a>
+            <a href="/tags/Unity-Shader/" rel="tag"><i class="fa fa-tag"></i> Unity Shader</a>
           
         </div>
       
@@ -637,8 +640,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2022/05/18/posteffects/" rel="next" title="屏幕后处理效果">
-                <i class="fa fa-chevron-left"></i> 屏幕后处理效果
+              <a href="/2022/05/28/posteffectsmb/" rel="next" title="屏幕后处理·运动模糊">
+                <i class="fa fa-chevron-left"></i> 屏幕后处理·运动模糊
               </a>
             
           </div>
@@ -646,10 +649,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2022/05/28/posteffectsmb/" rel="prev" title="屏幕后处理·运动模糊">
-                屏幕后处理·运动模糊 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -698,17 +697,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -831,22 +821,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#shader不报错"><span class="nav-number">1.</span> <span class="nav-text">shader不报错</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       

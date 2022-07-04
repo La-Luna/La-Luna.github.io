@@ -37,6 +37,20 @@
       </tags>
   </entry>
   <entry>
+    <title>posteff-fog</title>
+    <url>/2022/06/30/posteff-fog/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十三章介绍的屏幕后处理之全局雾效复现了一遍。记录一下。感谢乐乐女神~</p>
+</blockquote>
+
+]]></content>
+      <categories>
+        <category>Unity Shader</category>
+      </categories>
+      <tags>
+        <tag>Unity Shader</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Glass Refraction Shader</title>
     <url>/2022/05/08/GlassRefractionShader/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十章介绍的GlassRefractionShader复现了一遍。这是一个很有趣的效果，表现玻璃的纹理折射。记录一下。感谢乐乐女神~</p>
@@ -107,42 +121,6 @@ step 1: 树叶摇曳怎么实现
       </tags>
   </entry>
   <entry>
-    <title>屏幕后处理·运动模糊</title>
-    <url>/2022/05/28/posteffectsmb/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>《Unity Shader入门精要》第十二章屏幕后处理技巧中介绍了运动模糊的实现，因为涉及的知识点较多，因此单记一篇笔记，如有错误的理解，望各位指正。感谢乐乐女神~</p>
-</blockquote>
-
-<h1 id="透明度测试-与-透明度混合"><a href="#透明度测试-与-透明度混合" class="headerlink" title="透明度测试 与 透明度混合"></a>透明度测试 与 透明度混合</h1><p>实现透明效果主要有两种方法，一种是透明度测试，一种是透明度混合。透明度测试即在shader中加入clip()函数，裁剪掉小于透明度阈值的片元，无法实现半透明的效果。透明度用来实现半透明的效果，更加复杂。</p>
-<p>使用透明度混合，必须要添加ZWrite Off与Blend语义，告诉Unity不将透明物体的深度写入深度缓冲，并且要混合当前片元与颜色缓冲中的片元RGB值，利用Shader中frag返回的alpha通道值混合。混合的模式有多种方式：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Blend Off <span class="comment">//不混合，直接用当前片元覆盖颜色缓冲区</span></span><br><span class="line">Blend SrcFactor DstFactor <span class="comment">//利用当前片元的透明度混合 颜色缓冲区的rgb与当前片元的rgb</span></span><br><span class="line">Blend SrcFactor DstFactor,SrcFactorA DstFactorA <span class="comment">//赋予新的透明度因子SrcFactorA DstFactorA进行混合</span></span><br><span class="line">BlendOp BlendOperation <span class="comment">//指定别的方式BlendOperation进行混合</span></span><br></pre></td></tr></table></figure>
-
-<p>其中第二种混合方式公式如下（当SrcFactor为SrcAlpha ,DstFactor为OneMinusSrcalpha时）：<br>$$<br>DstColor_{new}&#x3D;SrcAlpha \times SrcColor + (1-SrcAlpha) \times DstColor_{old}<br>$$<br>其中$DstColor$为颜色缓冲区中的值。</p>
-<p>ColorMask A指的是只对alpha通道进行写值。</p>
-<h1 id="屏幕后处理脚本系统"><a href="#屏幕后处理脚本系统" class="headerlink" title="屏幕后处理脚本系统"></a>屏幕后处理脚本系统</h1><p>屏幕后处理，就是对执行完所有透明与不透明的Pass后的场景进行抓取，将抓取到的屏幕存在纹理中，对抓取的纹理进行一些处理，将变化后的纹理再显示再屏幕中。unity已经提供了抓取屏幕的接口—–OnRenderImage，函数声明如下：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">MonoBehaviour.OnRenderImage(RenderTexture source,RenderTexture destination);</span><br></pre></td></tr></table></figure>
-
-<p>当在脚本中声明此函数时，Unity会将当前渲染得到的屏幕图像存储在参数source中，此函数中的实现对source的操作，最终处理后的屏幕图像保存在destination中，Unity会将destination绘制在屏幕中。在OnRenderImage中我们通常用Graphics.Blit函数实现对纹理的变换，Blit函数声明如下：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Blit</span><span class="params">(Texture src,RnederTexture dest)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Blit</span><span class="params">(Texture src,RnederTexture dest,Material mat,<span class="keyword">int</span> pass=<span class="number">-1</span>)</span></span>;</span><br></pre></td></tr></table></figure>
-
-<p>Unity设计Blit函数帮助我们变换屏幕纹理，Blit中会将src传给mat中的“_MainTex”，利用mat进行修改，将结果返回给dest，pass默认为-1表示会依次执行mat中所有的pass，否则就会调用指定的Pass。</p>
-<h1 id="运动模糊法1"><a href="#运动模糊法1" class="headerlink" title="运动模糊法1"></a>运动模糊法1</h1><p>该效果主要思路就是：当前帧的rgb值取决于上一帧与实际当前帧的混合。</p>
-<h2 id="让画面运动起来"><a href="#让画面运动起来" class="headerlink" title="让画面运动起来"></a>让画面运动起来</h2><p>设置相机运动脚本，让画面动起来，再混合每一帧造成运动模糊的效果。在书中，想要获得相机绕固定点旋转的视角，改变相机的transform，lookAt矩阵即可。像机脚本的关键代码如下：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">		transform.position = Vector3.Slerp(transform.position, curEndPoint, Time.deltaTime * speed);<span class="comment">//利用Slerp球形插值函数，随着Time而移动</span></span><br><span class="line">		transform.LookAt(lookAt);<span class="comment">//改变像机视角矩阵 View</span></span><br><span class="line">		<span class="keyword">if</span> (pingpong) &#123;</span><br><span class="line">			<span class="keyword">if</span> (Vector3.Distance(transform.position, curEndPoint) &lt; <span class="number">0.001f</span>) &#123;</span><br><span class="line">				curEndPoint = Vector3.Distance(curEndPoint, endPoint) &lt; Vector3.Distance(curEndPoint, startPoint) ? startPoint : endPoint;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="shader"><a href="#shader" class="headerlink" title="shader"></a>shader</h2><p>在shader中开启ZWrite Off与Blend语义，以混合颜色缓冲区中上一帧的RGB与当前渲染帧的RGB以达到模糊的效果。设置两个Pass，Pass1往颜色缓冲中写RGB值，并且利用_BlurAmount混合前后帧率，Pass2往颜色缓冲区中写入原有屏幕的Alpha值。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">fixed4 fragRGB (v2f i) : SV_Target &#123;</span><br><span class="line">	<span class="keyword">return</span> fixed4(tex2D(_MainTex, i.uv).rgb, _BlurAmount);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>#运动模糊法2</p>
-<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></p>
-]]></content>
-      <categories>
-        <category>Unity Shader</category>
-      </categories>
-      <tags>
-        <tag>Unity Shader</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>屏幕后处理效果</title>
     <url>/2022/05/18/posteffects/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十二章介绍的屏幕后处理复现了一遍。包括屏幕明暗+饱和度+对比度、高斯模糊、运动模糊、Bloom、边缘检测等。记录一下。感谢乐乐女神~</p>
@@ -177,6 +155,48 @@ step 1: 树叶摇曳怎么实现
 
 <p>代码中用到了clamp函数，cg library中对clamp解释如下：<br><img src="http://www.laluna00.cn/2022/05/18/posteffects/clamp.png" width="100%" height="100%"></p>
 <p>bloom效果如下图：<br><img src="http://www.laluna00.cn/2022/05/18/posteffects/bloom.png" width="50%" height="50%"></p>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></p>
+]]></content>
+      <categories>
+        <category>Unity Shader</category>
+      </categories>
+      <tags>
+        <tag>Unity Shader</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>屏幕后处理·运动模糊</title>
+    <url>/2022/05/28/posteffectsmb/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>《Unity Shader入门精要》第十二章屏幕后处理技巧中介绍了运动模糊的实现，因为涉及的知识点较多，因此单记一篇笔记，如有错误的理解，望各位指正。感谢乐乐女神~</p>
+</blockquote>
+
+<h1 id="透明度测试-与-透明度混合"><a href="#透明度测试-与-透明度混合" class="headerlink" title="透明度测试 与 透明度混合"></a>透明度测试 与 透明度混合</h1><p>实现透明效果主要有两种方法，一种是透明度测试，一种是透明度混合。透明度测试即在shader中加入clip()函数，裁剪掉小于透明度阈值的片元，无法实现半透明的效果。透明度用来实现半透明的效果，更加复杂。</p>
+<p>使用透明度混合，必须要添加ZWrite Off与Blend语义，告诉Unity不将透明物体的深度写入深度缓冲，并且要混合当前片元与颜色缓冲中的片元RGB值，利用Shader中frag返回的alpha通道值混合。混合的模式有多种方式：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Blend Off <span class="comment">//不混合，直接用当前片元覆盖颜色缓冲区</span></span><br><span class="line">Blend SrcFactor DstFactor <span class="comment">//利用当前片元的透明度混合 颜色缓冲区的rgb与当前片元的rgb</span></span><br><span class="line">Blend SrcFactor DstFactor,SrcFactorA DstFactorA <span class="comment">//赋予新的透明度因子SrcFactorA DstFactorA进行混合</span></span><br><span class="line">BlendOp BlendOperation <span class="comment">//指定别的方式BlendOperation进行混合</span></span><br></pre></td></tr></table></figure>
+
+<p>其中第二种混合方式公式如下（当SrcFactor为SrcAlpha ,DstFactor为OneMinusSrcalpha时）：<br>$$<br>DstColor_{new}&#x3D;SrcAlpha \times SrcColor + (1-SrcAlpha) \times DstColor_{old}<br>$$<br>其中$DstColor$为颜色缓冲区中的值。</p>
+<p>ColorMask A指的是只对alpha通道进行写值。</p>
+<h1 id="屏幕后处理脚本系统"><a href="#屏幕后处理脚本系统" class="headerlink" title="屏幕后处理脚本系统"></a>屏幕后处理脚本系统</h1><p>屏幕后处理，就是对执行完所有透明与不透明的Pass后的场景进行抓取，将抓取到的屏幕存在纹理中，对抓取的纹理进行一些处理，将变化后的纹理再显示再屏幕中。unity已经提供了抓取屏幕的接口—–OnRenderImage，函数声明如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">MonoBehaviour.OnRenderImage(RenderTexture source,RenderTexture destination);</span><br></pre></td></tr></table></figure>
+
+<p>当在脚本中声明此函数时，Unity会将当前渲染得到的屏幕图像存储在参数source中，此函数中的实现对source的操作，最终处理后的屏幕图像保存在destination中，Unity会将destination绘制在屏幕中。在OnRenderImage中我们通常用Graphics.Blit函数实现对纹理的变换，Blit函数声明如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Blit</span><span class="params">(Texture src,RnederTexture dest)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Blit</span><span class="params">(Texture src,RnederTexture dest,Material mat,<span class="keyword">int</span> pass=<span class="number">-1</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>Unity设计Blit函数帮助我们变换屏幕纹理，Blit中会将src传给mat中的“_MainTex”，利用mat进行修改，将结果返回给dest，pass默认为-1表示会依次执行mat中所有的pass，否则就会调用指定的Pass。</p>
+<h1 id="运动模糊法1"><a href="#运动模糊法1" class="headerlink" title="运动模糊法1"></a>运动模糊法1</h1><p>该效果主要思路就是：当前帧的rgb值取决于上一帧与实际当前帧的混合。</p>
+<h2 id="让画面运动起来"><a href="#让画面运动起来" class="headerlink" title="让画面运动起来"></a>让画面运动起来</h2><p>设置相机运动脚本，让画面动起来，再混合每一帧造成运动模糊的效果。在书中，想要获得相机绕固定点旋转的视角，改变相机的transform，lookAt矩阵即可。像机脚本的关键代码如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">		transform.position = Vector3.Slerp(transform.position, curEndPoint, Time.deltaTime * speed);<span class="comment">//利用Slerp球形插值函数，随着Time而移动</span></span><br><span class="line">		transform.LookAt(lookAt);<span class="comment">//改变像机视角矩阵 View</span></span><br><span class="line">		<span class="keyword">if</span> (pingpong) &#123;</span><br><span class="line">			<span class="keyword">if</span> (Vector3.Distance(transform.position, curEndPoint) &lt; <span class="number">0.001f</span>) &#123;</span><br><span class="line">				curEndPoint = Vector3.Distance(curEndPoint, endPoint) &lt; Vector3.Distance(curEndPoint, startPoint) ? startPoint : endPoint;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="shader"><a href="#shader" class="headerlink" title="shader"></a>shader</h2><p>在shader中开启ZWrite Off与Blend语义，以混合颜色缓冲区中上一帧的RGB与当前渲染帧的RGB以达到模糊的效果。设置两个Pass，Pass1往颜色缓冲中写RGB值，并且利用_BlurAmount混合前后帧率，Pass2往颜色缓冲区中写入原有屏幕的Alpha值。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">fixed4 fragRGB (v2f i) : SV_Target &#123;</span><br><span class="line">	<span class="keyword">return</span> fixed4(tex2D(_MainTex, i.uv).rgb, _BlurAmount);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="运动模糊法2"><a href="#运动模糊法2" class="headerlink" title="运动模糊法2"></a>运动模糊法2</h1><p>在书的第三章中介绍了另外一种实现运动模糊的方法。是作者受《GPU GEMS3》速度映射图启发的方法。利用深度图来得到屏幕所有像素的世界坐标（经过VP逆矩阵的转换），再用上一帧的VP矩阵得到当前像素点在上一帧的像素位置。在屏幕空间坐标系中计算速度，沿着速度路径平均采样。关键代码如下：</p>
+<p>在后处理脚本中，需要拿到当前帧VP矩阵，和上一帧的VP逆矩阵：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">OnRenderImage</span> <span class="params">(RenderTexture src, RenderTexture dest)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (material != null) &#123;</span><br><span class="line">		material.SetFloat(<span class="string">"_BlurSize"</span>, blurSize);</span><br><span class="line"></span><br><span class="line">		material.SetMatrix(<span class="string">"_PreviousViewProjectionMatrix"</span>, previousViewProjectionMatrix);</span><br><span class="line">		Matrix4x4 currentViewProjectionMatrix = camera.projectionMatrix * camera.worldToCameraMatrix;<span class="comment">//VP矩阵</span></span><br><span class="line">		Matrix4x4 currentViewProjectionInverseMatrix = currentViewProjectionMatrix.inverse;<span class="comment">//逆矩阵</span></span><br><span class="line">		material.SetMatrix(<span class="string">"_CurrentViewProjectionInverseMatrix"</span>, currentViewProjectionInverseMatrix);</span><br><span class="line">		previousViewProjectionMatrix = currentViewProjectionMatrix;</span><br><span class="line"></span><br><span class="line">		Graphics.Blit (src, dest, material);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		Graphics.Blit(src, dest);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>shader中关键代码在fragment shader中：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">fixed4 frag(v2f i) : SV_Target &#123;</span><br><span class="line">	<span class="comment">//从深度图缓冲中得到当前采样点的深度值</span></span><br><span class="line">	<span class="keyword">float</span> d = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv_depth);</span><br><span class="line">	<span class="comment">//H是映射到-1~1坐标系中的坐标</span></span><br><span class="line">	float4 H = float4(i.uv.x * <span class="number">2</span> - <span class="number">1</span>, i.uv.y * <span class="number">2</span> - <span class="number">1</span>, d * <span class="number">2</span> - <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">	<span class="comment">//利用VP逆矩阵得到世界空间中坐标</span></span><br><span class="line">	float4 D = mul(_CurrentViewProjectionInverseMatrix, H);</span><br><span class="line">	<span class="comment">//齐次除法 </span></span><br><span class="line">	float4 worldPos = D / D.w;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//当前坐标</span></span><br><span class="line">	float4 currentPos = H;</span><br><span class="line">	<span class="comment">//因为书中的所有物体的世界空间坐标不会变化，变得只是摄像机的世界空间位置与朝向， 因此可以根据VP矩阵计算出准确的上一帧屏幕像素坐标</span></span><br><span class="line">	float4 previousPos = mul(_PreviousViewProjectionMatrix, worldPos);</span><br><span class="line">	<span class="comment">//齐次除法</span></span><br><span class="line">	previousPos /= previousPos.w;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//利用-1~1坐标系中的位置计算速度</span></span><br><span class="line">	float2 velocity = (currentPos.xy - previousPos.xy)/<span class="number">2.0f</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//沿着速度方向进行均值采样</span></span><br><span class="line">	float2 uv = i.uv;</span><br><span class="line">	float4 c = tex2D(_MainTex, uv);</span><br><span class="line">	uv += velocity * _BlurSize;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> it = <span class="number">1</span>; it &lt; <span class="number">3</span>; it++, uv += velocity * _BlurSize) &#123;</span><br><span class="line">		float4 currentColor = tex2D(_MainTex, uv);</span><br><span class="line">		c += currentColor;</span><br><span class="line">	&#125;</span><br><span class="line">	c /= <span class="number">3</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> fixed4(c.rgb, <span class="number">1.0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></p>
 ]]></content>
       <categories>
