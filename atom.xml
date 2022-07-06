@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.laluna00.cn/"/>
-  <updated>2022-07-05T16:52:04.382Z</updated>
+  <updated>2022-07-06T15:39:52.678Z</updated>
   <id>https://www.laluna00.cn/</id>
   
   <author>
@@ -21,9 +21,9 @@
     <link href="https://www.laluna00.cn/2022/07/05/edgedetect/"/>
     <id>https://www.laluna00.cn/2022/07/05/edgedetect/</id>
     <published>2022-07-05T13:15:56.000Z</published>
-    <updated>2022-07-05T16:52:04.382Z</updated>
+    <updated>2022-07-06T15:39:52.678Z</updated>
     
-    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另一种离线的方法。</p></blockquote><h1 id="描边效果"><a href="#描边效果" class="headerlink" title="描边效果"></a>描边效果</h1><h1 id="基于边缘检测的方法"><a href="#基于边缘检测的方法" class="headerlink" title="基于边缘检测的方法"></a>基于边缘检测的方法</h1><h1 id="边缘检测与深度纹理结合"><a href="#边缘检测与深度纹理结合" class="headerlink" title="边缘检测与深度纹理结合"></a>边缘检测与深度纹理结合</h1><h1 id="双通道渲染"><a href="#双通道渲染" class="headerlink" title="双通道渲染"></a>双通道渲染</h1><h1 id="笔刷离线工具"><a href="#笔刷离线工具" class="headerlink" title="笔刷离线工具"></a>笔刷离线工具</h1>]]></content>
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另两种离线的方法。</p></blockquote><h1 id="描边效果"><a href="#描边效果" class="headerlink" title="描边效果"></a>描边效果</h1><h1 id="法一：基于边缘检测的方法"><a href="#法一：基于边缘检测的方法" class="headerlink" title="法一：基于边缘检测的方法"></a>法一：基于边缘检测的方法</h1><h1 id="法二：边缘检测与深度纹理结合"><a href="#法二：边缘检测与深度纹理结合" class="headerlink" title="法二：边缘检测与深度纹理结合"></a>法二：边缘检测与深度纹理结合</h1><h1 id="法三：双通道渲染"><a href="#法三：双通道渲染" class="headerlink" title="法三：双通道渲染"></a>法三：双通道渲染</h1><h1 id="法四：笔刷离线工具"><a href="#法四：笔刷离线工具" class="headerlink" title="法四：笔刷离线工具"></a>法四：笔刷离线工具</h1>]]></content>
     
     <summary type="html">
     

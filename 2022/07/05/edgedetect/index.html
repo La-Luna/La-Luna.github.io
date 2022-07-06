@@ -149,18 +149,18 @@
 
 
 
-  <meta name="description" content="卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另一种离线的方法。   描边效果基于边缘检测的方法边缘检测与深度纹理结合双通道渲染笔刷离线工具">
+  <meta name="description" content="卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另两种离线的方法。   描边效果法一：基于边缘检测的方法法二：边缘检测与深度纹理结合法三：双通道渲染法四：笔刷离线工具">
 <meta name="keywords" content="卡通渲染">
 <meta property="og:type" content="article">
 <meta property="og:title" content="实现描边的几种方法">
 <meta property="og:url" content="https://www.laluna00.cn/2022/07/05/edgedetect/index.html">
 <meta property="og:site_name" content="LaLuna&#39;s Home">
-<meta property="og:description" content="卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另一种离线的方法。   描边效果基于边缘检测的方法边缘检测与深度纹理结合双通道渲染笔刷离线工具">
+<meta property="og:description" content="卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另两种离线的方法。   描边效果法一：基于边缘检测的方法法二：边缘检测与深度纹理结合法三：双通道渲染法四：笔刷离线工具">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2022-07-05T16:52:04.382Z">
+<meta property="og:updated_time" content="2022-07-06T15:39:52.678Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="实现描边的几种方法">
-<meta name="twitter:description" content="卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另一种离线的方法。   描边效果基于边缘检测的方法边缘检测与深度纹理结合双通道渲染笔刷离线工具">
+<meta name="twitter:description" content="卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另两种离线的方法。   描边效果法一：基于边缘检测的方法法二：边缘检测与深度纹理结合法三：双通道渲染法四：笔刷离线工具">
 
 
 
@@ -485,7 +485,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2022-07-06 00:52:04" itemprop="dateModified" datetime="2022-07-06T00:52:04+08:00">2022-07-06</time>
+                <time title="修改时间：2022-07-06 23:39:52" itemprop="dateModified" datetime="2022-07-06T23:39:52+08:00">2022-07-06</time>
               
             
           </span>
@@ -551,7 +551,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">119</span>
+                <span title="本文字数">131</span>
               
 
               
@@ -585,10 +585,10 @@
       
 
       
-        <blockquote><p>卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另一种离线的方法。</p>
+        <blockquote><p>卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另两种离线的方法。</p>
 </blockquote>
 
-<h1 id="描边效果"><a href="#描边效果" class="headerlink" title="描边效果"></a>描边效果</h1><h1 id="基于边缘检测的方法"><a href="#基于边缘检测的方法" class="headerlink" title="基于边缘检测的方法"></a>基于边缘检测的方法</h1><h1 id="边缘检测与深度纹理结合"><a href="#边缘检测与深度纹理结合" class="headerlink" title="边缘检测与深度纹理结合"></a>边缘检测与深度纹理结合</h1><h1 id="双通道渲染"><a href="#双通道渲染" class="headerlink" title="双通道渲染"></a>双通道渲染</h1><h1 id="笔刷离线工具"><a href="#笔刷离线工具" class="headerlink" title="笔刷离线工具"></a>笔刷离线工具</h1>
+<h1 id="描边效果"><a href="#描边效果" class="headerlink" title="描边效果"></a>描边效果</h1><h1 id="法一：基于边缘检测的方法"><a href="#法一：基于边缘检测的方法" class="headerlink" title="法一：基于边缘检测的方法"></a>法一：基于边缘检测的方法</h1><h1 id="法二：边缘检测与深度纹理结合"><a href="#法二：边缘检测与深度纹理结合" class="headerlink" title="法二：边缘检测与深度纹理结合"></a>法二：边缘检测与深度纹理结合</h1><h1 id="法三：双通道渲染"><a href="#法三：双通道渲染" class="headerlink" title="法三：双通道渲染"></a>法三：双通道渲染</h1><h1 id="法四：笔刷离线工具"><a href="#法四：笔刷离线工具" class="headerlink" title="法四：笔刷离线工具"></a>法四：笔刷离线工具</h1>
       
     </div>
 
@@ -840,7 +840,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#描边效果"><span class="nav-number">1.</span> <span class="nav-text">描边效果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基于边缘检测的方法"><span class="nav-number">2.</span> <span class="nav-text">基于边缘检测的方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#边缘检测与深度纹理结合"><span class="nav-number">3.</span> <span class="nav-text">边缘检测与深度纹理结合</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#双通道渲染"><span class="nav-number">4.</span> <span class="nav-text">双通道渲染</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#笔刷离线工具"><span class="nav-number">5.</span> <span class="nav-text">笔刷离线工具</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#描边效果"><span class="nav-number">1.</span> <span class="nav-text">描边效果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#法一：基于边缘检测的方法"><span class="nav-number">2.</span> <span class="nav-text">法一：基于边缘检测的方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#法二：边缘检测与深度纹理结合"><span class="nav-number">3.</span> <span class="nav-text">法二：边缘检测与深度纹理结合</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#法三：双通道渲染"><span class="nav-number">4.</span> <span class="nav-text">法三：双通道渲染</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#法四：笔刷离线工具"><span class="nav-number">5.</span> <span class="nav-text">法四：笔刷离线工具</span></a></li></ol></div>
             
 
           </div>
