@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>一种具有描边与卡通高光的效果</title>
-    <url>/2022/07/13/CartoonEdgeSpec/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><p><img src="https://blog.csdn.net/u013477973/article/details/80607989" alt="RenderType与Queue的理解"></p>
-]]></content>
-      <categories>
-        <category>卡通渲染</category>
-      </categories>
-      <tags>
-        <tag>卡通渲染</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Animation In Texture</title>
     <url>/2022/05/14/AnimationInTexture/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十一章介绍的纹理动画复现了一遍。纹理动画一个很有趣的效果，用一些简单的技巧实现动画。记录一下。感谢乐乐女神~</p>
@@ -78,16 +66,14 @@
       </tags>
   </entry>
   <entry>
-    <title>实现描边的几种方法</title>
-    <url>/2022/07/05/edgedetect/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另两种离线的方法。</p>
+    <title>一种具有描边与卡通高光的效果</title>
+    <url>/2022/07/13/CartoonEdgeSpec/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><p><img src="https://blog.csdn.net/u013477973/article/details/80607989" alt="RenderType与Queue的理解"></p>
+<blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十四章介绍的卡通风格渲染复现了一遍。这是一个简单但被广泛运用的效果。记录一下。感谢乐乐女神~</p>
 </blockquote>
 
-<h1 id="描边效果"><a href="#描边效果" class="headerlink" title="描边效果"></a>描边效果</h1><p>美术风格有很多种，其中日式和美式有种完全不同的风格，国风更有其独一无二的特点。美式动画的代表风格之一为皮克斯风格（如下图右所示），日式动画的代表风格之一为宫崎骏风格（如下图左所示）。<br><img src="/2022/07/05/edgedetect/cmp.jpg#pic_center"></p>
-<p>日式动画常基于二维美术风格表示，在色块外有着明显的边缘来区分形状，描边是这种风格的特点。当然，随着各种不同风格的碰撞与发展，描边成为各种不同美术风格的重要元素了(如下图所示)，具体的描边效果，随着风格的不同而有区别。本文记录一下遇到的几种实现不同风格描边的方法。<br><img src="/2022/07/05/edgedetect/cmp2.jpg#pic_center"></p>
-<h1 id="法一：屏幕后处理中进行边缘检测"><a href="#法一：屏幕后处理中进行边缘检测" class="headerlink" title="法一：屏幕后处理中进行边缘检测"></a>法一：屏幕后处理中进行边缘检测</h1><p>利用图像处理中的边缘检测算子，检测图像中的边（像素值跳变大的点视作边）。<br><img src="/2022/07/05/edgedetect/edgedetectwhite.png#pic_center"></p>
-<h1 id="法二：屏幕后处理中进行边缘检测feat-深度纹理"><a href="#法二：屏幕后处理中进行边缘检测feat-深度纹理" class="headerlink" title="法二：屏幕后处理中进行边缘检测feat.深度纹理"></a>法二：屏幕后处理中进行边缘检测feat.深度纹理</h1><p>在法一中，边缘检测算子只在原渲染图像中卷积，采集的边只是色块相交处的边缘，而不是实际物体的边缘。改用深度纹理（或者深度法线纹理）进行卷积，能够检测出深度跳变大的点，而往往是物体的实际边缘（如下图所示，图片来自<a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">乐乐的教程</a>）。因此这种方法更为常见。<br><img src="/2022/07/05/edgedetect/edgewithdepth.png#pic_center"></p>
-<h1 id="法三：双通道渲染"><a href="#法三：双通道渲染" class="headerlink" title="法三：双通道渲染"></a>法三：双通道渲染</h1><h1 id="法四：提取轮廓边单独渲染"><a href="#法四：提取轮廓边单独渲染" class="headerlink" title="法四：提取轮廓边单独渲染"></a>法四：提取轮廓边单独渲染</h1><p>这种常用于离线的边缘检测，对模型的所有边进行判断，判断是否是边缘（边的相邻三角形与视角的点乘正负，一正一负则为边）。这种方法常用于一些需要风格化边缘的情况。因为将边的信息提取出来后，可以用shader对边进行风格渲染。<br><img src="/2022/07/05/edgedetect/specialedges.png#pic_center"></p>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>书中给出的思路是，</p>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></p>
 ]]></content>
       <categories>
         <category>卡通渲染</category>
@@ -108,37 +94,22 @@
       </tags>
   </entry>
   <entry>
-    <title>屏幕后处理·雾效</title>
-    <url>/2022/06/30/posteff-fog/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十三章介绍的屏幕后处理之全局雾效复现了一遍。记录一下。感谢乐乐女神~</p>
+    <title>实现描边的几种方法</title>
+    <url>/2022/07/05/edgedetect/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另两种离线的方法。</p>
 </blockquote>
-<h1 id="雾效效果"><a href="#雾效效果" class="headerlink" title="雾效效果"></a>雾效效果</h1><p>添加雾效前的场景：<br><img src="/2022/06/30/posteff-fog/before.png#pic_center"><br>添加雾效后的场景：<br><img src="/2022/06/30/posteff-fog/after.png#pic_center"><br>该雾效脚本中FogDensity为0.72</p>
-<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>在屏幕后处理阶段添加雾效，在camera中添加雾效脚本，使得在Y轴方向根据位置高低，将原渲染结果与雾以不同系数混合输出最终效果。</p>
-<h1 id="雾效混合系数与其计算公式"><a href="#雾效混合系数与其计算公式" class="headerlink" title="雾效混合系数与其计算公式"></a>雾效混合系数与其计算公式</h1><p>需要一个混合系数f，来混合原始rgb值与雾rgb值：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">float3 afterFog = f * FogColor + (<span class="number">1</span>-f) * origColor;</span><br></pre></td></tr></table></figure>
 
-<p>书中采用类似线性的雾效公式来计算f：<br>$$<br>f &#x3D;{H_{end}-h}\over{H_{end}-H_{start}}<br>$$<br>如果h是指世界空间Y轴坐标的话，可见随着海拔增高，f越小，则雾越淡。</p>
-<h1 id="世界坐标的求解"><a href="#世界坐标的求解" class="headerlink" title="世界坐标的求解"></a>世界坐标的求解</h1><p>因为雾效混合系数的计算需要渲染位置的世界坐标，因此在后处理shader中计算像素的世界坐标是必须的一步。很容易想到用View矩阵和Projection矩阵的逆矩阵来计算屏幕像素的世界坐标，但这种需要在fragment shader中进行矩阵运算的方法性能不佳，因此需要另外一种方法。</p>
-<p>另一种方法，就是利用相机的世界坐标与像素位置相对于相机的偏移来计算像素的实际世界坐标，即根据公式：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">float4 worldPos=_WorldSpaceCameraPos+lineDepth*interpolatedRay;</span><br></pre></td></tr></table></figure>
-
-<p>其中lineDepth可以由相机的深度纹理直接得到，interpolatedRay是每个像素与相机相关的射线向量，该向量记录了位置与方向信息。<br>且interpolatedRay是由硬件插值计算来的，使得消耗更小的算力。</p>
-<h2 id="camera深度纹理的获取"><a href="#camera深度纹理的获取" class="headerlink" title="camera深度纹理的获取"></a>camera深度纹理的获取</h2><p>在脚本中设置camera的深度纹理类型：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">camera.depthTextureMode |= DepthTextureMode.Depth;</span><br></pre></td></tr></table></figure>
-
-<p>在shader中布置深度纹理变量,并获取对应像素位置的深度值：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">sampler2D _CameraDepthTexture;</span><br><span class="line">...</span><br><span class="line"><span class="keyword">float</span> linearDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture,i.uv_depth));</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<h1 id="shader"><a href="#shader" class="headerlink" title="shader"></a>shader</h1><p>关键代码如下：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">fixed4 frag(v2f i) :SV_Target&#123;</span><br><span class="line">    <span class="keyword">float</span> linearDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture,i.uv_depth));</span><br><span class="line">    float3 worldPos = _WorldSpaceCameraPos + linearDepth * i.interpolatedRay.xyz;</span><br><span class="line">    <span class="keyword">float</span> fogDensity = (_FogEnd - worldPos.y) / (_FogEnd - _FogStart);</span><br><span class="line">    fogDensity = saturate(fogDensity * _FogDensity);<span class="comment">//Clamps x to the [0, 1] range.</span></span><br><span class="line"></span><br><span class="line">    fixed4 finalColor = tex2D(_MainTex, i.uv);</span><br><span class="line">    finalColor.rgb = lerp(finalColor.rgb, _FogColor.rgb, fogDensity);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> finalColor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>记住个shader中常用的函数saturate：<br><img src="/2022/06/30/posteff-fog/saturate.png#pic_center"></p>
+<h1 id="描边效果"><a href="#描边效果" class="headerlink" title="描边效果"></a>描边效果</h1><p>美术风格有很多种，其中日式和美式有种完全不同的风格，国风更有其独一无二的特点。美式动画的代表风格之一为皮克斯风格（如下图右所示），日式动画的代表风格之一为宫崎骏风格（如下图左所示）。<br><img src="/2022/07/05/edgedetect/cmp.jpg#pic_center"></p>
+<p>日式动画常基于二维美术风格表示，在色块外有着明显的边缘来区分形状，描边是这种风格的特点。当然，随着各种不同风格的碰撞与发展，描边成为各种不同美术风格的重要元素了(如下图所示)，具体的描边效果，随着风格的不同而有区别。本文记录一下遇到的几种实现不同风格描边的方法。<br><img src="/2022/07/05/edgedetect/cmp2.jpg#pic_center"></p>
+<h1 id="法一：屏幕后处理中进行边缘检测"><a href="#法一：屏幕后处理中进行边缘检测" class="headerlink" title="法一：屏幕后处理中进行边缘检测"></a>法一：屏幕后处理中进行边缘检测</h1><p>利用图像处理中的边缘检测算子，检测图像中的边（像素值跳变大的点视作边）。<br><img src="/2022/07/05/edgedetect/edgedetectwhite.png#pic_center"></p>
+<h1 id="法二：屏幕后处理中进行边缘检测feat-深度纹理"><a href="#法二：屏幕后处理中进行边缘检测feat-深度纹理" class="headerlink" title="法二：屏幕后处理中进行边缘检测feat.深度纹理"></a>法二：屏幕后处理中进行边缘检测feat.深度纹理</h1><p>在法一中，边缘检测算子只在原渲染图像中卷积，采集的边只是色块相交处的边缘，而不是实际物体的边缘。改用深度纹理（或者深度法线纹理）进行卷积，能够检测出深度跳变大的点，而往往是物体的实际边缘（如下图所示，图片来自<a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">乐乐的教程</a>）。因此这种方法更为常见。<br><img src="/2022/07/05/edgedetect/edgewithdepth.png#pic_center"></p>
+<h1 id="法三：双通道渲染"><a href="#法三：双通道渲染" class="headerlink" title="法三：双通道渲染"></a>法三：双通道渲染</h1><h1 id="法四：提取轮廓边单独渲染"><a href="#法四：提取轮廓边单独渲染" class="headerlink" title="法四：提取轮廓边单独渲染"></a>法四：提取轮廓边单独渲染</h1><p>这种常用于离线的边缘检测，对模型的所有边进行判断，判断是否是边缘（边的相邻三角形与视角的点乘正负，一正一负则为边）。这种方法常用于一些需要风格化边缘的情况。因为将边的信息提取出来后，可以用shader对边进行风格渲染。<br><img src="/2022/07/05/edgedetect/specialedges.png#pic_center"></p>
 ]]></content>
       <categories>
-        <category>Unity Shader</category>
+        <category>卡通渲染</category>
       </categories>
       <tags>
-        <tag>Unity Shader</tag>
+        <tag>卡通渲染</tag>
       </tags>
   </entry>
   <entry>
@@ -180,6 +151,41 @@ step 1: 树叶摇曳怎么实现
       </categories>
       <tags>
         <tag>Unity Lighting</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>屏幕后处理·雾效</title>
+    <url>/2022/06/30/posteff-fog/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十三章介绍的屏幕后处理之全局雾效复现了一遍。记录一下。感谢乐乐女神~</p>
+</blockquote>
+<h1 id="雾效效果"><a href="#雾效效果" class="headerlink" title="雾效效果"></a>雾效效果</h1><p>添加雾效前的场景：<br><img src="/2022/06/30/posteff-fog/before.png#pic_center"><br>添加雾效后的场景：<br><img src="/2022/06/30/posteff-fog/after.png#pic_center"><br>该雾效脚本中FogDensity为0.72</p>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>在屏幕后处理阶段添加雾效，在camera中添加雾效脚本，使得在Y轴方向根据位置高低，将原渲染结果与雾以不同系数混合输出最终效果。</p>
+<h1 id="雾效混合系数与其计算公式"><a href="#雾效混合系数与其计算公式" class="headerlink" title="雾效混合系数与其计算公式"></a>雾效混合系数与其计算公式</h1><p>需要一个混合系数f，来混合原始rgb值与雾rgb值：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">float3 afterFog = f * FogColor + (<span class="number">1</span>-f) * origColor;</span><br></pre></td></tr></table></figure>
+
+<p>书中采用类似线性的雾效公式来计算f：<br>$$<br>f &#x3D;{H_{end}-h}\over{H_{end}-H_{start}}<br>$$<br>如果h是指世界空间Y轴坐标的话，可见随着海拔增高，f越小，则雾越淡。</p>
+<h1 id="世界坐标的求解"><a href="#世界坐标的求解" class="headerlink" title="世界坐标的求解"></a>世界坐标的求解</h1><p>因为雾效混合系数的计算需要渲染位置的世界坐标，因此在后处理shader中计算像素的世界坐标是必须的一步。很容易想到用View矩阵和Projection矩阵的逆矩阵来计算屏幕像素的世界坐标，但这种需要在fragment shader中进行矩阵运算的方法性能不佳，因此需要另外一种方法。</p>
+<p>另一种方法，就是利用相机的世界坐标与像素位置相对于相机的偏移来计算像素的实际世界坐标，即根据公式：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">float4 worldPos=_WorldSpaceCameraPos+lineDepth*interpolatedRay;</span><br></pre></td></tr></table></figure>
+
+<p>其中lineDepth可以由相机的深度纹理直接得到，interpolatedRay是每个像素与相机相关的射线向量，该向量记录了位置与方向信息。<br>且interpolatedRay是由硬件插值计算来的，使得消耗更小的算力。</p>
+<h2 id="camera深度纹理的获取"><a href="#camera深度纹理的获取" class="headerlink" title="camera深度纹理的获取"></a>camera深度纹理的获取</h2><p>在脚本中设置camera的深度纹理类型：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">camera.depthTextureMode |= DepthTextureMode.Depth;</span><br></pre></td></tr></table></figure>
+
+<p>在shader中布置深度纹理变量,并获取对应像素位置的深度值：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">sampler2D _CameraDepthTexture;</span><br><span class="line">...</span><br><span class="line"><span class="keyword">float</span> linearDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture,i.uv_depth));</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h1 id="shader"><a href="#shader" class="headerlink" title="shader"></a>shader</h1><p>关键代码如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">fixed4 frag(v2f i) :SV_Target&#123;</span><br><span class="line">    <span class="keyword">float</span> linearDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture,i.uv_depth));</span><br><span class="line">    float3 worldPos = _WorldSpaceCameraPos + linearDepth * i.interpolatedRay.xyz;</span><br><span class="line">    <span class="keyword">float</span> fogDensity = (_FogEnd - worldPos.y) / (_FogEnd - _FogStart);</span><br><span class="line">    fogDensity = saturate(fogDensity * _FogDensity);<span class="comment">//Clamps x to the [0, 1] range.</span></span><br><span class="line"></span><br><span class="line">    fixed4 finalColor = tex2D(_MainTex, i.uv);</span><br><span class="line">    finalColor.rgb = lerp(finalColor.rgb, _FogColor.rgb, fogDensity);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> finalColor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>记住个shader中常用的函数saturate：<br><img src="/2022/06/30/posteff-fog/saturate.png#pic_center"></p>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></p>
+]]></content>
+      <categories>
+        <category>Unity Shader</category>
+      </categories>
+      <tags>
+        <tag>Unity Shader</tag>
       </tags>
   </entry>
   <entry>
@@ -227,26 +233,6 @@ step 1: 树叶摇曳怎么实现
       </tags>
   </entry>
   <entry>
-    <title>Unity 的渲染路径</title>
-    <url>/2022/05/17/renderingpath/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="什么是渲染路径"><a href="#什么是渲染路径" class="headerlink" title="什么是渲染路径"></a>什么是渲染路径</h1><p>程序员指定渲染路径，是想配置光照属性与渲染流程。这是程序员与Unity的一个暗号。</p>
-<p>渲染路径中主要有两种，一是前向渲染路径（Forward Rendering Path）,一是延迟渲染路径（Differred Rendering Path）。</p>
-<h1 id="前向渲染路径"><a href="#前向渲染路径" class="headerlink" title="前向渲染路径"></a>前向渲染路径</h1><p>前向渲染需要计算两个缓冲区的信息，一是颜色缓冲区，二是深度缓冲区。利用深度缓冲来决定一个片元是否可见，如果可见就更新颜色缓冲区。</p>
-<p><strong>Unity含有内置的光照变量和函数，指定了前向渲染路径时，Unity会进行相关计算并填充一些变量如_LightColor0。</strong></p>
-<h2 id="如何指定前向渲染路径"><a href="#如何指定前向渲染路径" class="headerlink" title="如何指定前向渲染路径"></a>如何指定前向渲染路径</h2><p>大多数情况下，一个项目只使用一种渲染路径，可以在菜单Edit里设置。</p>
-<p>要是想使用多种渲染路径，也可以对不同的摄像机进行不同的设置。</p>
-<p>完成了上面的设置，就可以在Pass中使用标签“LightMode”来指定该Path使用的的渲染路径，比如，“LightMode”&#x3D;“ForwardBase”告诉Unity，当前Pass使用的是前向渲染路径中的“ForwadBase”路径，在shader中访问到Unity填好的光照属性。对于前向渲染，Unity Shader通常会定义一个Base Pass和一个Add Path。通常在Base Path中执行平行光照的逐像素计算，在Add Path中计算其他逐像素光照，最后Blend这些值。实际上，由于Shader中如何利用内置属性进行光照计算，完全取决于程序员，所以也可以在Base Path中进行逐顶点光照计算。</p>
-<h1 id="延迟渲染路径"><a href="#延迟渲染路径" class="headerlink" title="延迟渲染路径"></a>延迟渲染路径</h1><p>前向渲染会多出很多重复的操作，延迟渲染可以解决。延迟渲染不仅要计算深度缓冲、颜色缓冲，还需要计算G缓冲（Geometry Buffer，G-Buffer）。G-Buffer中存储表面信息，包括表面的法线、位置、材质属性等。</p>
-<p>延迟渲染的流程主要包括两个Pass，第一个Pass利用深度缓冲计算片元的可见性，如果一个片元可见就把其相关信息放到G-Buffer中。在第二个Pass中利用G-Buffer中的表面信息计算真正的着色。</p>
-]]></content>
-      <categories>
-        <category>Unity Lighting</category>
-      </categories>
-      <tags>
-        <tag>Unity Lighting</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>屏幕后处理·运动模糊</title>
     <url>/2022/05/28/posteffectsmb/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>《Unity Shader入门精要》第十二章屏幕后处理技巧中介绍了运动模糊的实现，因为涉及的知识点较多，因此单记一篇笔记，如有错误的理解，望各位指正。感谢乐乐女神~</p>
@@ -286,6 +272,26 @@ step 1: 树叶摇曳怎么实现
       </categories>
       <tags>
         <tag>Unity Shader</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity 的渲染路径</title>
+    <url>/2022/05/17/renderingpath/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="什么是渲染路径"><a href="#什么是渲染路径" class="headerlink" title="什么是渲染路径"></a>什么是渲染路径</h1><p>程序员指定渲染路径，是想配置光照属性与渲染流程。这是程序员与Unity的一个暗号。</p>
+<p>渲染路径中主要有两种，一是前向渲染路径（Forward Rendering Path）,一是延迟渲染路径（Differred Rendering Path）。</p>
+<h1 id="前向渲染路径"><a href="#前向渲染路径" class="headerlink" title="前向渲染路径"></a>前向渲染路径</h1><p>前向渲染需要计算两个缓冲区的信息，一是颜色缓冲区，二是深度缓冲区。利用深度缓冲来决定一个片元是否可见，如果可见就更新颜色缓冲区。</p>
+<p><strong>Unity含有内置的光照变量和函数，指定了前向渲染路径时，Unity会进行相关计算并填充一些变量如_LightColor0。</strong></p>
+<h2 id="如何指定前向渲染路径"><a href="#如何指定前向渲染路径" class="headerlink" title="如何指定前向渲染路径"></a>如何指定前向渲染路径</h2><p>大多数情况下，一个项目只使用一种渲染路径，可以在菜单Edit里设置。</p>
+<p>要是想使用多种渲染路径，也可以对不同的摄像机进行不同的设置。</p>
+<p>完成了上面的设置，就可以在Pass中使用标签“LightMode”来指定该Path使用的的渲染路径，比如，“LightMode”&#x3D;“ForwardBase”告诉Unity，当前Pass使用的是前向渲染路径中的“ForwadBase”路径，在shader中访问到Unity填好的光照属性。对于前向渲染，Unity Shader通常会定义一个Base Pass和一个Add Path。通常在Base Path中执行平行光照的逐像素计算，在Add Path中计算其他逐像素光照，最后Blend这些值。实际上，由于Shader中如何利用内置属性进行光照计算，完全取决于程序员，所以也可以在Base Path中进行逐顶点光照计算。</p>
+<h1 id="延迟渲染路径"><a href="#延迟渲染路径" class="headerlink" title="延迟渲染路径"></a>延迟渲染路径</h1><p>前向渲染会多出很多重复的操作，延迟渲染可以解决。延迟渲染不仅要计算深度缓冲、颜色缓冲，还需要计算G缓冲（Geometry Buffer，G-Buffer）。G-Buffer中存储表面信息，包括表面的法线、位置、材质属性等。</p>
+<p>延迟渲染的流程主要包括两个Pass，第一个Pass利用深度缓冲计算片元的可见性，如果一个片元可见就把其相关信息放到G-Buffer中。在第二个Pass中利用G-Buffer中的表面信息计算真正的着色。</p>
+]]></content>
+      <categories>
+        <category>Unity Lighting</category>
+      </categories>
+      <tags>
+        <tag>Unity Lighting</tag>
       </tags>
   </entry>
   <entry>
