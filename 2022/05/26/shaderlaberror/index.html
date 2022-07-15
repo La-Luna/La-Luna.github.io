@@ -149,18 +149,20 @@
 
 
 
-  <meta name="description" content="shader不报错">
+  <meta name="description" content="shader语法基本框架1234567891011121314151617181920212223242526272829Shader&quot;ShaderName&quot;&amp;#123;//定义Shader名字    Properties&amp;#123;//属性，cpu传给shader的值，出现在unity材质面板中，在Pass中要重新声明    &amp;#125;    SubShader&amp;#123;        //">
 <meta name="keywords" content="Unity Shader">
 <meta property="og:type" content="article">
-<meta property="og:title" content="写Unity Shader时常见问题">
+<meta property="og:title" content="Unity Shader常见问题">
 <meta property="og:url" content="https://www.laluna00.cn/2022/05/26/shaderlaberror/index.html">
 <meta property="og:site_name" content="LaLuna&#39;s Home">
-<meta property="og:description" content="shader不报错">
+<meta property="og:description" content="shader语法基本框架1234567891011121314151617181920212223242526272829Shader&quot;ShaderName&quot;&amp;#123;//定义Shader名字    Properties&amp;#123;//属性，cpu传给shader的值，出现在unity材质面板中，在Pass中要重新声明    &amp;#125;    SubShader&amp;#123;        //">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2022-07-15T07:46:59.214Z">
+<meta property="og:image" content="https://www.laluna00.cn/2022/05/26/shaderlaberror/queue.png#pic_center">
+<meta property="og:updated_time" content="2022-07-15T15:41:01.618Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="写Unity Shader时常见问题">
-<meta name="twitter:description" content="shader不报错">
+<meta name="twitter:title" content="Unity Shader常见问题">
+<meta name="twitter:description" content="shader语法基本框架1234567891011121314151617181920212223242526272829Shader&quot;ShaderName&quot;&amp;#123;//定义Shader名字    Properties&amp;#123;//属性，cpu传给shader的值，出现在unity材质面板中，在Pass中要重新声明    &amp;#125;    SubShader&amp;#123;        //">
+<meta name="twitter:image" content="https://www.laluna00.cn/2022/05/26/shaderlaberror/queue.png#pic_center">
 
 
 
@@ -179,7 +181,7 @@
   };
 </script>
 
-  <title>写Unity Shader时常见问题 | LaLuna's Home</title>
+  <title>Unity Shader常见问题 | LaLuna's Home</title>
   
 
 
@@ -443,7 +445,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">写Unity Shader时常见问题
+          <h2 class="post-title" itemprop="name headline">Unity Shader常见问题
               
             
           </h2>
@@ -485,7 +487,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2022-07-15 15:46:59" itemprop="dateModified" datetime="2022-07-15T15:46:59+08:00">2022-07-15</time>
+                <time title="修改时间：2022-07-15 23:41:01" itemprop="dateModified" datetime="2022-07-15T23:41:01+08:00">2022-07-15</time>
               
             
           </span>
@@ -526,7 +528,7 @@
 
           
           
-             <span id="/2022/05/26/shaderlaberror/" class="leancloud_visitors" data-flag-title="写Unity Shader时常见问题">
+             <span id="/2022/05/26/shaderlaberror/" class="leancloud_visitors" data-flag-title="Unity Shader常见问题">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -551,7 +553,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">9</span>
+                <span title="本文字数">1.3k</span>
               
 
               
@@ -585,7 +587,22 @@
       
 
       
-        <h1 id="shader不报错"><a href="#shader不报错" class="headerlink" title="shader不报错"></a>shader不报错</h1>
+        <h1 id="shader语法基本框架"><a href="#shader语法基本框架" class="headerlink" title="shader语法基本框架"></a>shader语法基本框架</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">Shader<span class="string">"ShaderName"</span>&#123;<span class="comment">//定义Shader名字</span></span><br><span class="line">    Properties&#123;<span class="comment">//属性，cpu传给shader的值，出现在unity材质面板中，在Pass中要重新声明</span></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    SubShader&#123;</span><br><span class="line">        <span class="comment">//针对显卡A的shader</span></span><br><span class="line">        <span class="comment">//此处设置标签1</span></span><br><span class="line">        Pass&#123;</span><br><span class="line">            <span class="comment">//此处也可以设置标签2</span></span><br><span class="line"></span><br><span class="line">            CGPROGRAM</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//下面是两条关键的编译指令，告诉unity哪两个函数最最重要的</span></span><br><span class="line">            <span class="meta">#<span class="meta-keyword">pragma</span> vertex vertname</span></span><br><span class="line">            <span class="meta">#<span class="meta-keyword">pragma</span> fragment fragname</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">//此处定义cg代码</span></span><br><span class="line">            </span><br><span class="line">            ENDCG</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        Pass&#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    SubShader&#123;</span><br><span class="line">        <span class="comment">//针对显卡B的shader</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Pass的执行"><a href="#Pass的执行" class="headerlink" title="Pass的执行"></a>Pass的执行</h2><h2 id="关于标签1常出现的字符串："><a href="#关于标签1常出现的字符串：" class="headerlink" title="关于标签1常出现的字符串："></a>关于标签1常出现的字符串：</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SubShader&#123;</span><br><span class="line">    Tags&#123;<span class="string">"RenderType"</span>=<span class="string">"Opaque"</span> <span class="string">"Queue"</span>=<span class="string">"Geometry"</span>&#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="RenderType"><a href="#RenderType" class="headerlink" title="RenderType"></a>RenderType</h3><p>其中RenderType使用的值通常包括Opaque、Transparent、Background等，实际上是一种约定,用来区别这个Shader要渲染的对象。并且可以使用自定义值，影响不大，只是在代替渲染时，定义者要区分不同RenderType类型的Shader。</p>
+<p>代替渲染解释：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Camera.SetReplacementShader(<span class="string">"shader1"</span>,<span class="string">""</span>) <span class="comment">//场景中所有的渲染对象的shader都替换成shader1进行渲染</span></span><br><span class="line">Camera.SetReplacementShader(<span class="string">"shader1"</span>,<span class="string">"RenderType"</span>) <span class="comment">//场景中所有RenderType类型与shader1的RenderType一致的渲染对象，其shader都替换为shader1，再渲染</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h3><p>Queue渲染队列，用来指定当前shader渲染对象的渲染顺序，其值有Background、Geometry、AlphaTest、Transparent等，<br>乐乐在书中介绍，队列索引号越小说明越先被渲染：<br><img src="/2022/05/26/shaderlaberror/queue.png#pic_center"></p>
+<h2 id="关于标签2中常出现的字符串："><a href="#关于标签2中常出现的字符串：" class="headerlink" title="关于标签2中常出现的字符串："></a>关于标签2中常出现的字符串：</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Pass&#123;</span><br><span class="line">    Tags&#123;<span class="string">"LightMode"</span>=<span class="string">"ForwardBase"</span> &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>程序员指定渲染路径LightMode，是想配置光照属性与渲染流程。这是程序员与Unity的一个暗号。详见<a href="http://www.laluna00.cn/2022/05/17/renderingpath/">这里</a></p>
+<h1 id="shader不报错"><a href="#shader不报错" class="headerlink" title="shader不报错"></a>shader不报错</h1><h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
+<li><a href="https://blog.csdn.net/u013477973/article/details/80607989" target="_blank" rel="noopener">RenderType与Queue的理解</a></li>
+</ol>
+
       
     </div>
 
@@ -845,7 +862,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#shader不报错"><span class="nav-number">1.</span> <span class="nav-text">shader不报错</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#shader语法基本框架"><span class="nav-number">1.</span> <span class="nav-text">shader语法基本框架</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass的执行"><span class="nav-number">1.1.</span> <span class="nav-text">Pass的执行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于标签1常出现的字符串："><span class="nav-number">1.2.</span> <span class="nav-text">关于标签1常出现的字符串：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RenderType"><span class="nav-number">1.2.1.</span> <span class="nav-text">RenderType</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Queue"><span class="nav-number">1.2.2.</span> <span class="nav-text">Queue</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于标签2中常出现的字符串："><span class="nav-number">1.3.</span> <span class="nav-text">关于标签2中常出现的字符串：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#shader不报错"><span class="nav-number">2.</span> <span class="nav-text">shader不报错</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
@@ -877,7 +894,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">21k</span>
+    <span title="站点总字数">23k</span>
   
 
   
@@ -886,7 +903,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">19 分钟</span>
+    <span title="站点阅读时长">21 分钟</span>
   
 </div>
 
