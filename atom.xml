@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.laluna00.cn/"/>
-  <updated>2022-07-11T08:11:47.607Z</updated>
+  <updated>2022-07-13T08:45:58.760Z</updated>
   <id>https://www.laluna00.cn/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>一种具有描边与卡通高光的效果</title>
+    <link href="https://www.laluna00.cn/2022/07/13/CartoonEdgeSpec/"/>
+    <id>https://www.laluna00.cn/2022/07/13/CartoonEdgeSpec/</id>
+    <published>2022-07-13T08:44:19.000Z</published>
+    <updated>2022-07-13T08:45:58.760Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><p><img src="https://blog.csdn.net/u013477973/article/details/80607989" alt="RenderType与Queue的理解"></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;\assets\css\APlayer.min.css&quot;&gt;&lt;script src=&quot;\assets\js\APlayer.min.js&quot; cla
+      
+    
+    </summary>
+    
+      <category term="卡通渲染" scheme="https://www.laluna00.cn/categories/%E5%8D%A1%E9%80%9A%E6%B8%B2%E6%9F%93/"/>
+    
+    
+      <category term="卡通渲染" scheme="https://www.laluna00.cn/tags/%E5%8D%A1%E9%80%9A%E6%B8%B2%E6%9F%93/"/>
+    
+  </entry>
   
   <entry>
     <title>使用深度纹理的几种特效</title>
@@ -46,9 +71,9 @@
     <link href="https://www.laluna00.cn/2022/07/05/edgedetect/"/>
     <id>https://www.laluna00.cn/2022/07/05/edgedetect/</id>
     <published>2022-07-05T13:15:56.000Z</published>
-    <updated>2022-07-11T14:18:00.482Z</updated>
+    <updated>2022-07-13T04:04:50.983Z</updated>
     
-    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另两种离线的方法。</p></blockquote><h1 id="描边效果"><a href="#描边效果" class="headerlink" title="描边效果"></a>描边效果</h1><p>美术风格有很多种，其中日式和美式有种完全不同的风格，国风更有其独一无二的特点。美式动画的代表风格之一为皮克斯风格（如下图右所示），日式动画的代表风格之一为宫崎骏风格（如下图左所示）。<br><img src="/2022/07/05/edgedetect/cmp.jpg#pic_center"></p><p>日式动画常基于二维美术风格表示，在色块外有着明显的边缘来区分形状，描边是这种风格的特点。当然，随着各种不同风格的碰撞与发展，描边成为各种不同美术风格的重要元素了，具体的描边效果，随着风格的不同而有区别。<br><img src="/2022/07/05/edgedetect/cmp2.jpg#pic_center"></p><h1 id="法一：基于边缘检测的方法"><a href="#法一：基于边缘检测的方法" class="headerlink" title="法一：基于边缘检测的方法"></a>法一：基于边缘检测的方法</h1><h1 id="法二：边缘检测与深度纹理结合"><a href="#法二：边缘检测与深度纹理结合" class="headerlink" title="法二：边缘检测与深度纹理结合"></a>法二：边缘检测与深度纹理结合</h1><h1 id="法三：双通道渲染"><a href="#法三：双通道渲染" class="headerlink" title="法三：双通道渲染"></a>法三：双通道渲染</h1><h1 id="法四：笔刷离线工具"><a href="#法四：笔刷离线工具" class="headerlink" title="法四：笔刷离线工具"></a>法四：笔刷离线工具</h1>]]></content>
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另两种离线的方法。</p></blockquote><h1 id="描边效果"><a href="#描边效果" class="headerlink" title="描边效果"></a>描边效果</h1><p>美术风格有很多种，其中日式和美式有种完全不同的风格，国风更有其独一无二的特点。美式动画的代表风格之一为皮克斯风格（如下图右所示），日式动画的代表风格之一为宫崎骏风格（如下图左所示）。<br><img src="/2022/07/05/edgedetect/cmp.jpg#pic_center"></p><p>日式动画常基于二维美术风格表示，在色块外有着明显的边缘来区分形状，描边是这种风格的特点。当然，随着各种不同风格的碰撞与发展，描边成为各种不同美术风格的重要元素了(如下图所示)，具体的描边效果，随着风格的不同而有区别。本文记录一下遇到的几种实现不同风格描边的方法。<br><img src="/2022/07/05/edgedetect/cmp2.jpg#pic_center"></p><h1 id="法一：屏幕后处理中进行边缘检测"><a href="#法一：屏幕后处理中进行边缘检测" class="headerlink" title="法一：屏幕后处理中进行边缘检测"></a>法一：屏幕后处理中进行边缘检测</h1><p>利用图像处理中的边缘检测算子，检测图像中的边（像素值跳变大的点视作边）。<br><img src="/2022/07/05/edgedetect/edgedetectwhite.png#pic_center"></p><h1 id="法二：屏幕后处理中进行边缘检测feat-深度纹理"><a href="#法二：屏幕后处理中进行边缘检测feat-深度纹理" class="headerlink" title="法二：屏幕后处理中进行边缘检测feat.深度纹理"></a>法二：屏幕后处理中进行边缘检测feat.深度纹理</h1><p>在法一中，边缘检测算子只在原渲染图像中卷积，采集的边只是色块相交处的边缘，而不是实际物体的边缘。改用深度纹理（或者深度法线纹理）进行卷积，能够检测出深度跳变大的点，而往往是物体的实际边缘（如下图所示，图片来自<a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">乐乐的教程</a>）。因此这种方法更为常见。<br><img src="/2022/07/05/edgedetect/edgewithdepth.png#pic_center"></p><h1 id="法三：双通道渲染"><a href="#法三：双通道渲染" class="headerlink" title="法三：双通道渲染"></a>法三：双通道渲染</h1><h1 id="法四：提取轮廓边单独渲染"><a href="#法四：提取轮廓边单独渲染" class="headerlink" title="法四：提取轮廓边单独渲染"></a>法四：提取轮廓边单独渲染</h1><p>这种常用于离线的边缘检测，对模型的所有边进行判断，判断是否是边缘（边的相邻三角形与视角的点乘正负，一正一负则为边）。这种方法常用于一些需要风格化边缘的情况。因为将边的信息提取出来后，可以用shader对边进行风格渲染。<br><img src="/2022/07/05/edgedetect/specialedges.png#pic_center"></p>]]></content>
     
     <summary type="html">
     
