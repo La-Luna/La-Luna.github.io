@@ -37,6 +37,60 @@
       </tags>
   </entry>
   <entry>
+    <title>实现描边的几种方法</title>
+    <url>/2022/07/05/edgedetect/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另两种离线的方法。</p>
+</blockquote>
+
+<h1 id="描边效果"><a href="#描边效果" class="headerlink" title="描边效果"></a>描边效果</h1><p>美术风格有很多种，其中日式和美式有种完全不同的风格，国风更有其独一无二的特点。美式动画的代表风格之一为皮克斯风格（如下图右所示），日式动画的代表风格之一为宫崎骏风格（如下图左所示）。<br><img src="/2022/07/05/edgedetect/cmp.jpg#pic_center"></p>
+<p>日式动画常基于二维美术风格表示，在色块外有着明显的边缘来区分形状，描边是这种风格的特点。当然，随着各种不同风格的碰撞与发展，描边成为各种不同美术风格的重要元素了(如下图所示)，具体的描边效果，随着风格的不同而有区别。本文记录一下遇到的几种实现不同风格描边的方法。<br><img src="/2022/07/05/edgedetect/cmp2.jpg#pic_center"></p>
+<h1 id="法一：屏幕后处理中进行边缘检测"><a href="#法一：屏幕后处理中进行边缘检测" class="headerlink" title="法一：屏幕后处理中进行边缘检测"></a>法一：屏幕后处理中进行边缘检测</h1><p>利用图像处理中的边缘检测算子，检测图像中的边（像素值跳变大的点视作边）。<br><img src="/2022/07/05/edgedetect/edgedetectwhite.png#pic_center"></p>
+<h1 id="法二：屏幕后处理中进行边缘检测feat-深度纹理"><a href="#法二：屏幕后处理中进行边缘检测feat-深度纹理" class="headerlink" title="法二：屏幕后处理中进行边缘检测feat.深度纹理"></a>法二：屏幕后处理中进行边缘检测feat.深度纹理</h1><p>在法一中，边缘检测算子只在原渲染图像中卷积，采集的边只是色块相交处的边缘，而不是实际物体的边缘。改用深度纹理（或者深度法线纹理）进行卷积，能够检测出深度跳变大的点，而往往是物体的实际边缘（如下图所示，图片来自<a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">乐乐的教程</a>）。因此这种方法更为常见。<br><img src="/2022/07/05/edgedetect/edgewithdepth.png#pic_center"></p>
+<h1 id="法三：双通道渲染"><a href="#法三：双通道渲染" class="headerlink" title="法三：双通道渲染"></a>法三：双通道渲染</h1><p>这种方法思路比较简单，通过两个Pass实现描边的效果，详见<a href="http://www.laluna00.cn/2022/07/13/CartoonEdgeSpec/">这篇blog</a>。第一个Pass在摄像机空间中沿着法线方向扩大顶点坐标，将对象渲染成黑色，且只渲染背面；第二个Pass正常渲染，且只渲染正面。这样叠加两个通道就得到了具有描边的效果。</p>
+<p><img src="/2022/07/05/edgedetect/2pass.png#pic_center"></p>
+<h1 id="法四：提取轮廓边单独渲染"><a href="#法四：提取轮廓边单独渲染" class="headerlink" title="法四：提取轮廓边单独渲染"></a>法四：提取轮廓边单独渲染</h1><p>这种常用于离线的边缘检测，对模型的所有边进行判断，判断是否是边缘（边的相邻三角形与视角的点乘正负，一正一负则为边）。这种方法常用于一些需要风格化边缘的情况。因为将边的信息提取出来后，可以用shader对边进行风格渲染。<br><img src="/2022/07/05/edgedetect/specialedges.png#pic_center"></p>
+]]></content>
+      <categories>
+        <category>卡通渲染</category>
+      </categories>
+      <tags>
+        <tag>卡通渲染</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>一种具有描边与卡通高光的效果</title>
+    <url>/2022/07/13/CartoonEdgeSpec/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十四章介绍的卡通风格渲染复现了一遍。这是一个简单但被广泛运用的效果。记录一下。感谢乐乐女神~</p>
+</blockquote>
+
+
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>渲染效果如下图所示：<br><img src="/2022/07/13/CartoonEdgeSpec/show.png#pic_center"></p>
+<p>书中给出的思路是：1.双通道描边；2.对高光反射进行处理，使得出现颜色统一的色块，而不是真实感渲染中的均匀高光反射区域，</p>
+<h1 id="描边"><a href="#描边" class="headerlink" title="描边"></a>描边</h1><h1 id="高光项"><a href="#高光项" class="headerlink" title="高光项"></a>高光项</h1><h2 id="Unity中生成阴影"><a href="#Unity中生成阴影" class="headerlink" title="Unity中生成阴影"></a>Unity中生成阴影</h2><h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><ol>
+<li><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></li>
+<li><a href="https://docs.unity3d.com/Manual/SL-UnityShaderVariables.html" target="_blank" rel="noopener">Built-in shader variables - Unity官方文档</a></li>
+<li><a href="https://sites.cs.ucsb.edu/~lingqi/teaching/resources/GAMES101_Lecture_04.pdf" target="_blank" rel="noopener">GAMES101课件</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>卡通渲染</category>
+      </categories>
+      <tags>
+        <tag>卡通渲染</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用深度纹理的几种特效</title>
+    <url>/2022/07/11/depthbufferapplication/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script>]]></content>
+      <categories>
+        <category>translation</category>
+      </categories>
+      <tags>
+        <tag>translation</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Glass Refraction Shader</title>
     <url>/2022/05/08/GlassRefractionShader/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十章介绍的GlassRefractionShader复现了一遍。这是一个很有趣的效果，表现玻璃的纹理折射。记录一下。感谢乐乐女神~</p>
@@ -63,52 +117,6 @@
       </categories>
       <tags>
         <tag>Unity Shader</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>一种具有描边与卡通高光的效果</title>
-    <url>/2022/07/13/CartoonEdgeSpec/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十四章介绍的卡通风格渲染复现了一遍。这是一个简单但被广泛运用的效果。记录一下。感谢乐乐女神~</p>
-</blockquote>
-
-<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>书中给出的思路是：1.双通道描边；2.对高光反射进行处理，使得出现颜色统一的色块，而不是真实感渲染中的均匀高光反射区域，</p>
-<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></p>
-]]></content>
-      <categories>
-        <category>卡通渲染</category>
-      </categories>
-      <tags>
-        <tag>卡通渲染</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用深度纹理的几种特效</title>
-    <url>/2022/07/11/depthbufferapplication/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script>]]></content>
-      <categories>
-        <category>translation</category>
-      </categories>
-      <tags>
-        <tag>translation</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>实现描边的几种方法</title>
-    <url>/2022/07/05/edgedetect/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另两种离线的方法。</p>
-</blockquote>
-
-<h1 id="描边效果"><a href="#描边效果" class="headerlink" title="描边效果"></a>描边效果</h1><p>美术风格有很多种，其中日式和美式有种完全不同的风格，国风更有其独一无二的特点。美式动画的代表风格之一为皮克斯风格（如下图右所示），日式动画的代表风格之一为宫崎骏风格（如下图左所示）。<br><img src="/2022/07/05/edgedetect/cmp.jpg#pic_center"></p>
-<p>日式动画常基于二维美术风格表示，在色块外有着明显的边缘来区分形状，描边是这种风格的特点。当然，随着各种不同风格的碰撞与发展，描边成为各种不同美术风格的重要元素了(如下图所示)，具体的描边效果，随着风格的不同而有区别。本文记录一下遇到的几种实现不同风格描边的方法。<br><img src="/2022/07/05/edgedetect/cmp2.jpg#pic_center"></p>
-<h1 id="法一：屏幕后处理中进行边缘检测"><a href="#法一：屏幕后处理中进行边缘检测" class="headerlink" title="法一：屏幕后处理中进行边缘检测"></a>法一：屏幕后处理中进行边缘检测</h1><p>利用图像处理中的边缘检测算子，检测图像中的边（像素值跳变大的点视作边）。<br><img src="/2022/07/05/edgedetect/edgedetectwhite.png#pic_center"></p>
-<h1 id="法二：屏幕后处理中进行边缘检测feat-深度纹理"><a href="#法二：屏幕后处理中进行边缘检测feat-深度纹理" class="headerlink" title="法二：屏幕后处理中进行边缘检测feat.深度纹理"></a>法二：屏幕后处理中进行边缘检测feat.深度纹理</h1><p>在法一中，边缘检测算子只在原渲染图像中卷积，采集的边只是色块相交处的边缘，而不是实际物体的边缘。改用深度纹理（或者深度法线纹理）进行卷积，能够检测出深度跳变大的点，而往往是物体的实际边缘（如下图所示，图片来自<a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">乐乐的教程</a>）。因此这种方法更为常见。<br><img src="/2022/07/05/edgedetect/edgewithdepth.png#pic_center"></p>
-<h1 id="法三：双通道渲染"><a href="#法三：双通道渲染" class="headerlink" title="法三：双通道渲染"></a>法三：双通道渲染</h1><h1 id="法四：提取轮廓边单独渲染"><a href="#法四：提取轮廓边单独渲染" class="headerlink" title="法四：提取轮廓边单独渲染"></a>法四：提取轮廓边单独渲染</h1><p>这种常用于离线的边缘检测，对模型的所有边进行判断，判断是否是边缘（边的相邻三角形与视角的点乘正负，一正一负则为边）。这种方法常用于一些需要风格化边缘的情况。因为将边的信息提取出来后，可以用shader对边进行风格渲染。<br><img src="/2022/07/05/edgedetect/specialedges.png#pic_center"></p>
-]]></content>
-      <categories>
-        <category>卡通渲染</category>
-      </categories>
-      <tags>
-        <tag>卡通渲染</tag>
       </tags>
   </entry>
   <entry>
@@ -188,48 +196,6 @@ step 1: 树叶摇曳怎么实现
       </tags>
   </entry>
   <entry>
-    <title>屏幕后处理·运动模糊</title>
-    <url>/2022/05/28/posteffectsmb/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>《Unity Shader入门精要》第十二章屏幕后处理技巧中介绍了运动模糊的实现，因为涉及的知识点较多，因此单记一篇笔记，如有错误的理解，望各位指正。感谢乐乐女神~</p>
-</blockquote>
-
-<h1 id="透明度测试-与-透明度混合"><a href="#透明度测试-与-透明度混合" class="headerlink" title="透明度测试 与 透明度混合"></a>透明度测试 与 透明度混合</h1><p>实现透明效果主要有两种方法，一种是透明度测试，一种是透明度混合。透明度测试即在shader中加入clip()函数，裁剪掉小于透明度阈值的片元，无法实现半透明的效果。透明度用来实现半透明的效果，更加复杂。</p>
-<p>使用透明度混合，必须要添加ZWrite Off与Blend语义，告诉Unity不将透明物体的深度写入深度缓冲，并且要混合当前片元与颜色缓冲中的片元RGB值，利用Shader中frag返回的alpha通道值混合。混合的模式有多种方式：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Blend Off <span class="comment">//不混合，直接用当前片元覆盖颜色缓冲区</span></span><br><span class="line">Blend SrcFactor DstFactor <span class="comment">//利用当前片元的透明度混合 颜色缓冲区的rgb与当前片元的rgb</span></span><br><span class="line">Blend SrcFactor DstFactor,SrcFactorA DstFactorA <span class="comment">//赋予新的透明度因子SrcFactorA DstFactorA进行混合</span></span><br><span class="line">BlendOp BlendOperation <span class="comment">//指定别的方式BlendOperation进行混合</span></span><br></pre></td></tr></table></figure>
-
-<p>其中第二种混合方式公式如下（当SrcFactor为SrcAlpha ,DstFactor为OneMinusSrcalpha时）：<br>$$<br>DstColor_{new}&#x3D;SrcAlpha \times SrcColor + (1-SrcAlpha) \times DstColor_{old}<br>$$<br>其中$DstColor$为颜色缓冲区中的值。</p>
-<p>ColorMask A指的是只对alpha通道进行写值。</p>
-<h1 id="屏幕后处理脚本系统"><a href="#屏幕后处理脚本系统" class="headerlink" title="屏幕后处理脚本系统"></a>屏幕后处理脚本系统</h1><p>屏幕后处理，就是对执行完所有透明与不透明的Pass后的场景进行抓取，将抓取到的屏幕存在纹理中，对抓取的纹理进行一些处理，将变化后的纹理再显示再屏幕中。unity已经提供了抓取屏幕的接口—–OnRenderImage，函数声明如下：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">MonoBehaviour.OnRenderImage(RenderTexture source,RenderTexture destination);</span><br></pre></td></tr></table></figure>
-
-<p>当在脚本中声明此函数时，Unity会将当前渲染得到的屏幕图像存储在参数source中，此函数中的实现对source的操作，最终处理后的屏幕图像保存在destination中，Unity会将destination绘制在屏幕中。在OnRenderImage中我们通常用Graphics.Blit函数实现对纹理的变换，Blit函数声明如下：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Blit</span><span class="params">(Texture src,RnederTexture dest)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Blit</span><span class="params">(Texture src,RnederTexture dest,Material mat,<span class="keyword">int</span> pass=<span class="number">-1</span>)</span></span>;</span><br></pre></td></tr></table></figure>
-
-<p>Unity设计Blit函数帮助我们变换屏幕纹理，Blit中会将src传给mat中的“_MainTex”，利用mat进行修改，将结果返回给dest，pass默认为-1表示会依次执行mat中所有的pass，否则就会调用指定的Pass。</p>
-<h1 id="运动模糊法1"><a href="#运动模糊法1" class="headerlink" title="运动模糊法1"></a>运动模糊法1</h1><p>该效果主要思路就是：当前帧的rgb值取决于上一帧与实际当前帧的混合。</p>
-<h2 id="让画面运动起来"><a href="#让画面运动起来" class="headerlink" title="让画面运动起来"></a>让画面运动起来</h2><p>设置相机运动脚本，让画面动起来，再混合每一帧造成运动模糊的效果。在书中，想要获得相机绕固定点旋转的视角，改变相机的transform，lookAt矩阵即可。像机脚本的关键代码如下：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">		transform.position = Vector3.Slerp(transform.position, curEndPoint, Time.deltaTime * speed);<span class="comment">//利用Slerp球形插值函数，随着Time而移动</span></span><br><span class="line">		transform.LookAt(lookAt);<span class="comment">//改变像机视角矩阵 View</span></span><br><span class="line">		<span class="keyword">if</span> (pingpong) &#123;</span><br><span class="line">			<span class="keyword">if</span> (Vector3.Distance(transform.position, curEndPoint) &lt; <span class="number">0.001f</span>) &#123;</span><br><span class="line">				curEndPoint = Vector3.Distance(curEndPoint, endPoint) &lt; Vector3.Distance(curEndPoint, startPoint) ? startPoint : endPoint;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="shader"><a href="#shader" class="headerlink" title="shader"></a>shader</h2><p>在shader中开启ZWrite Off与Blend语义，以混合颜色缓冲区中上一帧的RGB与当前渲染帧的RGB以达到模糊的效果。设置两个Pass，Pass1往颜色缓冲中写RGB值，并且利用_BlurAmount混合前后帧率，Pass2往颜色缓冲区中写入原有屏幕的Alpha值。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">fixed4 fragRGB (v2f i) : SV_Target &#123;</span><br><span class="line">	<span class="keyword">return</span> fixed4(tex2D(_MainTex, i.uv).rgb, _BlurAmount);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="运动模糊法2"><a href="#运动模糊法2" class="headerlink" title="运动模糊法2"></a>运动模糊法2</h1><p>在书的第三章中介绍了另外一种实现运动模糊的方法。是作者受《GPU GEMS3》速度映射图启发的方法。利用深度图来得到屏幕所有像素的世界坐标（经过VP逆矩阵的转换），再用上一帧的VP矩阵得到当前像素点在上一帧的像素位置。在屏幕空间坐标系中计算速度，沿着速度路径平均采样。关键代码如下：</p>
-<p>在后处理脚本中，需要拿到当前帧VP矩阵，和上一帧的VP逆矩阵：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">OnRenderImage</span> <span class="params">(RenderTexture src, RenderTexture dest)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (material != null) &#123;</span><br><span class="line">		material.SetFloat(<span class="string">"_BlurSize"</span>, blurSize);</span><br><span class="line"></span><br><span class="line">		material.SetMatrix(<span class="string">"_PreviousViewProjectionMatrix"</span>, previousViewProjectionMatrix);</span><br><span class="line">		Matrix4x4 currentViewProjectionMatrix = camera.projectionMatrix * camera.worldToCameraMatrix;<span class="comment">//VP矩阵</span></span><br><span class="line">		Matrix4x4 currentViewProjectionInverseMatrix = currentViewProjectionMatrix.inverse;<span class="comment">//逆矩阵</span></span><br><span class="line">		material.SetMatrix(<span class="string">"_CurrentViewProjectionInverseMatrix"</span>, currentViewProjectionInverseMatrix);</span><br><span class="line">		previousViewProjectionMatrix = currentViewProjectionMatrix;</span><br><span class="line"></span><br><span class="line">		Graphics.Blit (src, dest, material);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		Graphics.Blit(src, dest);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>shader中关键代码在fragment shader中：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">fixed4 frag(v2f i) : SV_Target &#123;</span><br><span class="line">	<span class="comment">//从深度图缓冲中得到当前采样点的深度值</span></span><br><span class="line">	<span class="keyword">float</span> d = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv_depth);</span><br><span class="line">	<span class="comment">//H是映射到-1~1坐标系中的坐标</span></span><br><span class="line">	float4 H = float4(i.uv.x * <span class="number">2</span> - <span class="number">1</span>, i.uv.y * <span class="number">2</span> - <span class="number">1</span>, d * <span class="number">2</span> - <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">	<span class="comment">//利用VP逆矩阵得到世界空间中坐标</span></span><br><span class="line">	float4 D = mul(_CurrentViewProjectionInverseMatrix, H);</span><br><span class="line">	<span class="comment">//齐次除法 </span></span><br><span class="line">	float4 worldPos = D / D.w;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//当前坐标</span></span><br><span class="line">	float4 currentPos = H;</span><br><span class="line">	<span class="comment">//因为书中的所有物体的世界空间坐标不会变化，变得只是摄像机的世界空间位置与朝向， 因此可以根据VP矩阵计算出准确的上一帧屏幕像素坐标</span></span><br><span class="line">	float4 previousPos = mul(_PreviousViewProjectionMatrix, worldPos);</span><br><span class="line">	<span class="comment">//齐次除法</span></span><br><span class="line">	previousPos /= previousPos.w;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//利用-1~1坐标系中的位置计算速度</span></span><br><span class="line">	float2 velocity = (currentPos.xy - previousPos.xy)/<span class="number">2.0f</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//沿着速度方向进行均值采样</span></span><br><span class="line">	float2 uv = i.uv;</span><br><span class="line">	float4 c = tex2D(_MainTex, uv);</span><br><span class="line">	uv += velocity * _BlurSize;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> it = <span class="number">1</span>; it &lt; <span class="number">3</span>; it++, uv += velocity * _BlurSize) &#123;</span><br><span class="line">		float4 currentColor = tex2D(_MainTex, uv);</span><br><span class="line">		c += currentColor;</span><br><span class="line">	&#125;</span><br><span class="line">	c /= <span class="number">3</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> fixed4(c.rgb, <span class="number">1.0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></p>
-]]></content>
-      <categories>
-        <category>Unity Shader</category>
-      </categories>
-      <tags>
-        <tag>Unity Shader</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>屏幕后处理效果</title>
     <url>/2022/05/18/posteffects/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十二章介绍的屏幕后处理复现了一遍。包括屏幕明暗+饱和度+对比度、高斯模糊、运动模糊、Bloom、边缘检测等。记录一下。感谢乐乐女神~</p>
@@ -294,9 +260,51 @@ step 1: 树叶摇曳怎么实现
       </tags>
   </entry>
   <entry>
+    <title>屏幕后处理·运动模糊</title>
+    <url>/2022/05/28/posteffectsmb/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>《Unity Shader入门精要》第十二章屏幕后处理技巧中介绍了运动模糊的实现，因为涉及的知识点较多，因此单记一篇笔记，如有错误的理解，望各位指正。感谢乐乐女神~</p>
+</blockquote>
+
+<h1 id="透明度测试-与-透明度混合"><a href="#透明度测试-与-透明度混合" class="headerlink" title="透明度测试 与 透明度混合"></a>透明度测试 与 透明度混合</h1><p>实现透明效果主要有两种方法，一种是透明度测试，一种是透明度混合。透明度测试即在shader中加入clip()函数，裁剪掉小于透明度阈值的片元，无法实现半透明的效果。透明度用来实现半透明的效果，更加复杂。</p>
+<p>使用透明度混合，必须要添加ZWrite Off与Blend语义，告诉Unity不将透明物体的深度写入深度缓冲，并且要混合当前片元与颜色缓冲中的片元RGB值，利用Shader中frag返回的alpha通道值混合。混合的模式有多种方式：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Blend Off <span class="comment">//不混合，直接用当前片元覆盖颜色缓冲区</span></span><br><span class="line">Blend SrcFactor DstFactor <span class="comment">//利用当前片元的透明度混合 颜色缓冲区的rgb与当前片元的rgb</span></span><br><span class="line">Blend SrcFactor DstFactor,SrcFactorA DstFactorA <span class="comment">//赋予新的透明度因子SrcFactorA DstFactorA进行混合</span></span><br><span class="line">BlendOp BlendOperation <span class="comment">//指定别的方式BlendOperation进行混合</span></span><br></pre></td></tr></table></figure>
+
+<p>其中第二种混合方式公式如下（当SrcFactor为SrcAlpha ,DstFactor为OneMinusSrcalpha时）：<br>$$<br>DstColor_{new}&#x3D;SrcAlpha \times SrcColor + (1-SrcAlpha) \times DstColor_{old}<br>$$<br>其中$DstColor$为颜色缓冲区中的值。</p>
+<p>ColorMask A指的是只对alpha通道进行写值。</p>
+<h1 id="屏幕后处理脚本系统"><a href="#屏幕后处理脚本系统" class="headerlink" title="屏幕后处理脚本系统"></a>屏幕后处理脚本系统</h1><p>屏幕后处理，就是对执行完所有透明与不透明的Pass后的场景进行抓取，将抓取到的屏幕存在纹理中，对抓取的纹理进行一些处理，将变化后的纹理再显示再屏幕中。unity已经提供了抓取屏幕的接口—–OnRenderImage，函数声明如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">MonoBehaviour.OnRenderImage(RenderTexture source,RenderTexture destination);</span><br></pre></td></tr></table></figure>
+
+<p>当在脚本中声明此函数时，Unity会将当前渲染得到的屏幕图像存储在参数source中，此函数中的实现对source的操作，最终处理后的屏幕图像保存在destination中，Unity会将destination绘制在屏幕中。在OnRenderImage中我们通常用Graphics.Blit函数实现对纹理的变换，Blit函数声明如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Blit</span><span class="params">(Texture src,RnederTexture dest)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Blit</span><span class="params">(Texture src,RnederTexture dest,Material mat,<span class="keyword">int</span> pass=<span class="number">-1</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>Unity设计Blit函数帮助我们变换屏幕纹理，Blit中会将src传给mat中的“_MainTex”，利用mat进行修改，将结果返回给dest，pass默认为-1表示会依次执行mat中所有的pass，否则就会调用指定的Pass。</p>
+<h1 id="运动模糊法1"><a href="#运动模糊法1" class="headerlink" title="运动模糊法1"></a>运动模糊法1</h1><p>该效果主要思路就是：当前帧的rgb值取决于上一帧与实际当前帧的混合。</p>
+<h2 id="让画面运动起来"><a href="#让画面运动起来" class="headerlink" title="让画面运动起来"></a>让画面运动起来</h2><p>设置相机运动脚本，让画面动起来，再混合每一帧造成运动模糊的效果。在书中，想要获得相机绕固定点旋转的视角，改变相机的transform，lookAt矩阵即可。像机脚本的关键代码如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">		transform.position = Vector3.Slerp(transform.position, curEndPoint, Time.deltaTime * speed);<span class="comment">//利用Slerp球形插值函数，随着Time而移动</span></span><br><span class="line">		transform.LookAt(lookAt);<span class="comment">//改变像机视角矩阵 View</span></span><br><span class="line">		<span class="keyword">if</span> (pingpong) &#123;</span><br><span class="line">			<span class="keyword">if</span> (Vector3.Distance(transform.position, curEndPoint) &lt; <span class="number">0.001f</span>) &#123;</span><br><span class="line">				curEndPoint = Vector3.Distance(curEndPoint, endPoint) &lt; Vector3.Distance(curEndPoint, startPoint) ? startPoint : endPoint;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="shader"><a href="#shader" class="headerlink" title="shader"></a>shader</h2><p>在shader中开启ZWrite Off与Blend语义，以混合颜色缓冲区中上一帧的RGB与当前渲染帧的RGB以达到模糊的效果。设置两个Pass，Pass1往颜色缓冲中写RGB值，并且利用_BlurAmount混合前后帧率，Pass2往颜色缓冲区中写入原有屏幕的Alpha值。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">fixed4 fragRGB (v2f i) : SV_Target &#123;</span><br><span class="line">	<span class="keyword">return</span> fixed4(tex2D(_MainTex, i.uv).rgb, _BlurAmount);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="运动模糊法2"><a href="#运动模糊法2" class="headerlink" title="运动模糊法2"></a>运动模糊法2</h1><p>在书的第三章中介绍了另外一种实现运动模糊的方法。是作者受《GPU GEMS3》速度映射图启发的方法。利用深度图来得到屏幕所有像素的世界坐标（经过VP逆矩阵的转换），再用上一帧的VP矩阵得到当前像素点在上一帧的像素位置。在屏幕空间坐标系中计算速度，沿着速度路径平均采样。关键代码如下：</p>
+<p>在后处理脚本中，需要拿到当前帧VP矩阵，和上一帧的VP逆矩阵：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">OnRenderImage</span> <span class="params">(RenderTexture src, RenderTexture dest)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (material != null) &#123;</span><br><span class="line">		material.SetFloat(<span class="string">"_BlurSize"</span>, blurSize);</span><br><span class="line"></span><br><span class="line">		material.SetMatrix(<span class="string">"_PreviousViewProjectionMatrix"</span>, previousViewProjectionMatrix);</span><br><span class="line">		Matrix4x4 currentViewProjectionMatrix = camera.projectionMatrix * camera.worldToCameraMatrix;<span class="comment">//VP矩阵</span></span><br><span class="line">		Matrix4x4 currentViewProjectionInverseMatrix = currentViewProjectionMatrix.inverse;<span class="comment">//逆矩阵</span></span><br><span class="line">		material.SetMatrix(<span class="string">"_CurrentViewProjectionInverseMatrix"</span>, currentViewProjectionInverseMatrix);</span><br><span class="line">		previousViewProjectionMatrix = currentViewProjectionMatrix;</span><br><span class="line"></span><br><span class="line">		Graphics.Blit (src, dest, material);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		Graphics.Blit(src, dest);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>shader中关键代码在fragment shader中：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">fixed4 frag(v2f i) : SV_Target &#123;</span><br><span class="line">	<span class="comment">//从深度图缓冲中得到当前采样点的深度值</span></span><br><span class="line">	<span class="keyword">float</span> d = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv_depth);</span><br><span class="line">	<span class="comment">//H是映射到-1~1坐标系中的坐标</span></span><br><span class="line">	float4 H = float4(i.uv.x * <span class="number">2</span> - <span class="number">1</span>, i.uv.y * <span class="number">2</span> - <span class="number">1</span>, d * <span class="number">2</span> - <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">	<span class="comment">//利用VP逆矩阵得到世界空间中坐标</span></span><br><span class="line">	float4 D = mul(_CurrentViewProjectionInverseMatrix, H);</span><br><span class="line">	<span class="comment">//齐次除法 </span></span><br><span class="line">	float4 worldPos = D / D.w;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//当前坐标</span></span><br><span class="line">	float4 currentPos = H;</span><br><span class="line">	<span class="comment">//因为书中的所有物体的世界空间坐标不会变化，变得只是摄像机的世界空间位置与朝向， 因此可以根据VP矩阵计算出准确的上一帧屏幕像素坐标</span></span><br><span class="line">	float4 previousPos = mul(_PreviousViewProjectionMatrix, worldPos);</span><br><span class="line">	<span class="comment">//齐次除法</span></span><br><span class="line">	previousPos /= previousPos.w;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//利用-1~1坐标系中的位置计算速度</span></span><br><span class="line">	float2 velocity = (currentPos.xy - previousPos.xy)/<span class="number">2.0f</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//沿着速度方向进行均值采样</span></span><br><span class="line">	float2 uv = i.uv;</span><br><span class="line">	float4 c = tex2D(_MainTex, uv);</span><br><span class="line">	uv += velocity * _BlurSize;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> it = <span class="number">1</span>; it &lt; <span class="number">3</span>; it++, uv += velocity * _BlurSize) &#123;</span><br><span class="line">		float4 currentColor = tex2D(_MainTex, uv);</span><br><span class="line">		c += currentColor;</span><br><span class="line">	&#125;</span><br><span class="line">	c /= <span class="number">3</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> fixed4(c.rgb, <span class="number">1.0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></p>
+]]></content>
+      <categories>
+        <category>Unity Shader</category>
+      </categories>
+      <tags>
+        <tag>Unity Shader</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unity Shader常见问题</title>
     <url>/2022/05/26/shaderlaberror/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="shader语法基本框架"><a href="#shader语法基本框架" class="headerlink" title="shader语法基本框架"></a>shader语法基本框架</h1><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Shader<span class="string">"ShaderName"</span>&#123;<span class="comment">//定义Shader名字</span></span><br><span class="line">    Properties&#123;<span class="comment">//属性，cpu传给shader的值，出现在unity材质面板中，在Pass中要重新声明</span></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    SubShader&#123;</span><br><span class="line">        <span class="comment">//针对显卡A的shader</span></span><br><span class="line">        <span class="comment">//此处设置标签1</span></span><br><span class="line">        Pass&#123;</span><br><span class="line">            <span class="comment">//此处也可以设置标签2</span></span><br><span class="line"></span><br><span class="line">            CGPROGRAM</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//下面是两条关键的编译指令，告诉unity哪两个函数最最重要的</span></span><br><span class="line">            <span class="meta">#<span class="meta-keyword">pragma</span> vertex vertname</span></span><br><span class="line">            <span class="meta">#<span class="meta-keyword">pragma</span> fragment fragname</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">//此处定义cg代码</span></span><br><span class="line">            </span><br><span class="line">            ENDCG</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        Pass&#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    SubShader&#123;</span><br><span class="line">        <span class="comment">//针对显卡B的shader</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="ShaderLab基础"><a href="#ShaderLab基础" class="headerlink" title="ShaderLab基础"></a>ShaderLab基础</h1><h2 id="shader语法基本框架"><a href="#shader语法基本框架" class="headerlink" title="shader语法基本框架"></a>shader语法基本框架</h2><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Shader<span class="string">"ShaderName"</span>&#123;<span class="comment">//定义Shader名字</span></span><br><span class="line">    Properties&#123;<span class="comment">//属性，cpu传给shader的值，出现在unity材质面板中，在Pass中要重新声明</span></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    SubShader&#123;</span><br><span class="line">        <span class="comment">//针对显卡A的shader</span></span><br><span class="line">        <span class="comment">//此处设置标签1</span></span><br><span class="line">        <span class="comment">//此处设置状态</span></span><br><span class="line">        Pass&#123;</span><br><span class="line">            <span class="comment">//此处也可以设置标签2</span></span><br><span class="line">            <span class="comment">//此处设置状态</span></span><br><span class="line">            CGPROGRAM</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//下面是两条关键的编译指令，告诉unity哪两个函数最最重要的</span></span><br><span class="line">            <span class="meta">#<span class="meta-keyword">pragma</span> vertex vertname</span></span><br><span class="line">            <span class="meta">#<span class="meta-keyword">pragma</span> fragment fragname</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">//此处定义cg代码</span></span><br><span class="line">            </span><br><span class="line">            ENDCG</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        Pass&#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    SubShader&#123;</span><br><span class="line">        <span class="comment">//针对显卡B的shader</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="Pass的执行"><a href="#Pass的执行" class="headerlink" title="Pass的执行"></a>Pass的执行</h2><p>Pass译为通道，一般渲染对象只经过一次Pass，效果是单薄的，多Pass渲染会让画面更加有趣。Pass可以命名，可以设置标签，可以指定某个Pass对对象进行渲染，也可以指定多个Pass进行渲染。</p>
 <h2 id="关于标签1常出现的字符串："><a href="#关于标签1常出现的字符串：" class="headerlink" title="关于标签1常出现的字符串："></a>关于标签1常出现的字符串：</h2><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">SubShader&#123;</span><br><span class="line">    Tags&#123;<span class="string">"RenderType"</span>=<span class="string">"Opaque"</span> <span class="string">"Queue"</span>=<span class="string">"Geometry"</span>&#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -309,8 +317,10 @@ step 1: 树叶摇曳怎么实现
 <h2 id="关于标签2中常出现的字符串："><a href="#关于标签2中常出现的字符串：" class="headerlink" title="关于标签2中常出现的字符串："></a>关于标签2中常出现的字符串：</h2><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Pass&#123;</span><br><span class="line">    Tags&#123;<span class="string">"LightMode"</span>=<span class="string">"ForwardBase"</span> &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>程序员指定渲染路径LightMode，是想配置光照属性与渲染流程。这是程序员与Unity的一个暗号。详见<a href="http://www.laluna00.cn/2022/05/17/renderingpath/">这里</a></p>
+<h2 id="状态设置"><a href="#状态设置" class="headerlink" title="状态设置"></a>状态设置</h2><dl><dt>SubShader或Pass中常出现一些状态设置：<br>: Cull<br>: ZTest<br>: Zwrite</dt><dd>Blend<br>在SubShader中出现，表示该SubShader中所有的Pass都受状态设置的影响；在Pass中出现，说明只有当前Pass受状态设置的影响。</dd></dl><h2 id="Shader中的系统语义"><a href="#Shader中的系统语义" class="headerlink" title="Shader中的系统语义"></a>Shader中的系统语义</h2><p>在定义输入struct的时，常遇到POSITION、SV_POSITION、SV_Target、NORMAL等语义，这些语义告诉Unity此处变量的输入输出类型，例如变量后有”:POSITION”指示Unity把模型的顶点坐标存到变量里，变量后有“:SV_POSITION”指示该变量存的值是裁剪空间中的模型坐标，“SV_Target”指示将输出输入到渲染缓冲中，一般为帧缓冲。</p>
 <h1 id="shader不报错"><a href="#shader不报错" class="headerlink" title="shader不报错"></a>shader不报错</h1><h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
 <li><a href="https://blog.csdn.net/u013477973/article/details/80607989" target="_blank" rel="noopener">RenderType与Queue的理解</a></li>
+<li><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></li>
 </ol>
 ]]></content>
       <categories>
