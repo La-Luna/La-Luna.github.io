@@ -1,42 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Animation In Texture</title>
-    <url>/2022/05/14/AnimationInTexture/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十一章介绍的纹理动画复现了一遍。纹理动画一个很有趣的效果，用一些简单的技巧实现动画。记录一下。感谢乐乐女神~</p>
-</blockquote>
-
-<p>书中介绍两种实现简单动画的技巧，一种是利用纹理坐标的偏移，一种是利用模型顶点坐标的偏移。还介绍了一种广告牌效果，作者也归于动画的范畴:)</p>
-<h1 id="纹理动画"><a href="#纹理动画" class="headerlink" title="纹理动画"></a>纹理动画</h1><p>实际上就是对Texture的采样坐标进行偏移，随着时间的流动，采样不断变化，以达到动画的效果。<br>书中介绍了两个例子，一个是火焰动画，一个是无限移动的背景板。</p>
-<p>火焰动画关键的代码块是</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">fixed4 frag(v2f i) :SV_Target&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">float</span> time = <span class="built_in">floor</span>(_Time.y*_Speed);<span class="comment">//_Time.y 表示自场景加载到当前经过的时间</span></span><br><span class="line">    <span class="keyword">float</span> row=<span class="built_in">floor</span>(time/_HorizonAmount);<span class="comment">//行索引</span></span><br><span class="line">    <span class="keyword">float</span> column = time - _HorizonAmount * row;<span class="comment">//列索引</span></span><br><span class="line"></span><br><span class="line">    float2 uv;</span><br><span class="line">    uv.x =i.uv.x + column;<span class="comment">//加在uv上</span></span><br><span class="line">    uv.y =i.uv.y - row;<span class="comment">//因为纹理列坐标 上大下小 所以是减法 变小</span></span><br><span class="line">    uv.x /= _HorizonAmount;<span class="comment">//映射到 局部的小片段纹理中的坐标 </span></span><br><span class="line">    uv.y /= _VerticleAmount;</span><br><span class="line">    fixed4 c=tex2D(_MainTex,uv);</span><br><span class="line">    c.rgb *= _Color.rgb;</span><br><span class="line">    <span class="keyword">return</span> c;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>主要就是给一个含有N*N个局部小片段纹理的动画纹理，在fragment中对采样坐标进行从左向右，从上倒下的偏移，因为时间变化是连续的，即采样坐标是连续的，所以只要动画纹理中的局部片段是连续的，则可以得到连续的动画。随着时间_Time.y的变化。其中在uv.x&#x2F;&#x3D;_HorizonAmount把坐标映射到局部的小片段纹理中，需要仔细体会。</p>
-<p>移动的背景墙就简单一点，关键的代码块为：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function">v2f <span class="title">vert</span> <span class="params">(appdata v)</span></span></span><br><span class="line"><span class="function">     </span>&#123;</span><br><span class="line">         v2f o;</span><br><span class="line">         o.pos = UnityObjectToClipPos(v.vertex);</span><br><span class="line">         o.uv.xy = TRANSFORM_TEX(v.uv, _FarTex)+frac(float2(_Time.y * _FarMoveSpeed,<span class="number">0.0</span>));</span><br><span class="line">         o.uv.zw = TRANSFORM_TEX(v.uv, _NearTex)+frac(float2(_Time.y*_NearMoveSpeed,<span class="number">0.0</span>));</span><br><span class="line">         <span class="comment">//对采样坐标进行偏移</span></span><br><span class="line"></span><br><span class="line">         <span class="keyword">return</span> o;</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
-
-<p>因为是横向移动的背景墙，所以只在uv.x上叠加时间的流动<br>其中frac函数是取值的小数位。</p>
-<h1 id="顶点动画"><a href="#顶点动画" class="headerlink" title="顶点动画"></a>顶点动画</h1><p>顶点动画，就是对顶点的位置进行变化。</p>
-<p>利用Asin(Bx+C)对顶点进行偏转。其中只对X方向进行位移，对应的mesh也是在xoz平面上分布如下图所示（如果在yoz平面上，对x偏移就使得mesh像飘动的丝带）。</p>
-<p><img src="/2022/05/14/AnimationInTexture/waterquadmesh.png#pic_center"></p>
-<p>关键代码如下</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function">v2f <span class="title">vert</span> <span class="params">(appdata v)</span></span></span><br><span class="line"><span class="function">            </span>&#123;</span><br><span class="line">                v2f o;</span><br><span class="line">                float4 offset;</span><br><span class="line">                offset.yzw = float3(<span class="number">0.0</span>,<span class="number">0.0</span>,<span class="number">0.0</span>);</span><br><span class="line">                offset.x = <span class="built_in">sin</span>(_Frequency * _Time.y + v.vertex.x * _InvWaveLength + v.vertex.y * _InvWaveLength + v.vertex.z * _InvWaveLength) * _Magnet;</span><br><span class="line">                </span><br><span class="line">                o.vertex = UnityObjectToClipPos(v.vertex+offset);</span><br><span class="line">                o.uv = TRANSFORM_TEX(v.uv, _MainTex);</span><br><span class="line">                o.uv += float2(<span class="number">0.0</span>, _Time.y * _Speed);</span><br><span class="line">                <span class="keyword">return</span> o;</span><br><span class="line">            &#125;</span><br></pre></td></tr></table></figure>
-
-<p>对正弦函数调参就能得到各种波浪效果了<br><img src="/2022/05/14/AnimationInTexture/sinfunction.png#pic_center"></p>
-<p>另外，在纹理采样时，也需要对纹理进行偏移达到水流的效果。y偏转为0时，水流不动。对y值进行偏转的话，结合纹理（如下图所示）的特点，会使得采样点迅速更新向偏转位置采样，则造成水流的效果。<br><img src="/2022/05/14/AnimationInTexture/watertexture.png#pic_center"></p>
-<h1 id="广告牌效果"><a href="#广告牌效果" class="headerlink" title="广告牌效果"></a>广告牌效果</h1><p>（挖个坑，下面这个是什么意思？）</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">float3 centerOffs = v.vertex.xyz - center;</span><br><span class="line">                float3 localPos = center + rightDir * centerOffs.x + upDir * centerOffs.y + normalDir * centerOffs.z;</span><br></pre></td></tr></table></figure>
-
-<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></p>
-]]></content>
-      <categories>
-        <category>Unity Shader</category>
-      </categories>
-      <tags>
-        <tag>Unity Shader</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>一种具有描边与卡通高光的效果</title>
     <url>/2022/07/13/CartoonEdgeSpec/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十四章介绍的卡通风格渲染复现了一遍。这是一个简单但被广泛运用的效果。记录一下。感谢乐乐女神~</p>
@@ -84,6 +48,42 @@
       </tags>
   </entry>
   <entry>
+    <title>Animation In Texture</title>
+    <url>/2022/05/14/AnimationInTexture/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十一章介绍的纹理动画复现了一遍。纹理动画一个很有趣的效果，用一些简单的技巧实现动画。记录一下。感谢乐乐女神~</p>
+</blockquote>
+
+<p>书中介绍两种实现简单动画的技巧，一种是利用纹理坐标的偏移，一种是利用模型顶点坐标的偏移。还介绍了一种广告牌效果，作者也归于动画的范畴:)</p>
+<h1 id="纹理动画"><a href="#纹理动画" class="headerlink" title="纹理动画"></a>纹理动画</h1><p>实际上就是对Texture的采样坐标进行偏移，随着时间的流动，采样不断变化，以达到动画的效果。<br>书中介绍了两个例子，一个是火焰动画，一个是无限移动的背景板。</p>
+<p>火焰动画关键的代码块是</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">fixed4 frag(v2f i) :SV_Target&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">float</span> time = <span class="built_in">floor</span>(_Time.y*_Speed);<span class="comment">//_Time.y 表示自场景加载到当前经过的时间</span></span><br><span class="line">    <span class="keyword">float</span> row=<span class="built_in">floor</span>(time/_HorizonAmount);<span class="comment">//行索引</span></span><br><span class="line">    <span class="keyword">float</span> column = time - _HorizonAmount * row;<span class="comment">//列索引</span></span><br><span class="line"></span><br><span class="line">    float2 uv;</span><br><span class="line">    uv.x =i.uv.x + column;<span class="comment">//加在uv上</span></span><br><span class="line">    uv.y =i.uv.y - row;<span class="comment">//因为纹理列坐标 上大下小 所以是减法 变小</span></span><br><span class="line">    uv.x /= _HorizonAmount;<span class="comment">//映射到 局部的小片段纹理中的坐标 </span></span><br><span class="line">    uv.y /= _VerticleAmount;</span><br><span class="line">    fixed4 c=tex2D(_MainTex,uv);</span><br><span class="line">    c.rgb *= _Color.rgb;</span><br><span class="line">    <span class="keyword">return</span> c;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>主要就是给一个含有N*N个局部小片段纹理的动画纹理，在fragment中对采样坐标进行从左向右，从上倒下的偏移，因为时间变化是连续的，即采样坐标是连续的，所以只要动画纹理中的局部片段是连续的，则可以得到连续的动画。随着时间_Time.y的变化。其中在uv.x&#x2F;&#x3D;_HorizonAmount把坐标映射到局部的小片段纹理中，需要仔细体会。</p>
+<p>移动的背景墙就简单一点，关键的代码块为：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function">v2f <span class="title">vert</span> <span class="params">(appdata v)</span></span></span><br><span class="line"><span class="function">     </span>&#123;</span><br><span class="line">         v2f o;</span><br><span class="line">         o.pos = UnityObjectToClipPos(v.vertex);</span><br><span class="line">         o.uv.xy = TRANSFORM_TEX(v.uv, _FarTex)+frac(float2(_Time.y * _FarMoveSpeed,<span class="number">0.0</span>));</span><br><span class="line">         o.uv.zw = TRANSFORM_TEX(v.uv, _NearTex)+frac(float2(_Time.y*_NearMoveSpeed,<span class="number">0.0</span>));</span><br><span class="line">         <span class="comment">//对采样坐标进行偏移</span></span><br><span class="line"></span><br><span class="line">         <span class="keyword">return</span> o;</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为是横向移动的背景墙，所以只在uv.x上叠加时间的流动<br>其中frac函数是取值的小数位。</p>
+<h1 id="顶点动画"><a href="#顶点动画" class="headerlink" title="顶点动画"></a>顶点动画</h1><p>顶点动画，就是对顶点的位置进行变化。</p>
+<p>利用Asin(Bx+C)对顶点进行偏转。其中只对X方向进行位移，对应的mesh也是在xoz平面上分布如下图所示（如果在yoz平面上，对x偏移就使得mesh像飘动的丝带）。</p>
+<p><img src="/2022/05/14/AnimationInTexture/waterquadmesh.png#pic_center"></p>
+<p>关键代码如下</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function">v2f <span class="title">vert</span> <span class="params">(appdata v)</span></span></span><br><span class="line"><span class="function">            </span>&#123;</span><br><span class="line">                v2f o;</span><br><span class="line">                float4 offset;</span><br><span class="line">                offset.yzw = float3(<span class="number">0.0</span>,<span class="number">0.0</span>,<span class="number">0.0</span>);</span><br><span class="line">                offset.x = <span class="built_in">sin</span>(_Frequency * _Time.y + v.vertex.x * _InvWaveLength + v.vertex.y * _InvWaveLength + v.vertex.z * _InvWaveLength) * _Magnet;</span><br><span class="line">                </span><br><span class="line">                o.vertex = UnityObjectToClipPos(v.vertex+offset);</span><br><span class="line">                o.uv = TRANSFORM_TEX(v.uv, _MainTex);</span><br><span class="line">                o.uv += float2(<span class="number">0.0</span>, _Time.y * _Speed);</span><br><span class="line">                <span class="keyword">return</span> o;</span><br><span class="line">            &#125;</span><br></pre></td></tr></table></figure>
+
+<p>对正弦函数调参就能得到各种波浪效果了<br><img src="/2022/05/14/AnimationInTexture/sinfunction.png#pic_center"></p>
+<p>另外，在纹理采样时，也需要对纹理进行偏移达到水流的效果。y偏转为0时，水流不动。对y值进行偏转的话，结合纹理（如下图所示）的特点，会使得采样点迅速更新向偏转位置采样，则造成水流的效果。<br><img src="/2022/05/14/AnimationInTexture/watertexture.png#pic_center"></p>
+<h1 id="广告牌效果"><a href="#广告牌效果" class="headerlink" title="广告牌效果"></a>广告牌效果</h1><p>（挖个坑，下面这个是什么意思？）</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">float3 centerOffs = v.vertex.xyz - center;</span><br><span class="line">                float3 localPos = center + rightDir * centerOffs.x + upDir * centerOffs.y + normalDir * centerOffs.z;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">Unity Shader 入门精要</a></p>
+]]></content>
+      <categories>
+        <category>Unity Shader</category>
+      </categories>
+      <tags>
+        <tag>Unity Shader</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Glass Refraction Shader</title>
     <url>/2022/05/08/GlassRefractionShader/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>在阅读《Unity Shader入门精要》时，跟着此书实现了案例shader，今天把第十章介绍的GlassRefractionShader复现了一遍。这是一个很有趣的效果，表现玻璃的纹理折射。记录一下。感谢乐乐女神~</p>
@@ -113,27 +113,6 @@
       </tags>
   </entry>
   <entry>
-    <title>实现描边的几种方法</title>
-    <url>/2022/07/05/edgedetect/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另两种离线的方法。</p>
-</blockquote>
-
-<h1 id="描边效果"><a href="#描边效果" class="headerlink" title="描边效果"></a>描边效果</h1><p>美术风格有很多种，其中日式和美式有种完全不同的风格，国风更有其独一无二的特点。美式动画的代表风格之一为皮克斯风格（如下图右所示），日式动画的代表风格之一为宫崎骏风格（如下图左所示）。<br><img src="/2022/07/05/edgedetect/cmp.jpg#pic_center"></p>
-<p>日式动画常基于二维美术风格表示，在色块外有着明显的边缘来区分形状，描边是这种风格的特点。当然，随着各种不同风格的碰撞与发展，描边成为各种不同美术风格的重要元素了(如下图所示)，具体的描边效果，随着风格的不同而有区别。本文记录一下遇到的几种实现不同风格描边的方法。<br><img src="/2022/07/05/edgedetect/cmp2.jpg#pic_center"></p>
-<h1 id="法一：屏幕后处理中进行边缘检测"><a href="#法一：屏幕后处理中进行边缘检测" class="headerlink" title="法一：屏幕后处理中进行边缘检测"></a>法一：屏幕后处理中进行边缘检测</h1><p>利用图像处理中的边缘检测算子，检测图像中的边（像素值跳变大的点视作边）。<br><img src="/2022/07/05/edgedetect/edgedetectwhite.png#pic_center"></p>
-<h1 id="法二：屏幕后处理中进行边缘检测feat-深度纹理"><a href="#法二：屏幕后处理中进行边缘检测feat-深度纹理" class="headerlink" title="法二：屏幕后处理中进行边缘检测feat.深度纹理"></a>法二：屏幕后处理中进行边缘检测feat.深度纹理</h1><p>在法一中，边缘检测算子只在原渲染图像中卷积，采集的边只是色块相交处的边缘，而不是实际物体的边缘。改用深度纹理（或者深度法线纹理）进行卷积，能够检测出深度跳变大的点，而往往是物体的实际边缘（如下图所示，图片来自<a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">乐乐的教程</a>）。因此这种方法更为常见。<br><img src="/2022/07/05/edgedetect/edgewithdepth.png#pic_center"></p>
-<h1 id="法三：双通道渲染"><a href="#法三：双通道渲染" class="headerlink" title="法三：双通道渲染"></a>法三：双通道渲染</h1><p>这种方法思路比较简单，通过两个Pass实现描边的效果，详见<a href="http://www.laluna00.cn/2022/07/13/CartoonEdgeSpec/">这篇blog</a>。第一个Pass在摄像机空间中沿着法线方向扩大顶点坐标，将对象渲染成黑色，且只渲染背面；第二个Pass正常渲染，且只渲染正面。这样叠加两个通道就得到了具有描边的效果。</p>
-<p><img src="/2022/07/05/edgedetect/2pass.png#pic_center"></p>
-<h1 id="法四：提取轮廓边单独渲染"><a href="#法四：提取轮廓边单独渲染" class="headerlink" title="法四：提取轮廓边单独渲染"></a>法四：提取轮廓边单独渲染</h1><p>这种常用于离线的边缘检测，对模型的所有边进行判断，判断是否是边缘（边的相邻三角形与视角的点乘正负，一正一负则为边）。这种方法常用于一些需要风格化边缘的情况。因为将边的信息提取出来后，可以用shader对边进行风格渲染。<br><img src="/2022/07/05/edgedetect/specialedges.png#pic_center"></p>
-]]></content>
-      <categories>
-        <category>卡通渲染</category>
-      </categories>
-      <tags>
-        <tag>卡通渲染</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>night：unity HDRP 体积光效果</title>
     <url>/2022/01/07/night/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>我将在后续更新unity灯光渲染demo的每一步….<br>之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果。</p>
@@ -149,10 +128,10 @@
 </blockquote>
 <p>首先要将项目的渲染管线转成HDRP：<br>1.window–package manager–安装HDRP<br>2.资源管理器中新建HDRP资源<br>3.edit–project setting–graphic中选择刚刚创建的HDRP资源</p>
 <p>此时，项目便使用HDRP了。<br>更多的，项目中的材质也要转为HDRP材质。参考这里—&gt;&gt;<a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p>
-<h1 id="HDRP"><a href="#HDRP" class="headerlink" title="HDRP"></a>HDRP</h1><p>HDRP，High Definition Render Pipeline是Unity可编程渲染管线的其中一种，是Unity用来适配现代兼容计算着色器平台的渲染管线。HDRP使用了基于物理的光线技术，线性空间，HDR光线，和前向光线（Forward lighting）结构，让游戏制作者用更高的图形标准去创造艺术。</p>
+<h2 id="HDRP"><a href="#HDRP" class="headerlink" title="HDRP"></a>HDRP</h2><p>HDRP，High Definition Render Pipeline是Unity可编程渲染管线的其中一种，是Unity用来适配现代兼容计算着色器平台的渲染管线。HDRP使用了基于物理的光线技术，线性空间，HDR光线，和前向光线（Forward lighting）结构，让游戏制作者用更高的图形标准去创造艺术。</p>
 <p>使用HDRP的项目则不能使用Lightweight Render Pipeline了。每个项目必须明确使用的渲染管线。</p>
 <p>HDRP支持光栅化，光线追踪，路径追踪等渲染技术，遵循基于物理的渲染工作流程。</p>
-<p>总之，HDRP就是Unity集成了多种基于物理的渲染技术所设计的面向用户的渲染管线。</p>
+<p>总之，HDRP就是Unity集成了多种基于物理的渲染技术所设计的面向用户的渲染管线。因此使用HDRP，就非常方便的使用Unity已经集成好的强大的渲染技术了，其中包括体积光技术。</p>
 <h1 id="Light"><a href="#Light" class="headerlink" title="Light"></a>Light</h1><h2 id="Direct-Light"><a href="#Direct-Light" class="headerlink" title="Direct Light"></a>Direct Light</h2><p>场景中创建direct light</p>
 <h2 id="Spot-Light"><a href="#Spot-Light" class="headerlink" title="Spot Light"></a>Spot Light</h2><h1 id="Fog"><a href="#Fog" class="headerlink" title="Fog"></a>Fog</h1><p>场景中创建Fog资源。调整Fog浓度</p>
 <!--
@@ -171,6 +150,27 @@ step 1: 树叶摇曳怎么实现
       </categories>
       <tags>
         <tag>Unity Lighting</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>实现描边的几种方法</title>
+    <url>/2022/07/05/edgedetect/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另两种离线的方法。</p>
+</blockquote>
+
+<h1 id="描边效果"><a href="#描边效果" class="headerlink" title="描边效果"></a>描边效果</h1><p>美术风格有很多种，其中日式和美式有种完全不同的风格，国风更有其独一无二的特点。美式动画的代表风格之一为皮克斯风格（如下图右所示），日式动画的代表风格之一为宫崎骏风格（如下图左所示）。<br><img src="/2022/07/05/edgedetect/cmp.jpg#pic_center"></p>
+<p>日式动画常基于二维美术风格表示，在色块外有着明显的边缘来区分形状，描边是这种风格的特点。当然，随着各种不同风格的碰撞与发展，描边成为各种不同美术风格的重要元素了(如下图所示)，具体的描边效果，随着风格的不同而有区别。本文记录一下遇到的几种实现不同风格描边的方法。<br><img src="/2022/07/05/edgedetect/cmp2.jpg#pic_center"></p>
+<h1 id="法一：屏幕后处理中进行边缘检测"><a href="#法一：屏幕后处理中进行边缘检测" class="headerlink" title="法一：屏幕后处理中进行边缘检测"></a>法一：屏幕后处理中进行边缘检测</h1><p>利用图像处理中的边缘检测算子，检测图像中的边（像素值跳变大的点视作边）。<br><img src="/2022/07/05/edgedetect/edgedetectwhite.png#pic_center"></p>
+<h1 id="法二：屏幕后处理中进行边缘检测feat-深度纹理"><a href="#法二：屏幕后处理中进行边缘检测feat-深度纹理" class="headerlink" title="法二：屏幕后处理中进行边缘检测feat.深度纹理"></a>法二：屏幕后处理中进行边缘检测feat.深度纹理</h1><p>在法一中，边缘检测算子只在原渲染图像中卷积，采集的边只是色块相交处的边缘，而不是实际物体的边缘。改用深度纹理（或者深度法线纹理）进行卷积，能够检测出深度跳变大的点，而往往是物体的实际边缘（如下图所示，图片来自<a href="https://github.com/candycat1992/Unity_Shaders_Book" target="_blank" rel="noopener">乐乐的教程</a>）。因此这种方法更为常见。<br><img src="/2022/07/05/edgedetect/edgewithdepth.png#pic_center"></p>
+<h1 id="法三：双通道渲染"><a href="#法三：双通道渲染" class="headerlink" title="法三：双通道渲染"></a>法三：双通道渲染</h1><p>这种方法思路比较简单，通过两个Pass实现描边的效果，详见<a href="http://www.laluna00.cn/2022/07/13/CartoonEdgeSpec/">这篇blog</a>。第一个Pass在摄像机空间中沿着法线方向扩大顶点坐标，将对象渲染成黑色，且只渲染背面；第二个Pass正常渲染，且只渲染正面。这样叠加两个通道就得到了具有描边的效果。</p>
+<p><img src="/2022/07/05/edgedetect/2pass.png#pic_center"></p>
+<h1 id="法四：提取轮廓边单独渲染"><a href="#法四：提取轮廓边单独渲染" class="headerlink" title="法四：提取轮廓边单独渲染"></a>法四：提取轮廓边单独渲染</h1><p>这种常用于离线的边缘检测，对模型的所有边进行判断，判断是否是边缘（边的相邻三角形与视角的点乘正负，一正一负则为边）。这种方法常用于一些需要风格化边缘的情况。因为将边的信息提取出来后，可以用shader对边进行风格渲染。<br><img src="/2022/07/05/edgedetect/specialedges.png#pic_center"></p>
+]]></content>
+      <categories>
+        <category>卡通渲染</category>
+      </categories>
+      <tags>
+        <tag>卡通渲染</tag>
       </tags>
   </entry>
   <entry>
@@ -253,6 +253,26 @@ step 1: 树叶摇曳怎么实现
       </tags>
   </entry>
   <entry>
+    <title>Unity 的渲染路径</title>
+    <url>/2022/05/17/renderingpath/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="什么是渲染路径"><a href="#什么是渲染路径" class="headerlink" title="什么是渲染路径"></a>什么是渲染路径</h1><p>程序员指定渲染路径，是想配置光照属性与渲染流程。这是程序员与Unity的一个暗号。</p>
+<p>渲染路径中主要有两种，一是前向渲染路径（Forward Rendering Path）,一是延迟渲染路径（Differred Rendering Path）。</p>
+<h1 id="前向渲染路径"><a href="#前向渲染路径" class="headerlink" title="前向渲染路径"></a>前向渲染路径</h1><p>前向渲染需要计算两个缓冲区的信息，一是颜色缓冲区，二是深度缓冲区。利用深度缓冲来决定一个片元是否可见，如果可见就更新颜色缓冲区。</p>
+<p><strong>Unity含有内置的光照变量和函数，指定了前向渲染路径时，Unity会进行相关计算并填充一些变量如_LightColor0。</strong></p>
+<h2 id="如何指定前向渲染路径"><a href="#如何指定前向渲染路径" class="headerlink" title="如何指定前向渲染路径"></a>如何指定前向渲染路径</h2><p>大多数情况下，一个项目只使用一种渲染路径，可以在菜单Edit里设置。</p>
+<p>要是想使用多种渲染路径，也可以对不同的摄像机进行不同的设置。</p>
+<p>完成了上面的设置，就可以在Pass中使用标签“LightMode”来指定该Path使用的的渲染路径，比如，“LightMode”&#x3D;“ForwardBase”告诉Unity，当前Pass使用的是前向渲染路径中的“ForwadBase”路径，在shader中访问到Unity填好的光照属性。对于前向渲染，Unity Shader通常会定义一个Base Pass和一个Add Path。通常在Base Path中执行平行光照的逐像素计算，在Add Path中计算其他逐像素光照，最后Blend这些值。实际上，由于Shader中如何利用内置属性进行光照计算，完全取决于程序员，所以也可以在Base Path中进行逐顶点光照计算。</p>
+<h1 id="延迟渲染路径"><a href="#延迟渲染路径" class="headerlink" title="延迟渲染路径"></a>延迟渲染路径</h1><p>前向渲染会多出很多重复的操作，延迟渲染可以解决。延迟渲染不仅要计算深度缓冲、颜色缓冲，还需要计算G缓冲（Geometry Buffer，G-Buffer）。G-Buffer中存储表面信息，包括表面的法线、位置、材质属性等。</p>
+<p>延迟渲染的流程主要包括两个Pass，第一个Pass利用深度缓冲计算片元的可见性，如果一个片元可见就把其相关信息放到G-Buffer中。在第二个Pass中利用G-Buffer中的表面信息计算真正的着色。</p>
+]]></content>
+      <categories>
+        <category>Unity Lighting</category>
+      </categories>
+      <tags>
+        <tag>Unity Lighting</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>屏幕后处理·运动模糊</title>
     <url>/2022/05/28/posteffectsmb/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>《Unity Shader入门精要》第十二章屏幕后处理技巧中介绍了运动模糊的实现，因为涉及的知识点较多，因此单记一篇笔记，如有错误的理解，望各位指正。感谢乐乐女神~</p>
@@ -295,23 +315,28 @@ step 1: 树叶摇曳怎么实现
       </tags>
   </entry>
   <entry>
-    <title>Unity 的渲染路径</title>
-    <url>/2022/05/17/renderingpath/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="什么是渲染路径"><a href="#什么是渲染路径" class="headerlink" title="什么是渲染路径"></a>什么是渲染路径</h1><p>程序员指定渲染路径，是想配置光照属性与渲染流程。这是程序员与Unity的一个暗号。</p>
-<p>渲染路径中主要有两种，一是前向渲染路径（Forward Rendering Path）,一是延迟渲染路径（Differred Rendering Path）。</p>
-<h1 id="前向渲染路径"><a href="#前向渲染路径" class="headerlink" title="前向渲染路径"></a>前向渲染路径</h1><p>前向渲染需要计算两个缓冲区的信息，一是颜色缓冲区，二是深度缓冲区。利用深度缓冲来决定一个片元是否可见，如果可见就更新颜色缓冲区。</p>
-<p><strong>Unity含有内置的光照变量和函数，指定了前向渲染路径时，Unity会进行相关计算并填充一些变量如_LightColor0。</strong></p>
-<h2 id="如何指定前向渲染路径"><a href="#如何指定前向渲染路径" class="headerlink" title="如何指定前向渲染路径"></a>如何指定前向渲染路径</h2><p>大多数情况下，一个项目只使用一种渲染路径，可以在菜单Edit里设置。</p>
-<p>要是想使用多种渲染路径，也可以对不同的摄像机进行不同的设置。</p>
-<p>完成了上面的设置，就可以在Pass中使用标签“LightMode”来指定该Path使用的的渲染路径，比如，“LightMode”&#x3D;“ForwardBase”告诉Unity，当前Pass使用的是前向渲染路径中的“ForwadBase”路径，在shader中访问到Unity填好的光照属性。对于前向渲染，Unity Shader通常会定义一个Base Pass和一个Add Path。通常在Base Path中执行平行光照的逐像素计算，在Add Path中计算其他逐像素光照，最后Blend这些值。实际上，由于Shader中如何利用内置属性进行光照计算，完全取决于程序员，所以也可以在Base Path中进行逐顶点光照计算。</p>
-<h1 id="延迟渲染路径"><a href="#延迟渲染路径" class="headerlink" title="延迟渲染路径"></a>延迟渲染路径</h1><p>前向渲染会多出很多重复的操作，延迟渲染可以解决。延迟渲染不仅要计算深度缓冲、颜色缓冲，还需要计算G缓冲（Geometry Buffer，G-Buffer）。G-Buffer中存储表面信息，包括表面的法线、位置、材质属性等。</p>
-<p>延迟渲染的流程主要包括两个Pass，第一个Pass利用深度缓冲计算片元的可见性，如果一个片元可见就把其相关信息放到G-Buffer中。在第二个Pass中利用G-Buffer中的表面信息计算真正的着色。</p>
+    <title>Unity Editor版本号介绍</title>
+    <url>/2022/07/21/unityeditor/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><p>以一个Unity Editor其中一个版本号作为例子说明：<br>2019.3.0f5</p>
+<p>首先要知道，软件开发中常见的命名缩写：</p>
+<ol>
+<li>a表示alpha，版本刚出来，不稳定。</li>
+<li>b表示beta，版本修复过，比alpha稳定，但是依然不稳定。</li>
+<li>f表示final，问题差不多修完了的最终版本。</li>
+</ol>
+<p>另外Unity官网中，Editor下载提供了三种版本，分别是：</p>
+<ol>
+<li>长期支持版本，数字代号4，缩写LTS</li>
+<li>补丁程序版，数字代号2</li>
+<li>Beta版，数字代号3</li>
+</ol>
+<p>可见“2019.3.0f5”表示2019年出的Beta测试版本中的第五个稳定版本。</p>
 ]]></content>
       <categories>
-        <category>Unity Lighting</category>
+        <category>Unity</category>
       </categories>
       <tags>
-        <tag>Unity Lighting</tag>
+        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>

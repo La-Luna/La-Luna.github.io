@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.laluna00.cn/"/>
-  <updated>2022-07-17T09:18:44.322Z</updated>
+  <updated>2022-07-21T10:10:30.375Z</updated>
   <id>https://www.laluna00.cn/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Unity Editor版本号介绍</title>
+    <link href="https://www.laluna00.cn/2022/07/21/unityeditor/"/>
+    <id>https://www.laluna00.cn/2022/07/21/unityeditor/</id>
+    <published>2022-07-21T09:58:58.000Z</published>
+    <updated>2022-07-21T10:10:30.375Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><p>以一个Unity Editor其中一个版本号作为例子说明：<br>2019.3.0f5</p><p>首先要知道，软件开发中常见的命名缩写：</p><ol><li>a表示alpha，版本刚出来，不稳定。</li><li>b表示beta，版本修复过，比alpha稳定，但是依然不稳定。</li><li>f表示final，问题差不多修完了的最终版本。</li></ol><p>另外Unity官网中，Editor下载提供了三种版本，分别是：</p><ol><li>长期支持版本，数字代号4，缩写LTS</li><li>补丁程序版，数字代号2</li><li>Beta版，数字代号3</li></ol><p>可见“2019.3.0f5”表示2019年出的Beta测试版本中的第五个稳定版本。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;\assets\css\APlayer.min.css&quot;&gt;&lt;script src=&quot;\assets\js\APlayer.min.js&quot; cla
+      
+    
+    </summary>
+    
+      <category term="Unity" scheme="https://www.laluna00.cn/categories/Unity/"/>
+    
+    
+      <category term="Unity" scheme="https://www.laluna00.cn/tags/Unity/"/>
+    
+  </entry>
   
   <entry>
     <title>一种具有描边与卡通高光的效果</title>
@@ -271,9 +296,9 @@
     <link href="https://www.laluna00.cn/2022/01/07/night/"/>
     <id>https://www.laluna00.cn/2022/01/07/night/</id>
     <published>2022-01-07T10:45:28.000Z</published>
-    <updated>2022-07-20T04:02:05.263Z</updated>
+    <updated>2022-07-20T04:20:57.451Z</updated>
     
-    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>我将在后续更新unity灯光渲染demo的每一步….<br>之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果。</p><p>我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。</p></blockquote><p>看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门</p><blockquote><p><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">Volumetric Lights in HDRP with Unity 2019.3</a>，<br>还有一个将内置渲染管线专为HDRP的，可以用来参考，传送门<br><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p></blockquote><h1 id="效果show"><a href="#效果show" class="headerlink" title="效果show"></a>效果show</h1><h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><blockquote><p><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">YouTube视频</a>下提供了Fontainebleau的下载位置，<br>这是一个森林模拟器。</p></blockquote><p>首先要将项目的渲染管线转成HDRP：<br>1.window–package manager–安装HDRP<br>2.资源管理器中新建HDRP资源<br>3.edit–project setting–graphic中选择刚刚创建的HDRP资源</p><p>此时，项目便使用HDRP了。<br>更多的，项目中的材质也要转为HDRP材质。参考这里—&gt;&gt;<a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p><h1 id="HDRP"><a href="#HDRP" class="headerlink" title="HDRP"></a>HDRP</h1><p>HDRP，High Definition Render Pipeline是Unity可编程渲染管线的其中一种，是Unity用来适配现代兼容计算着色器平台的渲染管线。HDRP使用了基于物理的光线技术，线性空间，HDR光线，和前向光线（Forward lighting）结构，让游戏制作者用更高的图形标准去创造艺术。</p><p>使用HDRP的项目则不能使用Lightweight Render Pipeline了。每个项目必须明确使用的渲染管线。</p><p>HDRP支持光栅化，光线追踪，路径追踪等渲染技术，遵循基于物理的渲染工作流程。</p><p>总之，HDRP就是Unity集成了多种基于物理的渲染技术所设计的面向用户的渲染管线。</p><h1 id="Light"><a href="#Light" class="headerlink" title="Light"></a>Light</h1><h2 id="Direct-Light"><a href="#Direct-Light" class="headerlink" title="Direct Light"></a>Direct Light</h2><p>场景中创建direct light</p><h2 id="Spot-Light"><a href="#Spot-Light" class="headerlink" title="Spot Light"></a>Spot Light</h2><h1 id="Fog"><a href="#Fog" class="headerlink" title="Fog"></a>Fog</h1><p>场景中创建Fog资源。调整Fog浓度</p><!--step 1: 树叶摇曳怎么实现# step 2: 路灯，光，阴影怎么实现# Step n：熟悉使用Unity实时预计算全局环境光照看unity官方教程去咯....-->]]></content>
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><blockquote><p>我将在后续更新unity灯光渲染demo的每一步….<br>之所以命名为“night”，因为想实现一个夜晚树叶在路灯下摇曳的效果。</p><p>我尽力去理清楚技术点，文中如若有误，欢迎大家批评指正。</p></blockquote><p>看到YouTube里有个介绍给场景添加体积光效果的，学习一下，传送门</p><blockquote><p><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">Volumetric Lights in HDRP with Unity 2019.3</a>，<br>还有一个将内置渲染管线专为HDRP的，可以用来参考，传送门<br><a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p></blockquote><h1 id="效果show"><a href="#效果show" class="headerlink" title="效果show"></a>效果show</h1><h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><blockquote><p><a href="https://youtu.be/EF5jy30ebVw" target="_blank" rel="noopener">YouTube视频</a>下提供了Fontainebleau的下载位置，<br>这是一个森林模拟器。</p></blockquote><p>首先要将项目的渲染管线转成HDRP：<br>1.window–package manager–安装HDRP<br>2.资源管理器中新建HDRP资源<br>3.edit–project setting–graphic中选择刚刚创建的HDRP资源</p><p>此时，项目便使用HDRP了。<br>更多的，项目中的材质也要转为HDRP材质。参考这里—&gt;&gt;<a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@6.7/manual/Upgrading-To-HDRP.html" target="_blank" rel="noopener">HDRP conversion tutorial</a>。</p><h2 id="HDRP"><a href="#HDRP" class="headerlink" title="HDRP"></a>HDRP</h2><p>HDRP，High Definition Render Pipeline是Unity可编程渲染管线的其中一种，是Unity用来适配现代兼容计算着色器平台的渲染管线。HDRP使用了基于物理的光线技术，线性空间，HDR光线，和前向光线（Forward lighting）结构，让游戏制作者用更高的图形标准去创造艺术。</p><p>使用HDRP的项目则不能使用Lightweight Render Pipeline了。每个项目必须明确使用的渲染管线。</p><p>HDRP支持光栅化，光线追踪，路径追踪等渲染技术，遵循基于物理的渲染工作流程。</p><p>总之，HDRP就是Unity集成了多种基于物理的渲染技术所设计的面向用户的渲染管线。因此使用HDRP，就非常方便的使用Unity已经集成好的强大的渲染技术了，其中包括体积光技术。</p><h1 id="Light"><a href="#Light" class="headerlink" title="Light"></a>Light</h1><h2 id="Direct-Light"><a href="#Direct-Light" class="headerlink" title="Direct Light"></a>Direct Light</h2><p>场景中创建direct light</p><h2 id="Spot-Light"><a href="#Spot-Light" class="headerlink" title="Spot Light"></a>Spot Light</h2><h1 id="Fog"><a href="#Fog" class="headerlink" title="Fog"></a>Fog</h1><p>场景中创建Fog资源。调整Fog浓度</p><!--step 1: 树叶摇曳怎么实现# step 2: 路灯，光，阴影怎么实现# Step n：熟悉使用Unity实时预计算全局环境光照看unity官方教程去咯....-->]]></content>
     
     <summary type="html">
     
