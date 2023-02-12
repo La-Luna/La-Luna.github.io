@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.laluna00.cn","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.14.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="最近在YouTube中看了些在Unreal材质蓝图中制作火焰的例子，感觉很有趣，学习记录一下。 最终效果因为美术风格的不同，火焰也有非常多种不同的风格，卡通，炫酷，写实等等，卡通风格中又包括二次元，美漫等风格。这里记一下简单卡通风格与炫酷风格的火焰，效果均在Unreal5.1中实现，  卡通火焰完整材质图 火焰颜色插值为了模拟出火焰颜色的层次感， 要使得火焰外层与内层的颜色有差异。这里进行纹理采样">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用虚幻材质编辑器制作火焰">
+<meta property="og:url" content="https://www.laluna00.cn/2023/02/08/uefirematerial/index.html">
+<meta property="og:site_name" content="LaLuna&#39;s Home">
+<meta property="og:description" content="最近在YouTube中看了些在Unreal材质蓝图中制作火焰的例子，感觉很有趣，学习记录一下。 最终效果因为美术风格的不同，火焰也有非常多种不同的风格，卡通，炫酷，写实等等，卡通风格中又包括二次元，美漫等风格。这里记一下简单卡通风格与炫酷风格的火焰，效果均在Unreal5.1中实现，  卡通火焰完整材质图 火焰颜色插值为了模拟出火焰颜色的层次感， 要使得火焰外层与内层的颜色有差异。这里进行纹理采样">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.laluna00.cn/2023/02/08/uefirematerial/flame.gif#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2023/02/08/uefirematerial/fireball.gif#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2023/02/08/uefirematerial/flamembpgraph.png#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2023/02/08/uefirematerial/colorinterpolation.png#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2023/02/08/uefirematerial/firebody.png#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2023/02/08/uefirematerial/uvdistortion.gif#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2023/02/08/uefirematerial/distortion2.png#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2023/02/08/uefirematerial/realityfire.png#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2023/02/08/uefirematerial/fireballbody.png#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2023/02/08/uefirematerial/fresnel.png#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2023/02/08/uefirematerial/vertexdistorsion.png#pic_center">
+<meta property="article:published_time" content="2023-02-08T15:08:58.000Z">
+<meta property="article:modified_time" content="2023-02-12T13:25:08.805Z">
+<meta property="article:author" content="LaLuna">
+<meta property="article:tag" content="Unreal &amp; Unreal Material">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.laluna00.cn/2023/02/08/uefirematerial/flame.gif#pic_center">
+
+
+<link rel="canonical" href="https://www.laluna00.cn/2023/02/08/uefirematerial/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.laluna00.cn/2023/02/08/uefirematerial/","path":"2023/02/08/uefirematerial/","title":"利用虚幻材质编辑器制作火焰"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>利用虚幻材质编辑器制作火焰 | LaLuna's Home</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">LaLuna's Home</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E6%95%88%E6%9E%9C"><span class="nav-number">1.</span> <span class="nav-text">最终效果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%A1%E9%80%9A%E7%81%AB%E7%84%B0"><span class="nav-number">2.</span> <span class="nav-text">卡通火焰</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E6%9D%90%E8%B4%A8%E5%9B%BE"><span class="nav-number">2.1.</span> <span class="nav-text">完整材质图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%81%AB%E7%84%B0%E9%A2%9C%E8%89%B2%E6%8F%92%E5%80%BC"><span class="nav-number">2.2.</span> <span class="nav-text">火焰颜色插值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%81%AB%E7%84%B0%E4%B8%BB%E4%BD%93%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84"><span class="nav-number">2.3.</span> <span class="nav-text">火焰主体纹理映射</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E6%89%B0%E5%8A%A8%E6%80%9D%E8%B7%AF"><span class="nav-number">2.4.</span> <span class="nav-text">两种扰动思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%82%AB%E9%85%B7%E7%81%AB%E7%84%B0"><span class="nav-number">3.</span> <span class="nav-text">炫酷火焰</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E6%9D%90%E8%B4%A8%E5%9B%BE-1"><span class="nav-number">3.1.</span> <span class="nav-text">完整材质图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%81%AB%E7%84%B0%E4%B8%BB%E4%BD%93%E7%BA%B9%E7%90%86%E6%98%A0%E5%B0%84-1"><span class="nav-number">3.2.</span> <span class="nav-text">火焰主体纹理映射</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8F%B2%E6%B6%85%E5%B0%94%E6%95%88%E5%BA%94"><span class="nav-number">3.3.</span> <span class="nav-text">菲涅尔效应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E7%81%AB%E8%88%8C"><span class="nav-number">3.4.</span> <span class="nav-text">添加火舌</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Unreal%E5%85%B6%E4%BB%96%E5%AE%9E%E7%8E%B0%E7%81%AB%E7%84%B0%E7%9A%84%E6%96%B9%E6%A1%88"><span class="nav-number">4.</span> <span class="nav-text">Unreal其他实现火焰的方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Eunreal%E6%9D%90%E8%B4%A8%E7%9A%84%E6%B6%88%E8%80%97"><span class="nav-number">5.</span> <span class="nav-text">关于unreal材质的消耗</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">LaLuna</p>
+  <div class="site-description" itemprop="description">Luna的窗口</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/La-Luna" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;La-Luna" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:la_luna2019@outlook.com" title="E-Mail → mailto:la_luna2019@outlook.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.laluna00.cn/2023/02/08/uefirematerial/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LaLuna">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LaLuna's Home">
+      <meta itemprop="description" content="Luna的窗口">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="利用虚幻材质编辑器制作火焰 | LaLuna's Home">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          利用虚幻材质编辑器制作火焰
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-02-08 23:08:58" itemprop="dateCreated datePublished" datetime="2023-02-08T23:08:58+08:00">2023-02-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-02-12 21:25:08" itemprop="dateModified" datetime="2023-02-12T21:25:08+08:00">2023-02-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Unreal-Material/" itemprop="url" rel="index"><span itemprop="name">Unreal Material</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>最近在YouTube中看了些在Unreal材质蓝图中制作火焰的例子，感觉很有趣，学习记录一下。</p>
+<h1 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h1><p>因为美术风格的不同，火焰也有非常多种不同的风格，卡通，炫酷，写实等等，卡通风格中又包括二次元，美漫等风格。这里记一下简单卡通风格与炫酷风格的火焰，效果均在Unreal5.1中实现，</p>
+<p><img src="/2023/02/08/uefirematerial/flame.gif#pic_center" alt="CartoonFire"><br><img src="/2023/02/08/uefirematerial/fireball.gif#pic_center" alt="FireBall"></p>
+<h1 id="卡通火焰"><a href="#卡通火焰" class="headerlink" title="卡通火焰"></a>卡通火焰</h1><h2 id="完整材质图"><a href="#完整材质图" class="headerlink" title="完整材质图"></a>完整材质图</h2><p><img src="/2023/02/08/uefirematerial/flamembpgraph.png#pic_center" alt="full material graph"></p>
+<h2 id="火焰颜色插值"><a href="#火焰颜色插值" class="headerlink" title="火焰颜色插值"></a>火焰颜色插值</h2><p><img src="/2023/02/08/uefirematerial/colorinterpolation.png#pic_center" alt="full material graph"><br>为了模拟出火焰颜色的层次感， 要使得火焰外层与内层的颜色有差异。这里进行纹理采样后，火焰边缘透明度接近0，火焰中心透明度接近1，正好利用透明度进行插值，在黄色与红色之间进行插值即可。</p>
+<h2 id="火焰主体纹理映射"><a href="#火焰主体纹理映射" class="headerlink" title="火焰主体纹理映射"></a>火焰主体纹理映射</h2><p><img src="/2023/02/08/uefirematerial/firebody.png#pic_center" alt="full material graph"><br>火焰顶端和底端，需要淡化，这样更符合现实中的火焰形态。淡化用<strong>渐变</strong>来处理。<strong>渐变</strong>利用纹理坐标y值的0-1映射来控制。</p>
+<p>火焰主体的纹理，由两张噪声图混合，噪声图选择时图像块要贴合火焰边缘的形状。并且利用Panner节点设定从下往上的运动。</p>
+<p>同时利用Mask纹理来裁剪出最后的火焰轮廓。</p>
+<h2 id="两种扰动思路"><a href="#两种扰动思路" class="headerlink" title="两种扰动思路"></a>两种扰动思路</h2><p>前面呈现的效果图中没有加入扰动。“扰动”是一种常见的效果，可以将直线变为曲线，就是在原来采样的基础上，增加一些随机效果，使得整体效果更加不规则（在边缘处比较明显可以看见扰动的效果）。比如</p>
+<p><img src="/2023/02/08/uefirematerial/uvdistortion.gif#pic_center"></p>
+<p>实现扰动一般是读噪声图，将噪声图中对应的值叠加到纹理坐标上，再用<strong>新的坐标值</strong>对纹理进行采样。</p>
+<p><img src="/2023/02/08/uefirematerial/distortion2.png#pic_center"></p>
+<h1 id="炫酷火焰"><a href="#炫酷火焰" class="headerlink" title="炫酷火焰"></a>炫酷火焰</h1><p>炫酷火焰比卡通火焰更贴近现实，但是又超出现实……</p>
+<h2 id="完整材质图-1"><a href="#完整材质图-1" class="headerlink" title="完整材质图"></a>完整材质图</h2><p>这个效果参考链接3</p>
+<blockquote>
+<ol start="3">
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=msebCSjuV6s">UE4 - Ring of fire on a sphere effect - Test (Material bp shown)</a></li>
+</ol>
+</blockquote>
+<p><img src="/2023/02/08/uefirematerial/realityfire.png#pic_center"></p>
+<h2 id="火焰主体纹理映射-1"><a href="#火焰主体纹理映射-1" class="headerlink" title="火焰主体纹理映射"></a>火焰主体纹理映射</h2><p><img src="/2023/02/08/uefirematerial/fireballbody.png#pic_center"></p>
+<p>对火焰纹理进行采样并混合噪声图，依然利用Panner节点添加滚动效果。利用3PointLevels节点对值重新映射。</p>
+<h2 id="菲涅尔效应"><a href="#菲涅尔效应" class="headerlink" title="菲涅尔效应"></a>菲涅尔效应</h2><p>主要理解Fresnel节点。</p>
+<p><img src="/2023/02/08/uefirematerial/fresnel.png#pic_center"></p>
+<p>所谓菲涅尔效应，是指<strong>光照基于观察者角度的不同形成不同强度反射的现象。</strong>比如，低头垂直视线看水面，能看见水底（光线折射多），平行水面看远方水面能看见倒映的天空（光线反射多）。</p>
+<p>unreal提供的简单Fresnel节点，有三个参数：</p>
+<ul>
+<li>ExponentIn：控制菲涅尔效果的衰减</li>
+<li>BaseReflectFractionIn：指定从正面观察表面时镜面反射的小数，为1时将禁用菲涅尔</li>
+<li>Normal：可在此处输入法线，影响菲涅尔效果的渲染方式</li>
+</ul>
+<p>利用Fresnel节点，将效果控制在物体的边缘轮廓上。</p>
+<h2 id="添加火舌"><a href="#添加火舌" class="headerlink" title="添加火舌"></a>添加火舌</h2><p>这里通过添加“顶点扰动”从而形成“火舌”，本文顶点扰动用PerlinNoise来做。</p>
+<p><img src="/2023/02/08/uefirematerial/vertexdistorsion.png#pic_center"></p>
+<p>因为这里希望火舌向上运动，于是依据顶点法线的方向判断是否需要扰动。法线向下的不需要添加扰动。顶点法线向上还是向下，用法线与物体世界坐标系中up向量点乘来判断(材质编辑器中的ObjectOrientation节点即为up向量)。</p>
+<h1 id="Unreal其他实现火焰的方案"><a href="#Unreal其他实现火焰的方案" class="headerlink" title="Unreal其他实现火焰的方案"></a>Unreal其他实现火焰的方案</h1><ol>
+<li>利用材质编辑器中FlipBook节点对动画纹理进行随时偏移采样形成动画。</li>
+<li>粒子系统也是常见的制作火焰的方式，尤其是对火焰移动的方向、速度、形态有较高要求时。</li>
+</ol>
+<h1 id="关于unreal材质的消耗"><a href="#关于unreal材质的消耗" class="headerlink" title="关于unreal材质的消耗"></a>关于unreal材质的消耗</h1><p>Unreal中材质节点到shader代码分为两个过程，材质编辑器中的节点图编译成HLSL代码，然后再把HLSL生成多平台的shader代码，每一个材质节点其实都是一片类HLSL代码的封装。一个材质会编译生成大量的shader源码来匹配不同光照不同材质特性的需求。游戏引擎为了设计师能便捷的进行设计，对于效率做出了些牺牲，虚幻材质系统一方面由于其可达丰富的材质类型而著名，又因为其缓慢的编译过程与冗杂的shader体量而诟病。因此为了游戏能具有更加流畅的表现，在使用虚幻材质时一定要注定材质优化。参考中给了一些材质优化的方法链接，之后我再渐渐总结一些材质优化方法。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=p9e8z8A4Zco&t=272s">Unreal Tournament Fire Material: Set (virtual) things ON FIRE!</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=cBgyCrGgFU4&list=PL1kafTLTzdae-T5cW7abDD07jWnaYzJBy&index=13">how video games make FIRE</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=msebCSjuV6s">UE4 - Ring of fire on a sphere effect - Test (Material bp shown)</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/55335907">[UE4]性能优化指南(程序向)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/people/xinfen">UE4材质编译加速</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/154081604">UE4 Shader 编译以及变种实现</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Unreal-Unreal-Material/" rel="tag"># Unreal & Unreal Material</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/08/01/uewindowbutton/" rel="prev" title="Unreal5.0-在菜单栏/工具栏插入按钮">
+                  <i class="fa fa-chevron-left"></i> Unreal5.0-在菜单栏/工具栏插入按钮
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LaLuna</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
