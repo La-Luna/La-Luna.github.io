@@ -26,13 +26,13 @@
 <meta property="og:site_name" content="LaLuna&#39;s Home">
 <meta property="og:description" content="ShaderLab基础shader语法基本框架12345678910111213141516171819202122232425262728293031Shader&quot;ShaderName&quot;&amp;#123;&#x2F;&#x2F;定义Shader名字    Properties&amp;#123;&#x2F;&#x2F;属性，cpu传给shader的值，出现在unity材质面板中，在Pass中要重新声明    &amp;#125;">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://www.laluna00.cn/queue.png#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2022/05/26/shaderlaberror/queue.png#pic_center">
 <meta property="article:published_time" content="2022-05-26T08:36:41.000Z">
-<meta property="article:modified_time" content="2022-07-16T09:17:19.120Z">
+<meta property="article:modified_time" content="2023-02-12T14:23:38.383Z">
 <meta property="article:author" content="LaLuna">
 <meta property="article:tag" content="Unity Shader">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://www.laluna00.cn/queue.png#pic_center">
+<meta name="twitter:image" content="https://www.laluna00.cn/2022/05/26/shaderlaberror/queue.png#pic_center">
 
 
 <link rel="canonical" href="https://www.laluna00.cn/2022/05/26/shaderlaberror/">
@@ -209,7 +209,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-07-16 17:17:19" itemprop="dateModified" datetime="2022-07-16T17:17:19+08:00">2022-07-16</time>
+      <time title="修改时间：2023-02-12 22:23:38" itemprop="dateModified" datetime="2023-02-12T22:23:38+08:00">2023-02-12</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -238,7 +238,7 @@
 <h3 id="RenderType"><a href="#RenderType" class="headerlink" title="RenderType"></a>RenderType</h3><p>其中RenderType使用的值通常包括Opaque、Transparent、Background等，实际上是一种约定,用来区别这个Shader要渲染的对象。并且可以使用自定义值，影响不大，只是在代替渲染时，定义者要区分不同RenderType类型的Shader。</p>
 <p>代替渲染解释：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Camera.SetReplacementShader(<span class="string">&quot;shader1&quot;</span>,<span class="string">&quot;&quot;</span>) <span class="comment">//场景中所有的渲染对象的shader都替换成shader1进行渲染</span></span><br><span class="line">Camera.SetReplacementShader(<span class="string">&quot;shader1&quot;</span>,<span class="string">&quot;RenderType&quot;</span>) <span class="comment">//场景中所有RenderType类型与shader1的RenderType一致的渲染对象，其shader都替换为shader1，再渲染</span></span><br></pre></td></tr></table></figure>
-<h3 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h3><p>Queue渲染队列，用来指定当前shader渲染对象的渲染顺序，其值有Background、Geometry、AlphaTest、Transparent等，<br>乐乐在书中介绍，队列索引号越小说明越先被渲染：<br><img src="/queue.png#pic_center"></p>
+<h3 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h3><p>Queue渲染队列，用来指定当前shader渲染对象的渲染顺序，其值有Background、Geometry、AlphaTest、Transparent等，<br>乐乐在书中介绍，队列索引号越小说明越先被渲染：<br><img src="/2022/05/26/shaderlaberror/queue.png#pic_center"></p>
 <h2 id="关于标签2中常出现的字符串："><a href="#关于标签2中常出现的字符串：" class="headerlink" title="关于标签2中常出现的字符串："></a>关于标签2中常出现的字符串：</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Pass&#123;</span><br><span class="line">    Tags&#123;<span class="string">&quot;LightMode&quot;</span>=<span class="string">&quot;ForwardBase&quot;</span> &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>程序员指定渲染路径LightMode，是想配置光照属性与渲染流程。这是程序员与Unity的一个暗号。详见<a href="http://www.laluna00.cn/2022/05/17/renderingpath/">这里</a></p>
 <h2 id="状态设置"><a href="#状态设置" class="headerlink" title="状态设置"></a>状态设置</h2><dl><dt>SubShader或Pass中常出现一些状态设置：<br>: Cull<br>: ZTest<br>: Zwrite</dt><dd>Blend<br>在SubShader中出现，表示该SubShader中所有的Pass都受状态设置的影响；在Pass中出现，说明只有当前Pass受状态设置的影响。</dd></dl><h2 id="Shader中的系统语义"><a href="#Shader中的系统语义" class="headerlink" title="Shader中的系统语义"></a>Shader中的系统语义</h2><p>在定义输入struct的时，常遇到POSITION、SV_POSITION、SV_Target、NORMAL等语义，这些语义告诉Unity此处变量的输入输出类型，例如变量后有”:POSITION”指示Unity把模型的顶点坐标存到变量里，变量后有“:SV_POSITION”指示该变量存的值是裁剪空间中的模型坐标，“SV_Target”指示将输出输入到渲染缓冲中，一般为帧缓冲。</p>

@@ -26,18 +26,18 @@
 <meta property="og:site_name" content="LaLuna&#39;s Home">
 <meta property="og:description" content="卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另两种离线的方法。   描边效果美术风格有很多种，其中日式和美式有种完全不同的风格，国风更有其独一无二的特点。美式动画的代表风格之一为皮克斯风格（如下图右所示），日式动画的代表风格之一为宫崎骏风格（如下图左所示）。 日式动画常基于二维美术风格表示，在色块外">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://www.laluna00.cn/cmp.jpg#pic_center">
-<meta property="og:image" content="https://www.laluna00.cn/cmp2.jpg#pic_center">
-<meta property="og:image" content="https://www.laluna00.cn/edgedetectwhite.png#pic_center">
-<meta property="og:image" content="https://www.laluna00.cn/edgewithdepth.png#pic_center">
-<meta property="og:image" content="https://www.laluna00.cn/2pass.png#pic_center">
-<meta property="og:image" content="https://www.laluna00.cn/specialedges.png#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2022/07/05/edgedetect/cmp.jpg#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2022/07/05/edgedetect/cmp2.jpg#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2022/07/05/edgedetect/edgedetectwhite.png#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2022/07/05/edgedetect/edgewithdepth.png#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2022/07/05/edgedetect/2pass.png#pic_center">
+<meta property="og:image" content="https://www.laluna00.cn/2022/07/05/edgedetect/specialedges.png#pic_center">
 <meta property="article:published_time" content="2022-07-05T13:15:56.000Z">
-<meta property="article:modified_time" content="2022-07-16T15:20:00.658Z">
+<meta property="article:modified_time" content="2023-02-12T14:19:44.643Z">
 <meta property="article:author" content="LaLuna">
 <meta property="article:tag" content="卡通渲染">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://www.laluna00.cn/cmp.jpg#pic_center">
+<meta name="twitter:image" content="https://www.laluna00.cn/2022/07/05/edgedetect/cmp.jpg#pic_center">
 
 
 <link rel="canonical" href="https://www.laluna00.cn/2022/07/05/edgedetect/">
@@ -214,7 +214,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-07-16 23:20:00" itemprop="dateModified" datetime="2022-07-16T23:20:00+08:00">2022-07-16</time>
+      <time title="修改时间：2023-02-12 22:19:44" itemprop="dateModified" datetime="2023-02-12T22:19:44+08:00">2023-02-12</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -239,13 +239,13 @@
         <blockquote><p>卡通渲染中，常常需要描边的效果。这里记录一下遇到的几种产生描边效果的方法。包括《Unity Shader入门精要》12、13章提到的两种方法，与另两种离线的方法。</p>
 </blockquote>
 
-<h1 id="描边效果"><a href="#描边效果" class="headerlink" title="描边效果"></a>描边效果</h1><p>美术风格有很多种，其中日式和美式有种完全不同的风格，国风更有其独一无二的特点。美式动画的代表风格之一为皮克斯风格（如下图右所示），日式动画的代表风格之一为宫崎骏风格（如下图左所示）。<br><img src="/cmp.jpg#pic_center"></p>
-<p>日式动画常基于二维美术风格表示，在色块外有着明显的边缘来区分形状，描边是这种风格的特点。当然，随着各种不同风格的碰撞与发展，描边成为各种不同美术风格的重要元素了(如下图所示)，具体的描边效果，随着风格的不同而有区别。本文记录一下遇到的几种实现不同风格描边的方法。<br><img src="/cmp2.jpg#pic_center"></p>
-<h1 id="法一：屏幕后处理中进行边缘检测"><a href="#法一：屏幕后处理中进行边缘检测" class="headerlink" title="法一：屏幕后处理中进行边缘检测"></a>法一：屏幕后处理中进行边缘检测</h1><p>利用图像处理中的边缘检测算子，检测图像中的边（像素值跳变大的点视作边）。<br><img src="/edgedetectwhite.png#pic_center"></p>
-<h1 id="法二：屏幕后处理中进行边缘检测feat-深度纹理"><a href="#法二：屏幕后处理中进行边缘检测feat-深度纹理" class="headerlink" title="法二：屏幕后处理中进行边缘检测feat.深度纹理"></a>法二：屏幕后处理中进行边缘检测feat.深度纹理</h1><p>在法一中，边缘检测算子只在原渲染图像中卷积，采集的边只是色块相交处的边缘，而不是实际物体的边缘。改用深度纹理（或者深度法线纹理）进行卷积，能够检测出深度跳变大的点，而往往是物体的实际边缘（如下图所示，图片来自<a target="_blank" rel="noopener" href="https://github.com/candycat1992/Unity_Shaders_Book">乐乐的教程</a>）。因此这种方法更为常见。<br><img src="/edgewithdepth.png#pic_center"></p>
+<h1 id="描边效果"><a href="#描边效果" class="headerlink" title="描边效果"></a>描边效果</h1><p>美术风格有很多种，其中日式和美式有种完全不同的风格，国风更有其独一无二的特点。美式动画的代表风格之一为皮克斯风格（如下图右所示），日式动画的代表风格之一为宫崎骏风格（如下图左所示）。<br><img src="/2022/07/05/edgedetect/cmp.jpg#pic_center"></p>
+<p>日式动画常基于二维美术风格表示，在色块外有着明显的边缘来区分形状，描边是这种风格的特点。当然，随着各种不同风格的碰撞与发展，描边成为各种不同美术风格的重要元素了(如下图所示)，具体的描边效果，随着风格的不同而有区别。本文记录一下遇到的几种实现不同风格描边的方法。<br><img src="/2022/07/05/edgedetect/cmp2.jpg#pic_center"></p>
+<h1 id="法一：屏幕后处理中进行边缘检测"><a href="#法一：屏幕后处理中进行边缘检测" class="headerlink" title="法一：屏幕后处理中进行边缘检测"></a>法一：屏幕后处理中进行边缘检测</h1><p>利用图像处理中的边缘检测算子，检测图像中的边（像素值跳变大的点视作边）。<br><img src="/2022/07/05/edgedetect/edgedetectwhite.png#pic_center"></p>
+<h1 id="法二：屏幕后处理中进行边缘检测feat-深度纹理"><a href="#法二：屏幕后处理中进行边缘检测feat-深度纹理" class="headerlink" title="法二：屏幕后处理中进行边缘检测feat.深度纹理"></a>法二：屏幕后处理中进行边缘检测feat.深度纹理</h1><p>在法一中，边缘检测算子只在原渲染图像中卷积，采集的边只是色块相交处的边缘，而不是实际物体的边缘。改用深度纹理（或者深度法线纹理）进行卷积，能够检测出深度跳变大的点，而往往是物体的实际边缘（如下图所示，图片来自<a target="_blank" rel="noopener" href="https://github.com/candycat1992/Unity_Shaders_Book">乐乐的教程</a>）。因此这种方法更为常见。<br><img src="/2022/07/05/edgedetect/edgewithdepth.png#pic_center"></p>
 <h1 id="法三：双通道渲染"><a href="#法三：双通道渲染" class="headerlink" title="法三：双通道渲染"></a>法三：双通道渲染</h1><p>这种方法思路比较简单，通过两个Pass实现描边的效果，详见<a href="http://www.laluna00.cn/2022/07/13/CartoonEdgeSpec/">这篇blog</a>。第一个Pass在摄像机空间中沿着法线方向扩大顶点坐标，将对象渲染成黑色，且只渲染背面；第二个Pass正常渲染，且只渲染正面。这样叠加两个通道就得到了具有描边的效果。</p>
-<p><img src="/2pass.png#pic_center"></p>
-<h1 id="法四：提取轮廓边单独渲染"><a href="#法四：提取轮廓边单独渲染" class="headerlink" title="法四：提取轮廓边单独渲染"></a>法四：提取轮廓边单独渲染</h1><p>这种常用于离线的边缘检测，对模型的所有边进行判断，判断是否是边缘（边的相邻三角形与视角的点乘正负，一正一负则为边）。这种方法常用于一些需要风格化边缘的情况。因为将边的信息提取出来后，可以用shader对边进行风格渲染。<br><img src="/specialedges.png#pic_center"></p>
+<p><img src="/2022/07/05/edgedetect/2pass.png#pic_center"></p>
+<h1 id="法四：提取轮廓边单独渲染"><a href="#法四：提取轮廓边单独渲染" class="headerlink" title="法四：提取轮廓边单独渲染"></a>法四：提取轮廓边单独渲染</h1><p>这种常用于离线的边缘检测，对模型的所有边进行判断，判断是否是边缘（边的相邻三角形与视角的点乘正负，一正一负则为边）。这种方法常用于一些需要风格化边缘的情况。因为将边的信息提取出来后，可以用shader对边进行风格渲染。<br><img src="/2022/07/05/edgedetect/specialedges.png#pic_center"></p>
 
     </div>
 
