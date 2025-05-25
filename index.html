@@ -37,7 +37,6 @@
 <script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":true,"isPost":false,"lang":"zh-CN","comments":"","permalink":"","path":"index.html","title":""}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<meta name="baidu-site-verification" content="codeva-dP8FgxU3Qn" />
 <title>LaLuna's Home</title>
   
 
@@ -124,7 +123,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -160,6 +159,94 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://www.laluna00.cn/2023/07/23/howunrealgenerateaframe/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/lion.png">
+      <meta itemprop="name" content="LaLuna">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LaLuna's Home">
+      <meta itemprop="description" content="Luna的窗口">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | LaLuna's Home">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/07/23/howunrealgenerateaframe/" class="post-title-link" itemprop="url">深入了解unreal实时渲染</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-07-23 10:25:28 / 修改时间：16:45:04" itemprop="dateCreated datePublished" datetime="2023-07-23T10:25:28+08:00">2023-07-23</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote><p>unreal引擎官方给出了unreal如何渲染一帧的介绍，结合renderDoc插件，分析渲染过程，并且给出各个环节的性能瓶颈与解决方案。</p>
+<p>本文用以记录，学习，分享。</p>
+</blockquote>
+
+<h1 id="原文链接"><a href="#原文链接" class="headerlink" title="原文链接"></a>原文链接</h1><p><a target="_blank" rel="noopener" href="https://dev.epicgames.com/community/learning/courses/EGR/unreal-engine-an-in-depth-look-at-real-time-rendering/edk/an-in-depth-look-at-real-time-rendering">An In-Depth Look at Real-Time Rendering</a></p>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><h2 id="概述之概述"><a href="#概述之概述" class="headerlink" title="概述之概述"></a>概述之概述</h2><p>这个系列课程旨在揭示和可视化整个渲染过程，对unreal所有的特性、挑战以及解决方案做一个全局的探讨，使得读者能理解unreal的设计蓝图，也能理解这一套工作流的利弊。</p>
+<p>当什么都没有的时候，实时渲染RTR是最高效的。RTR主要讨论的是一种平衡，性能与渲染质量的平衡。站在项目角度，应当在开发前明确目标帧率，在目标帧率的约束下，尽量用最少的性能换取最高的画面表现。画面表现，性能，渲染特性，三者有得必有失。<br><img src="/2023/07/23/howunrealgenerateaframe/balance2.png#pic_center"></p>
+<p>现实是非常复杂：<br>1.所有细节都需要被高效的绘制<br>2.需要一个稳定的工作流程和限制条件<br>3.结合使用预计算来离线渲染以提高效率<br>4.多种方法的耦合</p>
+<p>unreal用到的特性有：<br><img src="/2023/07/23/howunrealgenerateaframe/features.png#pic_center"><br>其中可见哪些是预计算的，哪些是实时计算的。几种计算反射与光照的方法在离线阶段完成。</p>
+<h2 id="由点到面"><a href="#由点到面" class="headerlink" title="由点到面"></a>由点到面</h2><p>一切渲染的源头，是由三点构成的三角面片，点标志着三角形的位置，面片显示三角形的颜色与图案，虚幻世界的一切模型都是由这样的三角面片构成的。</p>
+<p>计算机的两个核心元件，CPU与GPU共同肩负着渲染的责任。他们处理渲染流水的不同工作，都具有其瓶颈。</p>
+<h2 id="unreal采用的渲染流水线"><a href="#unreal采用的渲染流水线" class="headerlink" title="unreal采用的渲染流水线"></a>unreal采用的渲染流水线</h2><p>unreal采用延迟渲染流程（Deffered Rendering），与之比肩的是前向渲染流程（Forward Rendering）。unreal只采用延迟渲染流程，而unity则支持多种渲染流程。</p>
+<h3 id="前向渲染"><a href="#前向渲染" class="headerlink" title="前向渲染"></a>前向渲染</h3><p>乐乐跟我说<a target="_blank" rel="noopener" href="https://github.com/candycat1992/Unity_Shaders_Book">[1]</a>，每进行一次完整的前向渲染，都需要渲染该对象的渲染图元，并计算两个缓冲区的信息，一是颜色缓冲区，二是深度缓冲区。利用深度缓冲区来决定一个片元是否可见，如果可见即更新颜色缓冲区中的颜色值。乐乐用下面的伪代码解释这一过程：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Pass&#123;</span><br><span class="line">    <span class="keyword">for</span>(each primitive in this model)&#123;</span><br><span class="line">        <span class="keyword">for</span>(each fragment covered by this primitive)&#123;</span><br><span class="line">            <span class="keyword">if</span>(failed in depth test)&#123;</span><br><span class="line">                <span class="comment">//如果没有通过深度测试，则该片元不可见</span></span><br><span class="line">                discard；</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="comment">//如果可见则进行光照计算</span></span><br><span class="line">                float4 color = Shadeing();</span><br><span class="line">                writeFrameBuffer();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="延迟渲染"><a href="#延迟渲染" class="headerlink" title="延迟渲染"></a>延迟渲染</h3><p>乐乐又说延迟渲染包括两个过程，在第一部分，不进行任何光照计算，仅仅计算哪些片元是可见的（主要通过深度缓冲实现）。如果发现一个片元可见，则把相关信息存储到G缓冲区（信息包括表面法线，视角方向，漫反射系数等），然后在第二部分中，利用Gbuffer中的信息进行真正的光照计算。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Pass1&#123;</span><br><span class="line">    <span class="keyword">for</span>(each primitive in this model)&#123;</span><br><span class="line">        <span class="keyword">for</span>(each fragment covered fy this primitive)&#123;</span><br><span class="line">            <span class="keyword">if</span>(failed in depth test)&#123;</span><br><span class="line">                <span class="comment">//如果没有通过深度测试，则该片元不可见</span></span><br><span class="line">                discard;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                    <span class="comment">//如果可见则写进GBuffer</span></span><br><span class="line">                    writeGBuffer(materialInfo, norml, pos);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">Pass2&#123;</span><br><span class="line">    <span class="keyword">for</span>(each pixel in the screen)&#123;</span><br><span class="line">        <span class="keyword">if</span>(the pixel i valid)&#123;</span><br><span class="line">            readGBuffer();</span><br><span class="line">            float4 color = shading();</span><br><span class="line">            writeFrameBuffer(pixel ,color); </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="利弊"><a href="#利弊" class="headerlink" title="利弊"></a>利弊</h3><p><img src="/2023/07/23/howunrealgenerateaframe/dvsf.png#pic_center" alt="延迟渲染与前向渲染"></p>
+<h1 id="渲染准备"><a href="#渲染准备" class="headerlink" title="渲染准备"></a>渲染准备</h1><h1 id="几何渲染"><a href="#几何渲染" class="headerlink" title="几何渲染"></a>几何渲染</h1><h1 id="光栅化与GBuffer"><a href="#光栅化与GBuffer" class="headerlink" title="光栅化与GBuffer"></a>光栅化与GBuffer</h1><h1 id="纹理"><a href="#纹理" class="headerlink" title="纹理"></a>纹理</h1><h1 id="像素着色器和材质"><a href="#像素着色器和材质" class="headerlink" title="像素着色器和材质"></a>像素着色器和材质</h1><h1 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h1><h1 id="静态光源与静态阴影"><a href="#静态光源与静态阴影" class="headerlink" title="静态光源与静态阴影"></a>静态光源与静态阴影</h1><h1 id="动态光源与实时阴影"><a href="#动态光源与实时阴影" class="headerlink" title="动态光源与实时阴影"></a>动态光源与实时阴影</h1><h1 id="雾与透明物体"><a href="#雾与透明物体" class="headerlink" title="雾与透明物体"></a>雾与透明物体</h1><h1 id="后处理"><a href="#后处理" class="headerlink" title="后处理"></a>后处理</h1><h1 id="参考及推荐阅读"><a href="#参考及推荐阅读" class="headerlink" title="参考及推荐阅读"></a>参考及推荐阅读</h1><p><a target="_blank" rel="noopener" href="https://github.com/candycat1992/Unity_Shaders_Book">1. Unity Shader 入门精要</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1083,99 +1170,6 @@
 <p>代码中用到了clamp函数，cg library中对clamp解释如下：<br><img src="http://www.laluna00.cn/2022/05/18/posteffects/clamp.png" width="100%" height="100%"></p>
 <p>bloom效果如下图：<br><img src="http://www.laluna00.cn/2022/05/18/posteffects/bloom.png" width="50%" height="50%"></p>
 <h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a target="_blank" rel="noopener" href="https://github.com/candycat1992/Unity_Shaders_Book">Unity Shader 入门精要</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://www.laluna00.cn/2022/05/17/renderingpath/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/lion.png">
-      <meta itemprop="name" content="LaLuna">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LaLuna's Home">
-      <meta itemprop="description" content="Luna的窗口">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | LaLuna's Home">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/05/17/renderingpath/" class="post-title-link" itemprop="url">Unity 的渲染路径</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-05-17 14:48:48" itemprop="dateCreated datePublished" datetime="2022-05-17T14:48:48+08:00">2022-05-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-02-12 22:23:05" itemprop="dateModified" datetime="2023-02-12T22:23:05+08:00">2023-02-12</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Unity-Lighting/" itemprop="url" rel="index"><span itemprop="name">Unity Lighting</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="什么是渲染路径"><a href="#什么是渲染路径" class="headerlink" title="什么是渲染路径"></a>什么是渲染路径</h1><p>程序员指定渲染路径，是想配置光照属性与渲染流程。这是程序员与Unity的一个暗号。</p>
-<p>渲染路径中主要有两种，一是前向渲染路径（Forward Rendering Path）,一是延迟渲染路径（Differred Rendering Path）。</p>
-<h1 id="前向渲染路径"><a href="#前向渲染路径" class="headerlink" title="前向渲染路径"></a>前向渲染路径</h1><p>前向渲染需要计算两个缓冲区的信息，一是颜色缓冲区，二是深度缓冲区。利用深度缓冲来决定一个片元是否可见，如果可见就更新颜色缓冲区。</p>
-<p><strong>Unity含有内置的光照变量和函数，指定了前向渲染路径时，Unity会进行相关计算并填充一些变量如_LightColor0。</strong></p>
-<h2 id="如何指定前向渲染路径"><a href="#如何指定前向渲染路径" class="headerlink" title="如何指定前向渲染路径"></a>如何指定前向渲染路径</h2><p>大多数情况下，一个项目只使用一种渲染路径，可以在菜单Edit里设置。</p>
-<p>要是想使用多种渲染路径，也可以对不同的摄像机进行不同的设置。</p>
-<p>完成了上面的设置，就可以在Pass中使用标签“LightMode”来指定该Path使用的的渲染路径，比如，“LightMode”&#x3D;“ForwardBase”告诉Unity，当前Pass使用的是前向渲染路径中的“ForwadBase”路径，在shader中访问到Unity填好的光照属性。对于前向渲染，Unity Shader通常会定义一个Base Pass和一个Add Path。通常在Base Path中执行平行光照的逐像素计算，在Add Path中计算其他逐像素光照，最后Blend这些值。实际上，由于Shader中如何利用内置属性进行光照计算，完全取决于程序员，所以也可以在Base Path中进行逐顶点光照计算。</p>
-<h1 id="延迟渲染路径"><a href="#延迟渲染路径" class="headerlink" title="延迟渲染路径"></a>延迟渲染路径</h1><p>前向渲染会多出很多重复的操作，延迟渲染可以解决。延迟渲染不仅要计算深度缓冲、颜色缓冲，还需要计算G缓冲（Geometry Buffer，G-Buffer）。G-Buffer中存储表面信息，包括表面的法线、位置、材质属性等。</p>
-<p>延迟渲染的流程主要包括两个Pass，第一个Pass利用深度缓冲计算片元的可见性，如果一个片元可见就把其相关信息放到G-Buffer中。在第二个Pass中利用G-Buffer中的表面信息计算真正的着色。</p>
 
       
     </div>
