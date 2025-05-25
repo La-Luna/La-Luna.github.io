@@ -129,12 +129,12 @@
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -196,9 +196,24 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2023-07-23 10:25:28 / 修改时间：16:45:04" itemprop="dateCreated datePublished" datetime="2023-07-23T10:25:28+08:00">2023-07-23</time>
+      <time title="创建时间：2023-07-23 10:25:28" itemprop="dateCreated datePublished" datetime="2023-07-23T10:25:28+08:00">2023-07-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-05-25 16:02:30" itemprop="dateModified" datetime="2025-05-25T16:02:30+08:00">2025-05-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Unreal-Rendering/" itemprop="url" rel="index"><span itemprop="name">Unreal Rendering</span></a>
+        </span>
     </span>
 
   
@@ -211,8 +226,8 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <blockquote><p>unreal引擎官方给出了unreal如何渲染一帧的介绍，结合renderDoc插件，分析渲染过程，并且给出各个环节的性能瓶颈与解决方案。</p>
-<p>本文用以记录，学习，分享。</p>
+          <blockquote><p>unreal引擎官方给出了unreal-4如何渲染一帧的介绍，结合renderDoc插件，分析渲染过程，并且给出各个环节的性能瓶颈与解决方案。</p>
+<p>本文用以记录，学习，分享。如有错误，烦请指正。 </p>
 </blockquote>
 
 <h1 id="原文链接"><a href="#原文链接" class="headerlink" title="原文链接"></a>原文链接</h1><p><a target="_blank" rel="noopener" href="https://dev.epicgames.com/community/learning/courses/EGR/unreal-engine-an-in-depth-look-at-real-time-rendering/edk/an-in-depth-look-at-real-time-rendering">An In-Depth Look at Real-Time Rendering</a></p>
@@ -222,14 +237,241 @@
 <p>unreal用到的特性有：<br><img src="/2023/07/23/howunrealgenerateaframe/features.png#pic_center"><br>其中可见哪些是预计算的，哪些是实时计算的。几种计算反射与光照的方法在离线阶段完成。</p>
 <h2 id="由点到面"><a href="#由点到面" class="headerlink" title="由点到面"></a>由点到面</h2><p>一切渲染的源头，是由三点构成的三角面片，点标志着三角形的位置，面片显示三角形的颜色与图案，虚幻世界的一切模型都是由这样的三角面片构成的。</p>
 <p>计算机的两个核心元件，CPU与GPU共同肩负着渲染的责任。他们处理渲染流水的不同工作，都具有其瓶颈。</p>
-<h2 id="unreal采用的渲染流水线"><a href="#unreal采用的渲染流水线" class="headerlink" title="unreal采用的渲染流水线"></a>unreal采用的渲染流水线</h2><p>unreal采用延迟渲染流程（Deffered Rendering），与之比肩的是前向渲染流程（Forward Rendering）。unreal只采用延迟渲染流程，而unity则支持多种渲染流程。</p>
-<h3 id="前向渲染"><a href="#前向渲染" class="headerlink" title="前向渲染"></a>前向渲染</h3><p>乐乐跟我说<a target="_blank" rel="noopener" href="https://github.com/candycat1992/Unity_Shaders_Book">[1]</a>，每进行一次完整的前向渲染，都需要渲染该对象的渲染图元，并计算两个缓冲区的信息，一是颜色缓冲区，二是深度缓冲区。利用深度缓冲区来决定一个片元是否可见，如果可见即更新颜色缓冲区中的颜色值。乐乐用下面的伪代码解释这一过程：</p>
+<h2 id="unreal采用的渲染流水线"><a href="#unreal采用的渲染流水线" class="headerlink" title="unreal采用的渲染流水线"></a>unreal采用的渲染流水线</h2><p>unreal游戏场景视口的渲染主要采用延迟渲染管线（Deffered Rendering），在这个流程中的某些环节采用前向渲染管线（Forward Rendering）。</p>
+<h3 id="前向渲染"><a href="#前向渲染" class="headerlink" title="前向渲染"></a>前向渲染</h3><p>每进行一次完整的前向渲染，都需要渲染该对象的渲染图元，并计算两个缓冲区的信息，一是颜色缓冲区，二是深度缓冲区。利用深度缓冲区来决定一个片元是否可见，如果可见即更新颜色缓冲区中的颜色值。乐乐用下面的伪代码解释这一过程<a target="_blank" rel="noopener" href="https://github.com/candycat1992/Unity_Shaders_Book">[1]</a>：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Pass&#123;</span><br><span class="line">    <span class="keyword">for</span>(each primitive in this model)&#123;</span><br><span class="line">        <span class="keyword">for</span>(each fragment covered by this primitive)&#123;</span><br><span class="line">            <span class="keyword">if</span>(failed in depth test)&#123;</span><br><span class="line">                <span class="comment">//如果没有通过深度测试，则该片元不可见</span></span><br><span class="line">                discard；</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="comment">//如果可见则进行光照计算</span></span><br><span class="line">                float4 color = Shadeing();</span><br><span class="line">                writeFrameBuffer();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<h3 id="延迟渲染"><a href="#延迟渲染" class="headerlink" title="延迟渲染"></a>延迟渲染</h3><p>乐乐又说延迟渲染包括两个过程，在第一部分，不进行任何光照计算，仅仅计算哪些片元是可见的（主要通过深度缓冲实现）。如果发现一个片元可见，则把相关信息存储到G缓冲区（信息包括表面法线，视角方向，漫反射系数等），然后在第二部分中，利用Gbuffer中的信息进行真正的光照计算。</p>
+<h3 id="延迟渲染"><a href="#延迟渲染" class="headerlink" title="延迟渲染"></a>延迟渲染</h3><p>延迟渲染包括两个过程，在第一部分，不进行任何光照计算，仅仅计算哪些片元是可见的（主要通过深度缓冲实现）。如果发现一个片元可见，则把相关信息存储到G缓冲区（信息包括表面法线，视角方向，漫反射系数等），然后在第二部分中，利用Gbuffer中的信息进行真正的光照计算<a target="_blank" rel="noopener" href="https://github.com/candycat1992/Unity_Shaders_Book">[1]</a>。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Pass1&#123;</span><br><span class="line">    <span class="keyword">for</span>(each primitive in this model)&#123;</span><br><span class="line">        <span class="keyword">for</span>(each fragment covered fy this primitive)&#123;</span><br><span class="line">            <span class="keyword">if</span>(failed in depth test)&#123;</span><br><span class="line">                <span class="comment">//如果没有通过深度测试，则该片元不可见</span></span><br><span class="line">                discard;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                    <span class="comment">//如果可见则写进GBuffer</span></span><br><span class="line">                    writeGBuffer(materialInfo, norml, pos);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">Pass2&#123;</span><br><span class="line">    <span class="keyword">for</span>(each pixel in the screen)&#123;</span><br><span class="line">        <span class="keyword">if</span>(the pixel i valid)&#123;</span><br><span class="line">            readGBuffer();</span><br><span class="line">            float4 color = shading();</span><br><span class="line">            writeFrameBuffer(pixel ,color); </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h3 id="利弊"><a href="#利弊" class="headerlink" title="利弊"></a>利弊</h3><p><img src="/2023/07/23/howunrealgenerateaframe/dvsf.png#pic_center" alt="延迟渲染与前向渲染"></p>
-<h1 id="渲染准备"><a href="#渲染准备" class="headerlink" title="渲染准备"></a>渲染准备</h1><h1 id="几何渲染"><a href="#几何渲染" class="headerlink" title="几何渲染"></a>几何渲染</h1><h1 id="光栅化与GBuffer"><a href="#光栅化与GBuffer" class="headerlink" title="光栅化与GBuffer"></a>光栅化与GBuffer</h1><h1 id="纹理"><a href="#纹理" class="headerlink" title="纹理"></a>纹理</h1><h1 id="像素着色器和材质"><a href="#像素着色器和材质" class="headerlink" title="像素着色器和材质"></a>像素着色器和材质</h1><h1 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h1><h1 id="静态光源与静态阴影"><a href="#静态光源与静态阴影" class="headerlink" title="静态光源与静态阴影"></a>静态光源与静态阴影</h1><h1 id="动态光源与实时阴影"><a href="#动态光源与实时阴影" class="headerlink" title="动态光源与实时阴影"></a>动态光源与实时阴影</h1><h1 id="雾与透明物体"><a href="#雾与透明物体" class="headerlink" title="雾与透明物体"></a>雾与透明物体</h1><h1 id="后处理"><a href="#后处理" class="headerlink" title="后处理"></a>后处理</h1><h1 id="参考及推荐阅读"><a href="#参考及推荐阅读" class="headerlink" title="参考及推荐阅读"></a>参考及推荐阅读</h1><p><a target="_blank" rel="noopener" href="https://github.com/candycat1992/Unity_Shaders_Book">1. Unity Shader 入门精要</a></p>
+<hr>
+<h1 id="渲染准备"><a href="#渲染准备" class="headerlink" title="渲染准备"></a>渲染准备</h1><p>要将画面从数据呈现到屏幕中，需要CPU与GPU的交替配合，流水线使得工作效率更高。</p>
+<p><img src="/2023/07/23/howunrealgenerateaframe/cpugpupipeline.png#pic_center" alt="CPU与GPU的逐帧执行流水线"></p>
+<p>在Frame0时：<br>完成场景中所有物体的位置计算；</p>
+<p>在Frame1时：<br>依据远近、相机视锥盒子、遮挡关系进行剔除，得到最终需要渲染的物体，并将渲染信息发送给GPU；</p>
+<p>在Frame2时：<br>GPU进行绘制，先计算深度缓冲Zbuffer，再进行GBuffer的计算，渲染各种特性。理解draw call，GPU的性能与draw call紧密联系。通常场景中的同种材质的图元 在一个draw call中调用渲染。</p>
+<hr>
+<h1 id="几何渲染"><a href="#几何渲染" class="headerlink" title="几何渲染"></a>几何渲染</h1><h2 id="draw-call对性能的影响"><a href="#draw-call对性能的影响" class="headerlink" title="draw call对性能的影响"></a>draw call对性能的影响</h2><pre><code>Drawcall就是一个命令，cpu发起，gpu接收，这个命令仅仅指向一个需要被渲染的图元列表。DrawCall发出后，一般影响的是GPU端的绘制，因为draw的过程是图形的准备及绘制过程，大部分在GPU中处理（设置绘制上下文--绘图方式--顶点坐标--绘制）。
+</code></pre>
+<blockquote></blockquote>
+
+<blockquote>
+<p>draw call调用次数对游戏性能的影响，大于模型面数对性能的影响。比如有时候 ，50000个三角形会比5000 00000个三角形渲染起来更慢（如果draw call次数过多的话）。因为draw call有着基本的性能消耗，所以将一个低量级的三角形数量优化到一个超低量级的数量往往对性能提升没什么用。</p>
+<p>如果一个actor有多个component，那么每个component单独作一次draw call，一个接着一个的渲染，所以把很多component从多个actor，集合到一个actor中，并不会提升性能</p>
+<p>降低draw call的一种方法是使用更少的大模型代替很多的小模型。于是推荐使用 Modular Meshes 技术合并网格，同时利用Statistics工具和Stat命令，但是一旦合并就很难再恢复原样，所以尽量在项目的后期优化时再合并网格。如果面对目标机型为低端机的，可以利用合并网格技术合并几乎所有网格以提升性能。<br>另一种降低draw call的方法是Level of Detail（LOD）：给定条件下简化模型，比如随着与相机的距离变化简化模型。unreal采用了HLOD，成组的简化模型。</p>
+</blockquote>
+<h2 id="Shaders之始，Vertex-shader"><a href="#Shaders之始，Vertex-shader" class="headerlink" title="Shaders之始，Vertex shader"></a>Shaders之始，Vertex shader</h2><p>shader（着色器）是跑在GPU上的小程序，贯穿渲染流水线的整个过程，shader的种类有很多，渲染流水线执行的第一个shader便是 vertex shader。</p>
+<p>主要作用是将输入的顶点从局部坐标系，变换到世界空间坐标系。还有别的用途，比如处理顶点着色，也用作顶点位置的额外偏移，比如草地与水的偏移。</p>
+<pre><code>值得注意的是，顶点坐标便宜并不会改变其实际的坐标信息，只是视觉上的一种变幻而已，
+</code></pre>
+<blockquote>
+<p>vertex shader作为渲染的一部分，也对性能有着影响。着色器越复杂，运行越慢；顶点越多运行越慢。因此高量级的模型只应该参与简单的vertex shader。</p>
+</blockquote>
+<h2 id="光栅化与GBuffer"><a href="#光栅化与GBuffer" class="headerlink" title="光栅化与GBuffer"></a>光栅化与GBuffer</h2><h3 id="光栅化与OverShading"><a href="#光栅化与OverShading" class="headerlink" title="光栅化与OverShading"></a>光栅化与OverShading</h3><p>光栅化就是将图元渲染到像素构成的网格中。 每次draw call都要完成一次光栅化。<br>一个像素点只能代表一个三角形。同时一个像素点甚至可以代替一个面数非常大的模型（模型离相机非常非常远的情况下）</p>
+<blockquote>
+<p>当光栅化结束，每个像素点都使用pixel shader来进行更精确的像素计算，这个过程需要更多的图元信息，比如纹理。（OpenGL中，使用fragment shader，Direct中叫pixel shader），将在下文介绍。</p>
+</blockquote>
+<p>OverShading在两个地方出现。第一处是光栅化的时候，unreal对像素点的管理采用以2X2的模块单位进行分组，这意味着如果三角形某个点只占用2X2中的1个的时候，也会会整个2X2进行计算。第二处是当模型分布不合理时，导致某一处像素组，发生大量重复的计算与替换。</p>
+<h3 id="Gbuffer"><a href="#Gbuffer" class="headerlink" title="Gbuffer"></a>Gbuffer</h3><p>GBuffer是延迟渲染管线中的关键概念之一。在这一过程中，将画面的多种信息计算加载到不同的缓存中，最后合成一帧。</p>
+<pre><code>GBuffer包含的信息图：Normal(A), metalic value(B-r), specular value(B-g), roughness value(B-b), 
+without lighting value(C), special pixels(D), depth buffer(E)
+</code></pre>
+<p><img src="/2023/07/23/howunrealgenerateaframe/GBuffer.png#pic_center" alt="unreal游戏场景视口中可看见Gbuffer信息">   </p>
+<h2 id="像素着色器和材质"><a href="#像素着色器和材质" class="headerlink" title="像素着色器和材质"></a>像素着色器和材质</h2><h3 id="纹理"><a href="#纹理" class="headerlink" title="纹理"></a>纹理</h3><p>说到纹理，就要说纹理压缩技术，每个平台的压缩技术都不一样，DXTC（又叫BC）常见于PC平台。法线贴图常使用BC5压缩技术。</p>
+<blockquote>
+<p>纹理影响存储和带宽，而并不影响渲染性能，于是要考虑压缩技术。</p>
+</blockquote>
+<p>为了最大化纹理的利用效率，大部分引擎包括虚幻，都是用mipmaps技术（MIPS），即多级纹理。与LOD原理差不多，MIPS会依据距离加载同一张纹理的不同的级别显示。</p>
+<h3 id="pixel-shader"><a href="#pixel-shader" class="headerlink" title="pixel shader"></a>pixel shader</h3><p>像素着色器是渲染管线的核心，是GPU运行的对像素进行着色的一系列计算。像素着色器驱动着虚幻引擎整个材质系统，也驱动着光线，雾，反射，屏幕后处理，等特性。</p>
+<p>像素着色器可以自由选择屏幕中需要着色的像素点，依据mask图像。</p>
+<p>像素着色器用shader语言书写，每个平台的语言都不一样，比如DirectX API使用的着色器语言是HLSL</p>
+<h3 id="材质"><a href="#材质" class="headerlink" title="材质"></a>材质</h3><p>在ue中，材质系统是除了几何体数据外的所有其他数据。包括光照模型，分布函数，各种渲染状态，各种渲染分支，以及一个提供给用户的节点图等等。<br>材质系统的很大一部分特性是基于PBR的。PBR使用Specular&#x2F;Metallic&#x2F;Roughness来处理所有的着色。</p>
+<p>材质系统有个设置，shading model，是一些mask用于确定哪些像素使用非PBR着色模型，然后这些像素点采用另外的渲染路径。</p>
+<p>UE4 Shader生成分两部分，第一部分是把材质编辑器中的节点图编译成HLSL代码，这一部分是通过FHLSLMaterialTranslator来完成的。<br>UE4 Shader生成的第二部分是把HLSL生成多平台的Shader代码，如Windows上的HLSL,Android上的GLSL,IOS上的MetalShader。</p>
+<blockquote>
+<p>一个材质&#x2F;着色器的最大纹理采样器使用数量通常是16，其中通常有13个可以使用。开发者可以使用128个共享采样器（DX1以上）；</p>
+<p>纹理大小主要导致延迟，而不是帧率损失；</p>
+<p>像素着色器影响很大，因其对游戏运行十分重要；</p>
+<p>分辨率越高，复杂材质对性能的影响越大</p>
+</blockquote>
+<blockquote>
+<p>一个材质会编译生成很多个shader </p>
+</blockquote>
+<p>从render的角度, 具有同样材质实例的mesh 会在同一批次渲染，即在一个draw call被绘制，即使是不同skeletal mesh 上的材质。但就算是同一个skeletal mesh的不同材质，他们母材值一样，但是材质实例不一样，也是会调用不同的draw call。所以为了尽量减少draw call，合并texture使得不同的mesh用同一个材质实例是一个方法。</p>
+<hr>
+<h1 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h1><p>实时计算反射非常难，unreal提供了三种工具来计算反射，皆有其利弊，但是好好利用这三种技术，将反射与渲染结果相结合的话，会提升效果表现。</p>
+<h2 id="反射捕捉"><a href="#反射捕捉" class="headerlink" title="反射捕捉"></a>反射捕捉</h2><ul>
+<li>在一个特定的位置捕捉一张静态的cubemap</li>
+<li>预计算</li>
+<li>非常快</li>
+<li>不精确</li>
+<li>只能够用于捕捉点位置的反射效果</li>
+</ul>
+<h2 id="屏幕反射-Planar-Reflection"><a href="#屏幕反射-Planar-Reflection" class="headerlink" title="屏幕反射 Planar Reflection"></a>屏幕反射 Planar Reflection</h2><p><img src="/2023/07/23/howunrealgenerateaframe/SSR.png#pic_center" alt="Screen Space Reflections">   </p>
+<ul>
+<li>并不常用，发生在平面上的捕捉</li>
+<li>非常耗</li>
+<li>对于需要精确反射效果的光滑平面适用，其他情况就不太适用</li>
+<li>只在有限区域适用</li>
+</ul>
+<h2 id="屏幕空间反射SSR"><a href="#屏幕空间反射SSR" class="headerlink" title="屏幕空间反射SSR"></a>屏幕空间反射SSR</h2><ul>
+<li>虚幻默认的反射系统</li>
+<li>实时计算，影响场景中的所有地方</li>
+<li>准确的反射</li>
+<li>输出信息有噪声</li>
+<li>中等消耗</li>
+<li>只能显示 当前可见的集合体的反射信息</li>
+<li>在”post process volume”组件中</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>所有这三种反射一起影响最终的反射环境</p>
+<blockquote>
+<p>如果项目没有为分发进行烘培的话，反射捕捉会在关卡加载的时候进行。因此太多的反射捕捉会降低loading的速度（反射捕捉超过千个的话，引擎直到最后烘培前都不well） </p>
+<p>反射捕捉的精度可以在引擎中调整</p>
+</blockquote>
+<blockquote>
+<p>天空盒是一个性价比很高的选择</p>
+<p>平面反射仅推荐在非常需要的时候使用</p>
+<p>当项目对硬件的要求不高时，建议关闭SSR;如果电脑性能跟得上，那么SSR质量调整随意</p>
+</blockquote>
+<hr>
+<h1 id="静态光源与静态阴影"><a href="#静态光源与静态阴影" class="headerlink" title="静态光源与静态阴影"></a>静态光源与静态阴影</h1><p>虚幻主要有两种方式处理光照和阴影，针对静态光照的方式 与 针对动态光照的方式，或者说是预计算与实时 两种方式。光照和阴影一般是分开处理的。</p>
+<h2 id="方法的利弊"><a href="#方法的利弊" class="headerlink" title="方法的利弊"></a>方法的利弊</h2><blockquote>
+<p>处理静态光照，是在编辑器中预计算，然后存在光照贴图中；</p>
+<p>非常快，但是消耗存储</p>
+<p>预计算时候花费较长的时间</p>
+<p>只要场景中有东西改变，都要重新渲染一遍</p>
+<p>模型需要光照贴图的UV，这个额外的映射也需要时间</p>
+</blockquote>
+<h2 id="质量的利弊"><a href="#质量的利弊" class="headerlink" title="质量的利弊"></a>质量的利弊</h2><blockquote>
+<p>有效的处理辐射和全局光照</p>
+<p>产生具有软阴影的物理阴影</p>
+<p>质量依赖于lightmap的分辨率和UV映射</p>
+<p>lightmap分辨率是有上限的</p>
+<p>非常大的模型不会有足够的lightmap uv 空间</p>
+<p>一旦预计算完成，光线和阴影不会实时的变化与更换</p>
+</blockquote>
+<h2 id="Lightmass"><a href="#Lightmass" class="headerlink" title="Lightmass"></a>Lightmass</h2><p>Lightmass是生成Lightmaps的进程，是一个独立的工具，支持基于网络的分布式渲染。烘培质量由Light Build Quality还有每个关卡的Lightmass决定。</p>
+<h2 id="Indirect-Lighting-Cache"><a href="#Indirect-Lighting-Cache" class="headerlink" title="Indirect Lighting Cache"></a>Indirect Lighting Cache</h2><p>为了解决动态模型的光线预计算。ILC在场景中基于光线缓存，体在每个单位上放置了向量。每个向量都存了当前位置的光线强度。在运行时，距离动态模型最近的5X5X5个向量将会被考虑。</p>
+<h2 id="静态光源的表现及影响"><a href="#静态光源的表现及影响" class="headerlink" title="静态光源的表现及影响"></a>静态光源的表现及影响</h2><blockquote>
+<p>静态光源经常以用同一种速度渲染</p>
+<p>烘培之后，一个光源 还是五万个光源，对于性能表现不大</p>
+<p>lightmap分辨率影响的是存储和文件大小，并不影响帧率</p>
+<p>提升烘培时间可以考虑：</p>
+<pre><code> a. lightmap 分辨率
+ b. 模型/光源的数量
+ c. 具有大衰减半径或源半径的光
+</code></pre>
+</blockquote>
+<h1 id="动态光源与实时阴影"><a href="#动态光源与实时阴影" class="headerlink" title="动态光源与实时阴影"></a>动态光源与实时阴影</h1><blockquote>
+<p>unreal项目中对性能影响最大的几个因素：</p>
+<ol>
+<li>drawcall的数量，几何体渲染</li>
+<li>透明物体渲染</li>
+<li>像素着色器</li>
+<li>动态阴影</li>
+</ol>
+</blockquote>
+<h2 id="方法的利弊-1"><a href="#方法的利弊-1" class="headerlink" title="方法的利弊"></a>方法的利弊</h2><ol>
+<li>使用GBuffer进行实时渲染</li>
+<li>光源可以被任意更改&#x2F;移动&#x2F;替换 </li>
+<li>不需要任何特别的模型上的准备</li>
+<li>阴影是最耗的</li>
+<li>有多种方法渲染动态阴影，依据使用场景的不同来设计应用阴影的解决方案</li>
+</ol>
+<h2 id="质量的利弊-1"><a href="#质量的利弊-1" class="headerlink" title="质量的利弊"></a>质量的利弊</h2><ol>
+<li>因为阴影对性能影响很大，所以经常损失质量来弥补性能</li>
+<li>对于大部分资源，都不会进行辐射计算和全局光照计算</li>
+<li>动态光源比静态光源更尖锐和显眼</li>
+<li>动态阴影通常是大小中立的，不像静态阴影计算方法那样依赖模型大小</li>
+<li>动态阴影很难做好</li>
+</ol>
+<h2 id="实时阴影"><a href="#实时阴影" class="headerlink" title="实时阴影"></a>实时阴影</h2><p>为了计算阴影，需要知道两点的位置，为了得到距离集合体表面的距离，需要查询和比较。这是很慢的。</p>
+<p>实时阴影对性能影响明显，关掉一些光源的”shadow casting”选项对性能有显而易见的提升。</p>
+<p>unreal引擎中主要有四种动态阴影的方法，以及一些不常用的方法：</p>
+<ol>
+<li>Regular Dynamic Shadows - 最常用的方法</li>
+<li>Per Object Shadows - stationary light shadows</li>
+<li>cascaded shadow maps (CSM) - Directional light shadowing</li>
+<li>Distance field shadows - 使用距离场信息进行计算，而不是实时追踪集合体</li>
+</ol>
+<p>不常用的有：</p>
+<ol>
+<li>inset shaodows</li>
+<li>contact shadows</li>
+<li>capsule shadows</li>
+</ol>
+<h2 id="渲染过程"><a href="#渲染过程" class="headerlink" title="渲染过程"></a>渲染过程</h2><p>在像素着色器中计算，动态光源作为一个球体来渲染，这个球的作用就像mask一样。任何在球内的物体都需要一个像素着色器操作来混合动态光源信息。</p>
+<h2 id="实时光照的影响"><a href="#实时光照的影响" class="headerlink" title="实时光照的影响"></a>实时光照的影响</h2><ol>
+<li><p>实时光源在延迟渲染管线中影响不大，但在前向渲染管线中影响很大</p>
+</li>
+<li><p>实时光源的计算，会激发更多的像素着色器，而成本取决于像素着色器操作，像素越多，速度就越慢</p>
+</li>
+<li><p>光源离相机越近，照亮的像素就越多，运行就越慢</p>
+</li>
+<li><p>光源的半径最好尽可能的小</p>
+</li>
+<li><p>避免重复的光范围覆盖，引起更多的像素着色器计算。</p>
+</li>
+<li><p>如果不是一定需要的话，把阴影关掉</p>
+</li>
+<li><p>几何体的三角面片数量也影响动态阴影</p>
+</li>
+<li><p>尽量考虑用距离场来简化计算</p>
+</li>
+<li><p>距离场最适合用于具有硬直边几何形状的实体模型</p>
+</li>
+<li><p>当距离较远时，淡化或关闭阴影</p>
+</li>
+</ol>
+<h2 id="对于阴影方案的选择"><a href="#对于阴影方案的选择" class="headerlink" title="对于阴影方案的选择"></a>对于阴影方案的选择</h2><ol>
+<li>静态阴影与动态阴影相结合是最好的方案<ol>
+<li>弱光 离得比较远的光源 用静态</li>
+<li>相机附近的间接光照 用静态</li>
+<li>在静态灯光之上使用动态灯光，以更好地突出阴影和阴影，并在静态结果之上提供一个互动层</li>
+</ol>
+</li>
+</ol>
+<p>综合，有两个基础准则</p>
+<ol>
+<li>只有在需要尽可能高的性能时，才使用静态</li>
+<li>只有当你需要能够在任何时候自由地修改灯光时，才使用动态</li>
+</ol>
+<h1 id="雾与透明物体"><a href="#雾与透明物体" class="headerlink" title="雾与透明物体"></a>雾与透明物体</h1><h2 id="fog"><a href="#fog" class="headerlink" title="fog"></a>fog</h2><h2 id="透明物体"><a href="#透明物体" class="headerlink" title="透明物体"></a>透明物体</h2><p>延迟渲染管线在处理透明物体时显现了弊端（延迟渲染只有GBuffer信息，而计算透明物体需要更多的表面信息），因此透明物体都是在最后一个stage再开始处理，或者单独用前向渲染计算，最后与延迟渲染的结果合并。</p>
+<p>透明效果的影响：</p>
+<ol>
+<li>当以最好的质量渲染时，透明物体的需要计算更多的像素着色器</li>
+<li>当许多层覆盖同一个像素时，透明物体的计算更加高昂。</li>
+<li>除了像素着色器的消耗，透明物体的渲染顺序也是个麻烦的事情，很容易出错</li>
+</ol>
+<p>建议：</p>
+<ol>
+<li>如果非得使用透明物体的话，建议不要把view mode 设置为 default lit，改为 Unlit，会节约很多性能。如果非得需要绝佳的性能，把lighting  mode设置为 Surface ForwardShading</li>
+<li>预计透明材料覆盖的像素越多，一般来说，它的材料应该更简单</li>
+<li>讲光线考虑进效果的透明材质，比不发光unlit的透明材质，消耗更多性能。因此，透明物体，能避免光线就避免光线。</li>
+</ol>
+<h2 id="更多"><a href="#更多" class="headerlink" title="更多"></a>更多</h2><ul>
+<li>次表面渲染</li>
+<li>折射</li>
+<li>displacement mapping</li>
+<li>屏幕环境遮罩 SSAO</li>
+<li>交互界面 UI</li>
+<li>贴花 Decals</li>
+</ul>
+<h1 id="后处理"><a href="#后处理" class="headerlink" title="后处理"></a>后处理</h1><p>后处理在渲染流水线的最后计算，再次依赖于像素着色器，基于合成并重用GBuffer来计算其效果。</p>
+<p>常见的后处理效果：</p>
+<ul>
+<li>light bloom</li>
+<li>depth of field&#x2F;Blurring</li>
+<li>镜头光斑</li>
+<li>光束</li>
+<li>vignette 晕影相机？</li>
+<li>颜色矫正</li>
+<li>曝光</li>
+<li>motion blur</li>
+</ul>
+<h1 id="参考及推荐阅读"><a href="#参考及推荐阅读" class="headerlink" title="参考及推荐阅读"></a>参考及推荐阅读</h1><p><a target="_blank" rel="noopener" href="https://github.com/candycat1992/Unity_Shaders_Book">1. Unity Shader 入门精要</a></p>
+<p>2.《大象无形-虚幻引擎程序设计浅析-罗丁力》</p>
 
       
     </div>
@@ -1201,7 +1443,7 @@
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2025</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
