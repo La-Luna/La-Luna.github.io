@@ -204,7 +204,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-05-25 16:02:30" itemprop="dateModified" datetime="2025-05-25T16:02:30+08:00">2025-05-25</time>
+      <time title="修改时间：2025-07-20 23:25:51" itemprop="dateModified" datetime="2025-07-20T23:25:51+08:00">2025-07-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -237,7 +237,7 @@
 <p>unreal用到的特性有：<br><img src="/2023/07/23/howunrealgenerateaframe/features.png#pic_center"><br>其中可见哪些是预计算的，哪些是实时计算的。几种计算反射与光照的方法在离线阶段完成。</p>
 <h2 id="由点到面"><a href="#由点到面" class="headerlink" title="由点到面"></a>由点到面</h2><p>一切渲染的源头，是由三点构成的三角面片，点标志着三角形的位置，面片显示三角形的颜色与图案，虚幻世界的一切模型都是由这样的三角面片构成的。</p>
 <p>计算机的两个核心元件，CPU与GPU共同肩负着渲染的责任。他们处理渲染流水的不同工作，都具有其瓶颈。</p>
-<h2 id="unreal采用的渲染流水线"><a href="#unreal采用的渲染流水线" class="headerlink" title="unreal采用的渲染流水线"></a>unreal采用的渲染流水线</h2><p>unreal游戏场景视口的渲染主要采用延迟渲染管线（Deffered Rendering），在这个流程中的某些环节采用前向渲染管线（Forward Rendering）。</p>
+<h2 id="unreal采用的渲染流水线"><a href="#unreal采用的渲染流水线" class="headerlink" title="unreal采用的渲染流水线"></a>unreal采用的渲染流水线</h2><p>unreal游戏场景视口的渲染主要采用延迟渲染管线（Deffered Rendering），在这个流程中的某些环节采用前向渲染管线（Forward Rendering）。为移动平台准备的游戏，一般采用前向渲染。延迟渲染与前向渲染的区别主要在lighting阶段：延迟渲染在得到GBuffer后再进行lighting，显著减少计算复杂度。</p>
 <h3 id="前向渲染"><a href="#前向渲染" class="headerlink" title="前向渲染"></a>前向渲染</h3><p>每进行一次完整的前向渲染，都需要渲染该对象的渲染图元，并计算两个缓冲区的信息，一是颜色缓冲区，二是深度缓冲区。利用深度缓冲区来决定一个片元是否可见，如果可见即更新颜色缓冲区中的颜色值。乐乐用下面的伪代码解释这一过程<a target="_blank" rel="noopener" href="https://github.com/candycat1992/Unity_Shaders_Book">[1]</a>：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Pass&#123;</span><br><span class="line">    <span class="keyword">for</span>(each primitive in this model)&#123;</span><br><span class="line">        <span class="keyword">for</span>(each fragment covered by this primitive)&#123;</span><br><span class="line">            <span class="keyword">if</span>(failed in depth test)&#123;</span><br><span class="line">                <span class="comment">//如果没有通过深度测试，则该片元不可见</span></span><br><span class="line">                discard；</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="comment">//如果可见则进行光照计算</span></span><br><span class="line">                float4 color = Shadeing();</span><br><span class="line">                writeFrameBuffer();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
@@ -299,6 +299,7 @@ without lighting value(C), special pixels(D), depth buffer(E)
 <p>一个材质会编译生成很多个shader </p>
 </blockquote>
 <p>从render的角度, 具有同样材质实例的mesh 会在同一批次渲染，即在一个draw call被绘制，即使是不同skeletal mesh 上的材质。但就算是同一个skeletal mesh的不同材质，他们母材值一样，但是材质实例不一样，也是会调用不同的draw call。所以为了尽量减少draw call，合并texture使得不同的mesh用同一个材质实例是一个方法。</p>
+<p>半透明材质对性能影响比较大，因半透明材质会增加排序和混合计算的开销，也会带来overdraw。</p>
 <hr>
 <h1 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h1><p>实时计算反射非常难，unreal提供了三种工具来计算反射，皆有其利弊，但是好好利用这三种技术，将反射与渲染结果相结合的话，会提升效果表现。</p>
 <h2 id="反射捕捉"><a href="#反射捕捉" class="headerlink" title="反射捕捉"></a>反射捕捉</h2><ul>
